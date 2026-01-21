@@ -24,4 +24,10 @@ public class Task {
     public void setStatus(boolean newStatus) {
         this.status = newStatus;
     }
+
+    // To be overridden by subclasses
+    @Override
+    public String toString() {
+        return "[" + this.getStatusIcon() + "] " + this.getDescription();
+    }
 }
