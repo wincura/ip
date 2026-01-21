@@ -1,4 +1,8 @@
 // CS2103T Individual Project by William Scott Win A0273291A
+
+// Imports IO Package to handle user input
+import java.util.Scanner;
+
 @SuppressWarnings("TextBlockMigration") // Suppress the warning to use text block for logo instead
 
 public class InvictaBot {
@@ -17,15 +21,37 @@ public class InvictaBot {
     // Method to display greeting message
     public static void greet() {
         System.out.println("_".repeat(70) + "\n" +
-                "Hello! I'm InvictaBot!\n" +
-                "What can I do for you?\n" +
-                "_".repeat(70) + "\n" +
-                "Bye. Hope to see you again soon!\n" +
+                "Howdy! I'm InvictaBot!\n" +
+                "What can I do for ya, pal?\n" +
+                "_".repeat(70) + "\n");
+    }
+
+    // Method to display goodbye message
+    public static void bye() {
+        System.out.println("_".repeat(70) + "\n" +
+        "Bye bye now! You take care!\n" +
                 "_".repeat(70) + "\n");
     }
 
     public static void main(String[] args) {
+        // Method calls upon chatbot execution
         logo();
         greet();
+        // Uses Scanner to accept user input (planning to use BufferedReader in later releases)
+        Scanner s = new Scanner(System.in);
+        // Loop to keep chatbot running until bye prompt
+        while (true) {
+            String userInput = s.nextLine();
+            if (userInput.equals("bye")) {
+                bye();
+                // Exit loop
+                break;
+            } else {
+                // Print user input message
+                System.out.println("_".repeat(66) + "\n" +
+                        "\t" + userInput + "\n" +
+                        "_".repeat(66) + "\n");
+            }
+        }
     }
 }
