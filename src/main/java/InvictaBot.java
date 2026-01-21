@@ -7,7 +7,7 @@ import java.util.*;
 
 public class InvictaBot {
     // Declaring data structures to be used by chatbot
-    private static ArrayList<String> log = new ArrayList<String>();
+    private static ArrayList<Task> taskList = new ArrayList<Task>();
 
     // Method to display logo
     private static void logo() {
@@ -43,26 +43,67 @@ public class InvictaBot {
         // Uses Scanner to accept user input (planning to use BufferedReader in later releases)
         Scanner s = new Scanner(System.in);
         // Loop to keep chatbot running until bye prompt
+        label:
         while (true) {
-            String userInput = s.nextLine();
-            if (userInput.equals("bye")) {
-                bye();
-                // Exit loop
-                break;
-            } else if (userInput.equals("list")) {
-                int count = 0;
-                System.out.println("_".repeat(66));
-                for (String msg : log) {
-                    count += 1;
-                    System.out.println("\t" + count + ". " + msg);
+            String raw = s.nextLine();
+            String[] userInput = raw.split(" ");
+            switch (userInput[0]) {
+                case "bye":
+                    bye();
+                    // Exit loop
+                    break label;
+                case "list":
+                    int count = 0;
+                    System.out.println("_".repeat(66) + "\n" +
+                            "\t" + "Here is a list of your tasks: ");
+                    for (Task task : taskList) {
+                        count += 1;
+                        System.out.println("\t" + count + ". [" + task.getStatusIcon() + "] " + task.getDescription());
+                    }
+                    System.out.println("_".repeat(66) + "\n");
+                    break;
+                case "mark": {
+                    Task t = taskList.get(Integer.parseInt(userInput[1]) - 1);
+                    if (t.getStatus()) {
+                        System.out.println("_".repeat(66) + "\n" +
+                                "\t" + "This task is already marked as done: " + "\n" +
+                                "\t\t" + t.getDescription() + "\n" +
+                                "_".repeat(66) + "\n");
+                    } else {
+                        t.setStatus(true);
+                        System.out.println("_".repeat(66) + "\n" +
+                                "\t" + "Great! I've marked this as done: " + "\n" +
+                                "\t\t" + t.getDescription() + "\n" +
+                                "_".repeat(66) + "\n");
+                    }
+                    break;
                 }
-                System.out.println("_".repeat(66) + "\n");
-            } else {
-                // Display added user input message
-                log.add(userInput);
-                System.out.println("_".repeat(66) + "\n" +
-                        "\t" + "added: " + userInput + "\n" +
-                        "_".repeat(66) + "\n");
+                case "unmark": {
+                    Task t = taskList.get(Integer.parseInt(userInput[1]) - 1);
+                    if (!t.getStatus()) {
+                        System.out.println("_".repeat(66) + "\n" +
+                                "\t" + "This task is already marked as not done: " + "\n" +
+                                "\t\t" + t.getDescription() + "\n" +
+                                "_".repeat(66) + "\n");
+                    } else {
+                        t.setStatus(false);
+                        System.out.println("_".repeat(66) + "\n" +
+                                "\t" + "Great! I've marked this as not done: " + "\n" +
+                                "\t\t" + t.getDescription() + "\n" +
+                                "_".repeat(66) + "\n");
+                    }
+                    break;
+                }
+                default: {
+                    // Display added user input message
+                    Task t = new Task(raw);
+                    taskList.add(t);
+                    System.out.println("_".repeat(66) + "\n" +
+                            "\t" + "Okay! I've added this task: " + "\n" +
+                            "\t\t" + t.getDescription() + "\n" +
+                            "_".repeat(66) + "\n");
+                    break;
+                }
             }
         }
     }
