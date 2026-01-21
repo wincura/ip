@@ -28,3 +28,7 @@ expected output
 ## Feature XYZ
 
 // Feature details
+
+## Acknowledgements
+
+Logo for chatbot generated with the help of an external Text to ASCII Art Generator tool from https://patorjk.com/software/taag/.
