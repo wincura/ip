@@ -23,26 +23,26 @@ public class InvictaBot {
 
     // Method to display greeting message
     private static void greet() {
-        System.out.println("_".repeat(70) + "\n" +
+        System.out.println("_".repeat(100) + "\n" +
                 "\t" + "Howdy! I'm InvictaBot!\n" +
                 "\t" + "What can I do for ya, pal?\n" +
-                "_".repeat(70) + "\n");
+                "_".repeat(100));
     }
 
     // Method to display goodbye message
     private static void bye() {
-        System.out.println("_".repeat(70) + "\n" +
+        System.out.println("_".repeat(100) + "\n" +
                 "\t" + "Bye bye now! You take care!\n" +
-                "_".repeat(70) + "\n");
+                "_".repeat(100));
     }
 
     // Method to display message when adding, including count
     private static void added(Task t) {
-        System.out.println("_".repeat(66) + "\n" +
+        System.out.println("_".repeat(100) + "\n" +
                 "\t" + "Okay! I've added this task: " + "\n" +
                 "\t\t" + t.toString() + "\n" +
                 "\tYou've got " + taskList.size() + " tasks in your list now.\n" +
-                "_".repeat(66));
+                "_".repeat(100));
     }
 
     public static void main(String[] args) {
@@ -53,125 +53,207 @@ public class InvictaBot {
         Scanner s = new Scanner(System.in);
         // Loop to keep chatbot running until bye prompt
         label:
+
         while (true) {
-            String raw = s.nextLine();
-            String[] userInput = raw.split(" ");
-            switch (userInput[0]) {
-                case "bye":
-                    bye();
-                    // Exit loop
-                    break label;
-                case "list": {
-                    int number = 0;
-                    System.out.println("_".repeat(66) + "\n" +
-                            "\t" + "Here is a list of your tasks: ");
-                    for (Task t : taskList) {
-                        number += 1;
-                        System.out.println("\t" + number + ". " + t.toString());
-                    }
-                    System.out.println("_".repeat(66) + "\n");
-                    break;
-                }
-                case "mark": {
-                    Task t = taskList.get(Integer.parseInt(userInput[1]) - 1);
-                    if (t.getStatus()) {
-                        System.out.println("_".repeat(66) + "\n" +
-                                "\t" + "This task is already marked as done: " + "\n" +
-                                "\t\t" + t.toString() + "\n" +
-                                "_".repeat(66) + "\n");
-                    } else {
-                        t.setStatus(true);
-                        System.out.println("_".repeat(66) + "\n" +
-                                "\t" + "Great! I've marked this as done: " + "\n" +
-                                "\t\t" + t.toString() + "\n" +
-                                "_".repeat(66) + "\n");
-                    }
-                    break;
-                }
-                case "unmark": {
-                    Task t = taskList.get(Integer.parseInt(userInput[1]) - 1);
-                    if (!t.getStatus()) {
-                        System.out.println("_".repeat(66) + "\n" +
-                                "\t" + "This task is already marked as not done: " + "\n" +
-                                "\t\t" + t.toString() + "\n" +
-                                "_".repeat(66) + "\n");
-                    } else {
-                        t.setStatus(false);
-                        System.out.println("_".repeat(66) + "\n" +
-                                "\t" + "Great! I've marked this as not done: " + "\n" +
-                                "\t\t" + t.toString() + "\n" +
-                                "_".repeat(66) + "\n");
-                    }
-                    break;
-                }
-                case "event": {
-                    StringBuilder taskName = new StringBuilder();
-                    StringBuilder eventStartTime = new StringBuilder();
-                    StringBuilder eventEndTime = new StringBuilder();
-                    boolean taskNameDone = false;
-                    boolean eventStartDone = false;
-                    // Start counting from index 1 to ignore event command
-                    for (int i = 1 ; i < userInput.length ; i++) {
-                        String word = userInput[i];
-                        if (word.equals("/from")) {
-                            taskNameDone = true;
-                        } else if (word.equals("/to")) {
-                            eventStartDone = true;
-                        } else if (taskNameDone && !eventStartDone) {
-                            eventStartTime.append(word).append(" ");
-                        } else if (eventStartDone) {
-                            eventEndTime.append(word).append(" ");
-                        } else {
-                            taskName.append(word).append(" ");
+            try {
+                String raw = s.nextLine().trim();
+                String[] userInput = raw.split(" ");
+                if (raw.isEmpty()) {
+                    throw new InvictaException("_".repeat(100) + "\n" + "\tWhat? Did you say something? Type a message!" + "\n" + "_".repeat(100));
+                } else {
+                    switch (userInput[0]) {
+                        case "bye":
+                            bye();
+                            // Exit loop
+                            break;
+                        case "help":
+                            System.out.println("_".repeat(100) + "\n" +
+                                    "\tList of commands in InvictaBot:\n" +
+                                    "\tbye - exit app\n" +
+                                    "\tlist - display task list\n" +
+                                    "\tmark <index> - mark task as done\n" +
+                                    "\tunmark <index> - mask task as not done\n" +
+                                    "\ttodo <name> - add a to-do task\n" +
+                                    "\tdeadline <name> /by <deadline> - add a deadline task\n" +
+                                    "\tevent <name> /from <start> /to <end> - add an event\n" +
+                                    "_".repeat(100));
+                            break;
+                        case "list": {
+                            int number = 0;
+                            if (taskList.isEmpty()) {
+                                System.out.println("_".repeat(100) + "\n" +
+                                        "\t" + "Your task list is empty! Add a few tasks!\n" +
+                                        "_".repeat(100));
+                            } else {
+                                System.out.println("_".repeat(100) + "\n" +
+                                        "\t" + "Here is a list of your tasks: ");
+                                for (Task t : taskList) {
+                                    number += 1;
+                                    System.out.println("\t" + number + ". " + t.toString());
+                                }
+                                System.out.println("_".repeat(100));
+                            }
+                            break;
+                        }
+                        case "mark": {
+                            if (userInput.length < 2) {
+                                throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: mark <number>)" + "\n" + "_".repeat(100));
+                            } else {
+                                int index = Integer.parseInt(userInput[1]) - 1;
+                                if (index < 0 | index > taskList.size() - 1) {
+                                    throw new InvictaException("_".repeat(100) + "\n" + "\tYou want me to do what? Put a valid index! (check task list using 'list' command)" + "\n" + "_".repeat(100));
+                                } else {
+                                    Task t = taskList.get(index);
+                                    if (t.getStatus()) {
+                                        System.out.println("_".repeat(100) + "\n" +
+                                                "\t" + "This task is already marked as done: " + "\n" +
+                                                "\t\t" + t.toString() + "\n" +
+                                                "_".repeat(100));
+                                    } else {
+                                        t.setStatus(true);
+                                        System.out.println("_".repeat(100) + "\n" +
+                                                "\t" + "Great! I've marked this as done: " + "\n" +
+                                                "\t\t" + t.toString() + "\n" +
+                                                "_".repeat(100));
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                        case "unmark": {
+                            if (userInput.length < 2) {
+                                throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: mark <number>)" + "\n" + "_".repeat(100));
+                            } else {
+                                int index = Integer.parseInt(userInput[1]) - 1;
+                                if (index < 0 | index > taskList.size() - 1) {
+                                    throw new InvictaException("_".repeat(100) + "\n" + "\tYou want me to do what? Put a valid index! (check task list using 'list' command)" + "\n" + "_".repeat(100));
+                                } else {
+                                    Task t = taskList.get(index);
+                                    if (!t.getStatus()) {
+                                        System.out.println("_".repeat(100) + "\n" +
+                                                "\t" + "This task is already marked as not done: " + "\n" +
+                                                "\t\t" + t.toString() + "\n" +
+                                                "_".repeat(100));
+                                    } else {
+                                        t.setStatus(false);
+                                        System.out.println("_".repeat(100) + "\n" +
+                                                "\t" + "Great! I've marked this as not done: " + "\n" +
+                                                "\t\t" + t.toString() + "\n" +
+                                                "_".repeat(100));
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                        case "event": {
+                            if (userInput.length < 2) {
+                                throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name, start time and end time! (usage: event <name> /from <start> /to <end>)" + "\n" + "_".repeat(100));
+                            } else {
+                                StringBuilder taskName = new StringBuilder();
+                                StringBuilder eventStartTime = new StringBuilder();
+                                StringBuilder eventEndTime = new StringBuilder();
+                                // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
+                                boolean taskNameDone = false;
+                                boolean eventStartDone = false;
+                                int argsDoneFlag = 2;
+                                // Start counting from index 1 to ignore event command
+                                for (int i = 1; i < userInput.length; i++) {
+                                    String word = userInput[i];
+                                    if (word.equals("/from")) {
+                                        taskNameDone = true;
+                                        argsDoneFlag -= 1;
+                                        if (argsDoneFlag < 0) {
+                                            break;
+                                        }
+                                    } else if (word.equals("/to")) {
+                                        eventStartDone = true;
+                                        argsDoneFlag -= 1;
+                                        if (argsDoneFlag < 0) {
+                                            break;
+                                        }
+                                    } else if (taskNameDone && !eventStartDone) {
+                                        eventStartTime.append(word).append(" ");
+                                    } else if (eventStartDone) {
+                                        eventEndTime.append(word).append(" ");
+                                    } else {
+                                        taskName.append(word).append(" ");
+                                    }
+                                }
+                                if (eventStartTime.isEmpty()) {
+                                    throw new InvictaException("_".repeat(100) + "\n" + "\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)" + "\n" + "_".repeat(100));
+                                } else if (eventEndTime.isEmpty()) {
+                                    throw new InvictaException("_".repeat(100) + "\n" + "\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n" + "_".repeat(100));
+                                } else {
+                                    Event ev = new Event(taskName.toString().trim(),
+                                            eventStartTime.toString().trim(),
+                                            eventEndTime.toString().trim());
+                                    taskList.add(ev);
+                                    added(ev);
+                                }
+                            }
+                            break;
+                        }
+                        case "deadline": {
+                            if (userInput.length < 2) {
+                                throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name and deadline! (usage: deadline <name> /by <deadline>)" + "\n" + "_".repeat(100));
+                            } else {
+                                StringBuilder taskName = new StringBuilder();
+                                StringBuilder deadlineTime = new StringBuilder();
+                                // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
+                                boolean taskNameDone = false;
+                                int argsDoneFlag = 1;
+                                // Start counting from index 1 to ignore deadline command
+                                for (int i = 1; i < userInput.length; i++) {
+                                    String word = userInput[i];
+                                    if (word.equals("/by")) {
+                                        taskNameDone = true;
+                                        argsDoneFlag -= 1;
+                                        if (argsDoneFlag < 0) {
+                                            break;
+                                        }
+                                    } else if (taskNameDone) {
+                                        deadlineTime.append(word).append(" ");
+                                    } else {
+                                        taskName.append(word).append(" ");
+                                    }
+                                }
+                                if (deadlineTime.isEmpty()) {
+                                    throw new InvictaException("_".repeat(100) + "\n" + "\tMissing deadline! (usage: deadline <name> /by <deadline>)" + "\n" + "_".repeat(100));
+                                } else {
+                                    Deadline dl = new Deadline(taskName.toString().trim(),
+                                            deadlineTime.toString().trim());
+                                    taskList.add(dl);
+                                    added(dl);
+                                }
+                            }
+                            break;
+                        }
+                        case "todo": {
+                            if (userInput.length < 2) {
+                                throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name! (usage: todo <name>)" + "\n" + "_".repeat(100));
+                            } else {
+                                StringBuilder taskName = new StringBuilder();
+                                // Start counting from index 1 to ignore todo command
+                                for (int i = 1; i < userInput.length; i++) {
+                                    String word = userInput[i];
+                                    taskName.append(word).append(" ");
+                                }
+                                Todo td = new Todo(taskName.toString().trim());
+                                taskList.add(td);
+                                added(td);
+                            }
+                            break;
+                        }
+                        default: {
+                            throw new InvictaException("_".repeat(100) + "\n" + "\tWhat are you talking about? I do not understand: " + userInput[0] + "\n" +
+                                    "\tType 'help' for a list of commands and their usage.\n" + "_".repeat(100));
                         }
                     }
-                    Event ev = new Event(taskName.toString().trim(),
-                            eventStartTime.toString().trim(),
-                            eventEndTime.toString().trim());
-                    taskList.add(ev);
-                    added(ev);
-                    break;
                 }
-                case "deadline": {
-                    StringBuilder taskName = new StringBuilder();
-                    StringBuilder deadlineTime = new StringBuilder();
-                    boolean taskNameDone = false;
-                    // Start counting from index 1 to ignore deadline command
-                    for (int i = 1 ; i < userInput.length ; i++) {
-                        String word = userInput[i];
-                        if (word.equals("/by")) {
-                            taskNameDone = true;
-                        } else if (taskNameDone) {
-                            deadlineTime.append(word).append(" ");
-                        } else {
-                            taskName.append(word).append(" ");
-                        }
-                    }
-                    Deadline dl = new Deadline(taskName.toString().trim(),
-                            deadlineTime.toString().trim());
-                    taskList.add(dl);
-                    added(dl);
-                    break;
-                }
-                case "todo": {
-                    StringBuilder taskName = new StringBuilder();
-                    // Start counting from index 1 to ignore todo command
-                    for (int i = 1 ; i < userInput.length ; i++) {
-                        String word = userInput[i];
-                        taskName.append(word).append(" ");
-                    }
-                    Todo td = new Todo(taskName.toString().trim());
-                    taskList.add(td);
-                    added(td);
-                    break;
-                }
-                default: {
-                    // Display added user input message
-                    Task t = new Task(raw);
-                    taskList.add(t);
-                    added(t);
-                    break;
-                }
+            } catch (NumberFormatException e) {
+                System.out.println("_".repeat(100) + "\n" + "\tAn index is a number, so go put one! (usage: mark/unmark <int as index>)" + "\n" + "_".repeat(100));
+            } catch (InvictaException e) {
+                System.out.println(e.getMessage());
             }
         }
     }

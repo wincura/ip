@@ -1,9 +1,30 @@
-Do something
+
+ 
+.
+ .
+help
+mark
+mark 1
+mark a
+list
+todo
 todo Buy Books
-mark 2
+mark 1
+deadline
+deadline Homework
+deadline Homework /by
 deadline Homework /by Sunday
+deadline Project /by Monday /by me
+event
+event CCA Festival
+event CCA Festival /from
+event CCA Festival /from Tuesday 4pm
+event CCA Festival /from Tuesday 4pm /to
 event CCA Festival /from Tuesday 4pm /to Wednesday 5pm
-mark 2
-unmark 2
+event Marathon /from Monday 5am /to Monday 8am /from here /to there
+list
+mark 3
+unmark 3
+unmark 1
 list
 bye
