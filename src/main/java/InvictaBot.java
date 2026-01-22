@@ -71,6 +71,7 @@ public class InvictaBot {
                                     "\tList of commands in InvictaBot:\n" +
                                     "\tbye - exit app\n" +
                                     "\tlist - display task list\n" +
+                                    "\tdelete - delete the task\n" +
                                     "\tmark <index> - mark task as done\n" +
                                     "\tunmark <index> - mask task as not done\n" +
                                     "\ttodo <name> - add a to-do task\n" +
@@ -92,6 +93,26 @@ public class InvictaBot {
                                     System.out.println("\t" + number + ". " + t.toString());
                                 }
                                 System.out.println("_".repeat(100));
+                            }
+                            break;
+                        }
+                        case "delete": {
+                            if (userInput.length < 2) {
+                                throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: delete <number>)" + "\n" + "_".repeat(100));
+                            } else {
+                                int index = Integer.parseInt(userInput[1]) - 1;
+                                if (index < 0 | index > taskList.size() - 1) {
+                                    throw new InvictaException("_".repeat(100) + "\n" + "\tYou want me to do what? Put a valid index! (check task list using 'list' command)" + "\n" + "_".repeat(100));
+                                } else {
+                                    Task temp = taskList.get(index);
+                                    String deleteTask = temp.toString();
+                                    taskList.remove(index);
+                                    System.out.println("_".repeat(100) + "\n" +
+                                            "\t" + "Into the trash! This task has been deleted: " + "\n" +
+                                            "\t\t" + deleteTask + "\n" +
+                                            "\tYou've got " + taskList.size() + " tasks in your list now.\n" +
+                                            "_".repeat(100));
+                                }
                             }
                             break;
                         }
@@ -137,7 +158,7 @@ public class InvictaBot {
                                     } else {
                                         t.setStatus(false);
                                         System.out.println("_".repeat(100) + "\n" +
-                                                "\t" + "Great! I've marked this as not done: " + "\n" +
+                                                "\t" + "Oh I see! I've marked this as not done: " + "\n" +
                                                 "\t\t" + t.toString() + "\n" +
                                                 "_".repeat(100));
                                     }

@@ -15,6 +15,7 @@ deadline Homework
 deadline Homework /by
 deadline Homework /by Sunday
 deadline Project /by Monday /by me
+delete 3
 event
 event CCA Festival
 event CCA Festival /from
@@ -26,5 +27,12 @@ list
 mark 3
 unmark 3
 unmark 1
+list
+delete 4
+delete 3
+delete 2
+delete 1
+delete 1
+delete 0
 list
 bye
