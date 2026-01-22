@@ -61,12 +61,13 @@ public class InvictaBot {
                 if (raw.isEmpty()) {
                     throw new InvictaException("_".repeat(100) + "\n" + "\tWhat? Did you say something? Type a message!" + "\n" + "_".repeat(100));
                 } else {
-                    switch (userInput[0]) {
-                        case "bye":
+                    Command c = Command.fromString(userInput[0]);
+                    switch (c) {
+                        case BYE:
                             bye();
                             // Exit loop
                             break;
-                        case "help":
+                        case HELP:
                             System.out.println("_".repeat(100) + "\n" +
                                     "\tList of commands in InvictaBot:\n" +
                                     "\tbye - exit app\n" +
@@ -79,7 +80,7 @@ public class InvictaBot {
                                     "\tevent <name> /from <start> /to <end> - add an event\n" +
                                     "_".repeat(100));
                             break;
-                        case "list": {
+                        case LIST: {
                             int number = 0;
                             if (taskList.isEmpty()) {
                                 System.out.println("_".repeat(100) + "\n" +
@@ -96,7 +97,7 @@ public class InvictaBot {
                             }
                             break;
                         }
-                        case "delete": {
+                        case DELETE: {
                             if (userInput.length < 2) {
                                 throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: delete <number>)" + "\n" + "_".repeat(100));
                             } else {
@@ -116,7 +117,7 @@ public class InvictaBot {
                             }
                             break;
                         }
-                        case "mark": {
+                        case MARK: {
                             if (userInput.length < 2) {
                                 throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: mark <number>)" + "\n" + "_".repeat(100));
                             } else {
@@ -141,7 +142,7 @@ public class InvictaBot {
                             }
                             break;
                         }
-                        case "unmark": {
+                        case UNMARK: {
                             if (userInput.length < 2) {
                                 throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: mark <number>)" + "\n" + "_".repeat(100));
                             } else {
@@ -166,7 +167,7 @@ public class InvictaBot {
                             }
                             break;
                         }
-                        case "event": {
+                        case EVENT: {
                             if (userInput.length < 2) {
                                 throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name, start time and end time! (usage: event <name> /from <start> /to <end>)" + "\n" + "_".repeat(100));
                             } else {
@@ -214,7 +215,7 @@ public class InvictaBot {
                             }
                             break;
                         }
-                        case "deadline": {
+                        case DEADLINE: {
                             if (userInput.length < 2) {
                                 throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name and deadline! (usage: deadline <name> /by <deadline>)" + "\n" + "_".repeat(100));
                             } else {
@@ -249,7 +250,7 @@ public class InvictaBot {
                             }
                             break;
                         }
-                        case "todo": {
+                        case TODO: {
                             if (userInput.length < 2) {
                                 throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name! (usage: todo <name>)" + "\n" + "_".repeat(100));
                             } else {
@@ -266,8 +267,7 @@ public class InvictaBot {
                             break;
                         }
                         default: {
-                            throw new InvictaException("_".repeat(100) + "\n" + "\tWhat are you talking about? I do not understand: " + userInput[0] + "\n" +
-                                    "\tType 'help' for a list of commands and their usage.\n" + "_".repeat(100));
+                            bye();
                         }
                     }
                 }
