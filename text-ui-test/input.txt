@@ -1,0 +1,9 @@
+Do something
+todo Buy Books
+mark 2
+deadline Homework /by Sunday
+event CCA Festival /from Tuesday 4pm /to Wednesday 5pm
+mark 2
+unmark 2
+list
+bye
