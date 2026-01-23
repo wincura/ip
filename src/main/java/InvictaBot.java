@@ -25,14 +25,14 @@ public class InvictaBot {
     private static void greet() {
         System.out.println("_".repeat(100) + "\n" +
                 "\t" + "Howdy! I'm InvictaBot!\n" +
-                "\t" + "What can I do for ya, pal?\n" +
+                "\t" + "How might I address you, pal?\n" +
                 "_".repeat(100));
     }
 
     // Method to display goodbye message
-    private static void bye() {
+    private static void bye(String username) {
         System.out.println("_".repeat(100) + "\n" +
-                "\t" + "Bye bye now! You take care!\n" +
+                "\t" + "Bye bye now! You take care, " + username + "!\n" +
                 "_".repeat(100));
     }
 
@@ -47,10 +47,27 @@ public class InvictaBot {
 
     public static void main(String[] args) {
         // Method calls upon chatbot execution
+        String username = "";
         logo();
         greet();
         // Uses Scanner to accept user input (planning to use BufferedReader in later releases)
         Scanner s = new Scanner(System.in);
+        while (true) {
+            try {
+                // Obtaining user's name, with validation to handle empty names
+                username = s.nextLine().trim();
+                if (username.isEmpty()) {
+                    throw new InvictaException("Surely you're not a nameless person! Come again?");
+                } else {
+                    // Exit loop and continue to chatbot program
+                    System.out.println("_".repeat(100) + "\n" + "\tIt's a pleasure, " +
+                            username + "! What can I do you for?\n" + "_".repeat(100));
+                    break;
+                }
+            } catch (InvictaException e) {
+                System.out.println(e.getMessage());
+            }
+        }
         // Loop to keep chatbot running until bye prompt
         label:
 
@@ -64,8 +81,9 @@ public class InvictaBot {
                     Command c = Command.fromString(userInput[0]);
                     switch (c) {
                         case BYE:
-                            bye();
+                            bye(username);
                             // Exit loop
+                            System.exit(0);
                             break;
                         case HELP:
                             System.out.println("_".repeat(100) + "\n" +
@@ -267,7 +285,7 @@ public class InvictaBot {
                             break;
                         }
                         default: {
-                            bye();
+                            bye(username);
                         }
                     }
                 }
