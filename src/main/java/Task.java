@@ -1,10 +1,10 @@
 public class Task {
     protected String description;
-    protected boolean status;
+    protected boolean isDone;
 
     public Task(String description) {
         this.description = description;
-        this.status = false;
+        this.isDone = false;
     }
 
     // Getter methods to get description and status
@@ -12,22 +12,22 @@ public class Task {
         return this.description;
     }
 
-    public boolean getStatus() {
-        return this.status;
+    public boolean getDone() {
+        return this.isDone;
     }
 
-    public String getStatusIcon() {
-        return (status ? "X" : " "); // mark done task with X character
+    public String getDoneIcon() {
+        return (isDone ? "X" : " "); // mark done task with X character
     }
 
     // Setter method to mark/unmark done task
-    public void setStatus(boolean newStatus) {
-        this.status = newStatus;
+    public void setDone(boolean newStatus) {
+        this.isDone = newStatus;
     }
 
     // To be overridden by subclasses
     @Override
     public String toString() {
-        return "[" + this.getStatusIcon() + "] " + this.getDescription();
+        return "[" + this.getDoneIcon() + "] " + this.getDescription();
     }
 }

@@ -1,48 +1,47 @@
 // CS2103T Individual Project by William Scott Win A0273291A
 
 // Imports to use collections and handle user input
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 @SuppressWarnings("TextBlockMigration") // Suppress the warning to use text block for logo instead
 
 public class InvictaBot {
     // Declaring data structures to be used by chatbot
-    private static ArrayList<Task> taskList = new ArrayList<Task>();
+    private static final ArrayList<Task> taskList = new ArrayList<Task>();
 
     // Method to display logo
     private static void logo() {
         // Logo below generated with the help of an external tool from https://patorjk.com/software/taag/
-        String logo =   ".___            .__        __        __________        __\n" +
-                "|   | _______  _|__| _____/  |______ \\______   \\ _____/  |_\n" +
-                "|   |/    \\  \\/ /  |/ ___\\   __\\__  \\ |    |  _//  _ \\   __\\\n" +
-                "|   |   |  \\   /|  \\  \\___|  |  / __ \\|    |   (  <_> )  |\n"  +
-                "|___|___|  /\\_/ |__|\\___  >__| (____  /______  /\\____/|__|\n" +
-                "         \\/             \\/          \\/       \\/\n";
+        String logo =   ".___            .__        __        __________        __\n"
+                + "|   | _______  _|__| _____/  |______ \\______   \\ _____/  |_\n"
+                + "|   |/    \\  \\/ /  |/ ___\\   __\\__  \\ |    |  _//  _ \\   __\\\n"
+                + "|   |   |  \\   /|  \\  \\___|  |  / __ \\|    |   (  <_> )  |\n"
+                + "|___|___|  /\\_/ |__|\\___  >__| (____  /______  /\\____/|__|\n"
+                + "         \\/             \\/          \\/       \\/\n";
         System.out.println("Hello from\n" + logo);
     }
 
     // Method to display greeting message
     private static void greet() {
-        System.out.println("_".repeat(100) + "\n" +
-                "\t" + "Howdy! I'm InvictaBot!\n" +
-                "\t" + "How might I address you, pal?\n" +
-                "_".repeat(100));
+        System.out.println("_".repeat(100)
+                + "\n\tHowdy! I'm InvictaBot!\n\tHow might I address you, pal?\n"
+                + "_".repeat(100));
     }
 
     // Method to display goodbye message
     private static void bye(String username) {
-        System.out.println("_".repeat(100) + "\n" +
-                "\t" + "Bye bye now! You take care, " + username + "!\n" +
-                "_".repeat(100));
+        System.out.println("_".repeat(100)
+                + "\n\tBye bye now! You take care, " + username + "!\n"
+                + "_".repeat(100));
     }
 
     // Method to display message when adding, including count
     private static void added(Task t) {
-        System.out.println("_".repeat(100) + "\n" +
-                "\t" + "Okay! I've added this task: " + "\n" +
-                "\t\t" + t.toString() + "\n" +
-                "\tYou've got " + taskList.size() + " tasks in your list now.\n" +
-                "_".repeat(100));
+        System.out.println("_".repeat(100)
+                + "\n\tOkay! I've added this task: \n\t\t" + t.toString()
+                + "\n\tYou've got " + taskList.size() + " tasks in your list now.\n"
+                + "_".repeat(100));
     }
 
     public static void main(String[] args) {
@@ -60,8 +59,9 @@ public class InvictaBot {
                     throw new InvictaException("Surely you're not a nameless person! Come again?");
                 } else {
                     // Exit loop and continue to chatbot program
-                    System.out.println("_".repeat(100) + "\n" + "\tIt's a pleasure, " +
-                            username + "! What can I do you for?\n" + "_".repeat(100));
+                    System.out.println("_".repeat(100)
+                            + "\n\tIt's a pleasure, " + username + "! What can I do you for?\n"
+                            + "_".repeat(100));
                     break;
                 }
             } catch (InvictaException e) {
@@ -69,44 +69,44 @@ public class InvictaBot {
             }
         }
         // Loop to keep chatbot running until bye prompt
-        label:
-
+        appLoop:
         while (true) {
             try {
                 String raw = s.nextLine().trim();
                 String[] userInput = raw.split(" ");
                 if (raw.isEmpty()) {
-                    throw new InvictaException("_".repeat(100) + "\n" + "\tWhat? Did you say something? Type a message!" + "\n" + "_".repeat(100));
+                    throw new InvictaException("_".repeat(100)
+                            + "\n\tWhat? Did you say something? Type a message!\n"
+                            + "_".repeat(100));
                 } else {
                     Command c = Command.fromString(userInput[0]);
                     switch (c) {
                         case BYE:
                             bye(username);
                             // Exit loop
-                            System.exit(0);
-                            break;
+                            break appLoop;
                         case HELP:
-                            System.out.println("_".repeat(100) + "\n" +
-                                    "\tList of commands in InvictaBot:\n" +
-                                    "\tbye - exit app\n" +
-                                    "\tlist - display task list\n" +
-                                    "\tdelete - delete the task\n" +
-                                    "\tmark <index> - mark task as done\n" +
-                                    "\tunmark <index> - mask task as not done\n" +
-                                    "\ttodo <name> - add a to-do task\n" +
-                                    "\tdeadline <name> /by <deadline> - add a deadline task\n" +
-                                    "\tevent <name> /from <start> /to <end> - add an event\n" +
-                                    "_".repeat(100));
+                            System.out.println("_".repeat(100)
+                                    + "\n\tList of commands in InvictaBot:\n"
+                                    + "\tbye - exit app\n"
+                                    + "\tlist - display task list\n"
+                                    + "\tdelete - delete the task\n"
+                                    + "\tmark <index> - mark task as done\n"
+                                    + "\tunmark <index> - mask task as not done\n"
+                                    + "\ttodo <name> - add a to-do task\n"
+                                    + "\tdeadline <name> /by <deadline> - add a deadline task\n"
+                                    + "\tevent <name> /from <start> /to <end> - add an event\n"
+                                    + "_".repeat(100));
                             break;
                         case LIST: {
                             int number = 0;
                             if (taskList.isEmpty()) {
-                                System.out.println("_".repeat(100) + "\n" +
-                                        "\t" + "Your task list is empty! Add a few tasks!\n" +
-                                        "_".repeat(100));
+                                System.out.println("_".repeat(100)
+                                        + "\n\tYour task list is empty! Add a few tasks!\n"
+                                        + "_".repeat(100));
                             } else {
-                                System.out.println("_".repeat(100) + "\n" +
-                                        "\t" + "Here is a list of your tasks: ");
+                                System.out.println("_".repeat(100)
+                                        + "\n\tHere is a list of your tasks: ");
                                 for (Task t : taskList) {
                                     number += 1;
                                     System.out.println("\t" + number + ". " + t.toString());
@@ -117,44 +117,51 @@ public class InvictaBot {
                         }
                         case DELETE: {
                             if (userInput.length < 2) {
-                                throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: delete <number>)" + "\n" + "_".repeat(100));
+                                throw new InvictaException("_".repeat(100)
+                                        + "\n\tPlease provide an index for this command. (usage: delete <number>)\n"
+                                        + "_".repeat(100));
                             } else {
                                 int index = Integer.parseInt(userInput[1]) - 1;
                                 if (index < 0 | index > taskList.size() - 1) {
-                                    throw new InvictaException("_".repeat(100) + "\n" + "\tYou want me to do what? Put a valid index! (check task list using 'list' command)" + "\n" + "_".repeat(100));
+                                    throw new InvictaException("_".repeat(100)
+                                            + "\n\tYou want me to do what? "
+                                            + "Put a valid index! (check task list using 'list' command)\n"
+                                            + "_".repeat(100));
                                 } else {
                                     Task temp = taskList.get(index);
                                     String deleteTask = temp.toString();
                                     taskList.remove(index);
-                                    System.out.println("_".repeat(100) + "\n" +
-                                            "\t" + "Into the trash! This task has been deleted: " + "\n" +
-                                            "\t\t" + deleteTask + "\n" +
-                                            "\tYou've got " + taskList.size() + " tasks in your list now.\n" +
-                                            "_".repeat(100));
+                                    System.out.println("_".repeat(100)
+                                            + "\n\tInto the trash! This task has been deleted: \n"
+                                            + "\t\t" + deleteTask + "\n\tYou've got " + taskList.size()
+                                            + " tasks in your list now.\n"
+                                            + "_".repeat(100));
                                 }
                             }
                             break;
                         }
                         case MARK: {
                             if (userInput.length < 2) {
-                                throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: mark <number>)" + "\n" + "_".repeat(100));
+                                throw new InvictaException("_".repeat(100)
+                                        + "\n\tPlease provide an index for this command. (usage: mark <number>)\n"
+                                        + "_".repeat(100));
                             } else {
                                 int index = Integer.parseInt(userInput[1]) - 1;
                                 if (index < 0 | index > taskList.size() - 1) {
-                                    throw new InvictaException("_".repeat(100) + "\n" + "\tYou want me to do what? Put a valid index! (check task list using 'list' command)" + "\n" + "_".repeat(100));
+                                    throw new InvictaException("_".repeat(100)
+                                            + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
+                                            + "_".repeat(100));
                                 } else {
                                     Task t = taskList.get(index);
-                                    if (t.getStatus()) {
-                                        System.out.println("_".repeat(100) + "\n" +
-                                                "\t" + "This task is already marked as done: " + "\n" +
-                                                "\t\t" + t.toString() + "\n" +
-                                                "_".repeat(100));
+                                    if (t.getDone()) {
+                                        System.out.println("_".repeat(100)
+                                                + "\n\tThis task is already marked as done: " + "\n\t\t" + t.toString() + "\n"
+                                                + "_".repeat(100));
                                     } else {
-                                        t.setStatus(true);
-                                        System.out.println("_".repeat(100) + "\n" +
-                                                "\t" + "Great! I've marked this as done: " + "\n" +
-                                                "\t\t" + t.toString() + "\n" +
-                                                "_".repeat(100));
+                                        t.setDone(true);
+                                        System.out.println("_".repeat(100)
+                                                + "\n\tGreat! I've marked this as done:  \n\t\t" + t + "\n"
+                                                + "_".repeat(100));
                                     }
                                 }
                             }
@@ -162,24 +169,26 @@ public class InvictaBot {
                         }
                         case UNMARK: {
                             if (userInput.length < 2) {
-                                throw new InvictaException("_".repeat(100) + "\n" + "\tPlease provide an index for this command. (usage: mark <number>)" + "\n" + "_".repeat(100));
+                                throw new InvictaException("_".repeat(100)
+                                        + "\n\tPlease provide an index for this command. (usage: mark <number>)\n"
+                                        + "_".repeat(100));
                             } else {
                                 int index = Integer.parseInt(userInput[1]) - 1;
                                 if (index < 0 | index > taskList.size() - 1) {
-                                    throw new InvictaException("_".repeat(100) + "\n" + "\tYou want me to do what? Put a valid index! (check task list using 'list' command)" + "\n" + "_".repeat(100));
+                                    throw new InvictaException("_".repeat(100)
+                                            + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
+                                            + "_".repeat(100));
                                 } else {
                                     Task t = taskList.get(index);
-                                    if (!t.getStatus()) {
-                                        System.out.println("_".repeat(100) + "\n" +
-                                                "\t" + "This task is already marked as not done: " + "\n" +
-                                                "\t\t" + t.toString() + "\n" +
-                                                "_".repeat(100));
+                                    if (!t.getDone()) {
+                                        System.out.println("_".repeat(100)
+                                                + "\n\tThis task is already marked as not done: \n\t\t" + t + "\n"
+                                                + "_".repeat(100));
                                     } else {
-                                        t.setStatus(false);
-                                        System.out.println("_".repeat(100) + "\n" +
-                                                "\t" + "Oh I see! I've marked this as not done: " + "\n" +
-                                                "\t\t" + t.toString() + "\n" +
-                                                "_".repeat(100));
+                                        t.setDone(false);
+                                        System.out.println("_".repeat(100)
+                                                + "\n\tOh I see! I've marked this as not done: \n\t\t" + t + "\n"
+                                                + "_".repeat(100));
                                     }
                                 }
                             }
@@ -187,7 +196,9 @@ public class InvictaBot {
                         }
                         case EVENT: {
                             if (userInput.length < 2) {
-                                throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name, start time and end time! (usage: event <name> /from <start> /to <end>)" + "\n" + "_".repeat(100));
+                                throw new InvictaException("_".repeat(100)
+                                        + "\n\tMissing task name, start time and end time! (usage: event <name> /from <start> /to <end>)\n"
+                                        + "_".repeat(100));
                             } else {
                                 StringBuilder taskName = new StringBuilder();
                                 StringBuilder eventStartTime = new StringBuilder();
@@ -220,9 +231,13 @@ public class InvictaBot {
                                     }
                                 }
                                 if (eventStartTime.isEmpty()) {
-                                    throw new InvictaException("_".repeat(100) + "\n" + "\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)" + "\n" + "_".repeat(100));
+                                    throw new InvictaException("_".repeat(100)
+                                            + "\n\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)\n"
+                                            + "_".repeat(100));
                                 } else if (eventEndTime.isEmpty()) {
-                                    throw new InvictaException("_".repeat(100) + "\n" + "\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n" + "_".repeat(100));
+                                    throw new InvictaException("_".repeat(100)
+                                            + "\n\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n"
+                                            + "_".repeat(100));
                                 } else {
                                     Event ev = new Event(taskName.toString().trim(),
                                             eventStartTime.toString().trim(),
@@ -235,7 +250,9 @@ public class InvictaBot {
                         }
                         case DEADLINE: {
                             if (userInput.length < 2) {
-                                throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name and deadline! (usage: deadline <name> /by <deadline>)" + "\n" + "_".repeat(100));
+                                throw new InvictaException("_".repeat(100)
+                                        + "\n\tMissing task name and deadline! (usage: deadline <name> /by <deadline>)\n"
+                                        + "_".repeat(100));
                             } else {
                                 StringBuilder taskName = new StringBuilder();
                                 StringBuilder deadlineTime = new StringBuilder();
@@ -258,7 +275,9 @@ public class InvictaBot {
                                     }
                                 }
                                 if (deadlineTime.isEmpty()) {
-                                    throw new InvictaException("_".repeat(100) + "\n" + "\tMissing deadline! (usage: deadline <name> /by <deadline>)" + "\n" + "_".repeat(100));
+                                    throw new InvictaException("_".repeat(100)
+                                            + "\n\tMissing deadline! (usage: deadline <name> /by <deadline>)\n"
+                                            + "_".repeat(100));
                                 } else {
                                     Deadline dl = new Deadline(taskName.toString().trim(),
                                             deadlineTime.toString().trim());
@@ -270,7 +289,9 @@ public class InvictaBot {
                         }
                         case TODO: {
                             if (userInput.length < 2) {
-                                throw new InvictaException("_".repeat(100) + "\n" + "\tMissing task name! (usage: todo <name>)" + "\n" + "_".repeat(100));
+                                throw new InvictaException("_".repeat(100)
+                                        + "\n\tMissing task name! (usage: todo <name>)\n"
+                                        + "_".repeat(100));
                             } else {
                                 StringBuilder taskName = new StringBuilder();
                                 // Start counting from index 1 to ignore todo command
@@ -290,7 +311,9 @@ public class InvictaBot {
                     }
                 }
             } catch (NumberFormatException e) {
-                System.out.println("_".repeat(100) + "\n" + "\tAn index is a number, so go put one! (usage: mark/unmark <int as index>)" + "\n" + "_".repeat(100));
+                System.out.println("_".repeat(100)
+                        + "\n\tAn index is a number, so go put one! (usage: mark/unmark <int as index>)\n"
+                        + "_".repeat(100));
             } catch (InvictaException e) {
                 System.out.println(e.getMessage());
             }

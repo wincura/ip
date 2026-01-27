@@ -22,8 +22,10 @@ public enum Command {
                 return c;
             }
         }
-        throw new InvictaException("_".repeat(100) + "\n" + "\tWhat are you talking about? I do not understand: " + word + "\n" +
-                "\tType 'help' for a list of commands and their usage.\n" + "_".repeat(100));
+        throw new InvictaException("_".repeat(100)
+                + "\n\tWhat are you talking about? I do not understand: "
+                + word + "\n\tType 'help' for a list of commands and their usage.\n"
+                + "_".repeat(100));
     }
 }
 
