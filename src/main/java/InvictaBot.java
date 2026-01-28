@@ -1,17 +1,79 @@
 // CS2103T Individual Project by William Scott Win A0273291A
 
-// Imports to use collections and handle user input
+// Imports to use collections, handle files and user input
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileWriter;
 
 @SuppressWarnings("TextBlockMigration") // Suppress the warning to use text block for logo instead
 
 public class InvictaBot {
-    // Declaring data structures to be used by chatbot
-    private static final ArrayList<Task> taskList = new ArrayList<Task>();
+    // Declaring data structures and files to be used by chatbot
+    private static ArrayList<Task> taskList = new ArrayList<Task>();
+    private static final String DATA_DIR_PATH = "./data";
+    private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
 
     // Method to display logo
-    private static void logo() {
+    private static void invictaBotInit(File taskListFile) {
+        try {
+            if (taskListFile.createNewFile()) {
+                System.out.println("Task list file created at: " + taskListFile.getAbsolutePath());
+            } else {
+                System.out.println("Task list file found at: " + taskListFile.getAbsolutePath()
+                        + "\nLoading data from file into Invicta...");
+                Scanner s = new Scanner(taskListFile);
+                while (s.hasNext()) {
+                    String[] input = s.nextLine().split(";");
+                    try {
+                        Type type = Type.fromString(input[0]);
+                        switch (type) {
+                            case TODO: {
+                                boolean isDone = input[1].equals("1");
+                                String name = input[2];
+                                Todo toAdd = new Todo(name);
+                                if (isDone) {
+                                    toAdd.setDone(true);
+                                }
+                                taskList.add(toAdd);
+                                break;
+                            }
+                            case DEADLINE: {
+                                boolean isDone = input[1].equals("1");
+                                String name = input[2];
+                                String deadline = input[3];
+                                Deadline toAdd = new Deadline(name, deadline);
+                                if (isDone) {
+                                    toAdd.setDone(true);
+                                }
+                                taskList.add(toAdd);
+                                break;
+                            }
+                            case EVENT: {
+                                boolean isDone = input[1].equals("1");
+                                String name = input[2];
+                                String start = input[3];
+                                String end = input[4];
+                                Event toAdd = new Event(name, start, end);
+                                if (isDone) {
+                                    toAdd.setDone(true);
+                                }
+                                taskList.add(toAdd);
+                                break;
+                            }
+                        }
+                    } catch (InvictaException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+                System.out.println("Task list file data successfully loaded into Invicta.\n\n\n");
+            }
+        } catch (IOException e) {
+            System.out.print("Error occurred while reading file: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         // Logo below generated with the help of an external tool from https://patorjk.com/software/taag/
         String logo =   ".___            .__        __        __________        __\n"
                 + "|   | _______  _|__| _____/  |______ \\______   \\ _____/  |_\n"
@@ -20,13 +82,38 @@ public class InvictaBot {
                 + "|___|___|  /\\_/ |__|\\___  >__| (____  /______  /\\____/|__|\n"
                 + "         \\/             \\/          \\/       \\/\n";
         System.out.println("Hello from\n" + logo);
-    }
-
-    // Method to display greeting message
-    private static void greet() {
         System.out.println("_".repeat(100)
                 + "\n\tHowdy! I'm InvictaBot!\n\tHow might I address you, pal?\n"
                 + "_".repeat(100));
+    }
+
+    // Method to update task list file upon changes to task list
+    private static void updateTaskListFile() {
+        try {
+            FileWriter fw = new FileWriter(TASK_LIST_FILE_PATH);
+            String toAdd = "";
+            for (Task t : taskList) {
+                if (t instanceof Todo) {
+                    String[] values = {Type.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
+                    toAdd = String.join(";", values);
+                    fw.write(System.lineSeparator() + toAdd);
+                } else if (t instanceof Deadline) {
+                    String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+                            ((Deadline) t).getDeadline()};
+                    toAdd = String.join(";", values);
+                    fw.write(System.lineSeparator() + toAdd);
+                } else if (t instanceof Event) {
+                    String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+                            ((Event) t).getStart(), ((Event) t).getEnd()};
+                    toAdd = String.join(";", values);
+                    fw.write(System.lineSeparator() + toAdd);
+                }
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.print("Error occurred while writing to file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // Method to display goodbye message
@@ -45,11 +132,23 @@ public class InvictaBot {
     }
 
     public static void main(String[] args) {
-        // Method calls upon chatbot execution
+        // Method to initialize chatbot upon execution
+        File dataDir = new File(DATA_DIR_PATH);
+        if (!dataDir.exists()) {
+            if (dataDir.mkdir()) {
+                System.out.println("Data directory created at: " + dataDir.getAbsolutePath());
+            } else {
+                System.out.println("Failed to create new directory.");
+            }
+        } else {
+            System.out.println("Data directory found at: " + dataDir.getAbsolutePath());
+        }
+        File taskListFile = new File(TASK_LIST_FILE_PATH);
+
+        invictaBotInit(taskListFile);
+
+        // Loop to prompt user for username input until valid
         String username = "";
-        logo();
-        greet();
-        // Uses Scanner to accept user input (planning to use BufferedReader in later releases)
         Scanner s = new Scanner(System.in);
         while (true) {
             try {
@@ -68,6 +167,7 @@ public class InvictaBot {
                 System.out.println(e.getMessage());
             }
         }
+
         // Loop to keep chatbot running until bye prompt
         appLoop:
         while (true) {
@@ -81,11 +181,12 @@ public class InvictaBot {
                 } else {
                     Command c = Command.fromString(userInput[0]);
                     switch (c) {
-                        case BYE:
+                        case BYE: {
                             bye(username);
                             // Exit loop
                             break appLoop;
-                        case HELP:
+                        }
+                        case HELP: {
                             System.out.println("_".repeat(100)
                                     + "\n\tList of commands in InvictaBot:\n"
                                     + "\tbye - exit app\n"
@@ -98,6 +199,7 @@ public class InvictaBot {
                                     + "\tevent <name> /from <start> /to <end> - add an event\n"
                                     + "_".repeat(100));
                             break;
+                        }
                         case LIST: {
                             int number = 0;
                             if (taskList.isEmpty()) {
@@ -131,6 +233,7 @@ public class InvictaBot {
                                     Task temp = taskList.get(index);
                                     String deleteTask = temp.toString();
                                     taskList.remove(index);
+                                    updateTaskListFile();
                                     System.out.println("_".repeat(100)
                                             + "\n\tInto the trash! This task has been deleted: \n"
                                             + "\t\t" + deleteTask + "\n\tYou've got " + taskList.size()
@@ -159,6 +262,7 @@ public class InvictaBot {
                                                 + "_".repeat(100));
                                     } else {
                                         t.setDone(true);
+                                        updateTaskListFile();
                                         System.out.println("_".repeat(100)
                                                 + "\n\tGreat! I've marked this as done:  \n\t\t" + t + "\n"
                                                 + "_".repeat(100));
@@ -186,6 +290,7 @@ public class InvictaBot {
                                                 + "_".repeat(100));
                                     } else {
                                         t.setDone(false);
+                                        updateTaskListFile();
                                         System.out.println("_".repeat(100)
                                                 + "\n\tOh I see! I've marked this as not done: \n\t\t" + t + "\n"
                                                 + "_".repeat(100));
@@ -243,6 +348,7 @@ public class InvictaBot {
                                             eventStartTime.toString().trim(),
                                             eventEndTime.toString().trim());
                                     taskList.add(ev);
+                                    updateTaskListFile();
                                     added(ev);
                                 }
                             }
@@ -282,6 +388,7 @@ public class InvictaBot {
                                     Deadline dl = new Deadline(taskName.toString().trim(),
                                             deadlineTime.toString().trim());
                                     taskList.add(dl);
+                                    updateTaskListFile();
                                     added(dl);
                                 }
                             }
@@ -301,6 +408,7 @@ public class InvictaBot {
                                 }
                                 Todo td = new Todo(taskName.toString().trim());
                                 taskList.add(td);
+                                updateTaskListFile();
                                 added(td);
                             }
                             break;

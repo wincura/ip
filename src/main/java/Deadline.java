@@ -7,6 +7,11 @@ public class Deadline extends Task {
     }
 
 
+    // Getter methods to get deadline
+    public String getDeadline() {
+        return this.deadline;
+    }
+
     @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: " + this.deadline + ")";
