@@ -7,15 +7,19 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
 
-@SuppressWarnings("TextBlockMigration") // Suppress the warning to use text block for logo instead
 
 public class InvictaBot {
-    // Declaring data structures and files to be used by chatbot
-    private static ArrayList<Task> taskList = new ArrayList<Task>();
+    // Declaring data structures and file paths to be used by chatbot
+    private static ArrayList<Task> taskList = new ArrayList<>();
     private static final String DATA_DIR_PATH = "./data";
     private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
 
-    // Method to display logo
+    /**
+     * Initializes task list from provided file and display greeting message.
+     * If the file does not exist, it is created.
+     *
+     * @param taskListFile File on which Task List is stored.
+     */
     private static void invictaBotInit(File taskListFile) {
         try {
             if (taskListFile.createNewFile()) {
@@ -82,16 +86,16 @@ public class InvictaBot {
                 + "|___|___|  /\\_/ |__|\\___  >__| (____  /______  /\\____/|__|\n"
                 + "         \\/             \\/          \\/       \\/\n";
         System.out.println("Hello from\n" + logo);
-        System.out.println("_".repeat(100)
-                + "\n\tHowdy! I'm InvictaBot!\n\tHow might I address you, pal?\n"
-                + "_".repeat(100));
     }
 
-    // Method to update task list file upon changes to task list
+
+    /**
+     * Updates task list file upon changes to task list.
+     */
     private static void updateTaskListFile() {
         try {
             FileWriter fw = new FileWriter(TASK_LIST_FILE_PATH);
-            String toAdd = "";
+            String toAdd;
             for (Task t : taskList) {
                 if (t instanceof Todo) {
                     String[] values = {Type.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
@@ -116,14 +120,18 @@ public class InvictaBot {
         }
     }
 
-    // Method to display goodbye message
+    /**
+     * Displays goodbye message with username.
+     */
     private static void bye(String username) {
         System.out.println("_".repeat(100)
                 + "\n\tBye bye now! You take care, " + username + "!\n"
                 + "_".repeat(100));
     }
 
-    // Method to display message when adding, including count
+    /**
+     * Displays message when adding tasks, including count.
+     */
     private static void added(Task t) {
         System.out.println("_".repeat(100)
                 + "\n\tOkay! I've added this task: \n\t\t" + t.toString()
@@ -148,7 +156,10 @@ public class InvictaBot {
         invictaBotInit(taskListFile);
 
         // Loop to prompt user for username input until valid
-        String username = "";
+        System.out.println("_".repeat(100)
+                + "\n\tHowdy! I'm InvictaBot!\n\tHow might I address you, pal?\n"
+                + "_".repeat(100));
+        String username;
         Scanner s = new Scanner(System.in);
         while (true) {
             try {
@@ -258,7 +269,7 @@ public class InvictaBot {
                                     Task t = taskList.get(index);
                                     if (t.getDone()) {
                                         System.out.println("_".repeat(100)
-                                                + "\n\tThis task is already marked as done: " + "\n\t\t" + t.toString() + "\n"
+                                                + "\n\tThis task is already marked as done: " + "\n\t\t" + t + "\n"
                                                 + "_".repeat(100));
                                     } else {
                                         t.setDone(true);
