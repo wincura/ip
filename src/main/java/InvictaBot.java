@@ -1,13 +1,12 @@
 // CS2103T Individual Project by William Scott Win A0273291A
 
 // Imports to use data structures
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 // Imports to handle files and user input
 import java.io.IOException;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
@@ -16,18 +15,21 @@ import java.io.FileWriter;
 import java.time.format.DateTimeParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 
 public class InvictaBot {
-    // Declaring data structures and file paths to be used by chatbot
+    // data structures and file paths to be used by chatbot
     private static ArrayList<Task> taskList = new ArrayList<>();
     private static final String DATA_DIR_PATH = "./data";
     private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
+
+    // date time formats and formatters to be used by the chatbot
     public static final String FORMAT_DATE_ONLY = "yyyy-MM-dd";
     public static final String FORMAT_DATE_AND_TIME = "yyyy-MM-dd HH:mm";
+    public static final String FORMAT_DATE_DISPLAY = "MMM dd yyyy (EEE)";
     public static DateTimeFormatter dateOnly = DateTimeFormatter.ofPattern(FORMAT_DATE_ONLY);
     public static DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern(FORMAT_DATE_AND_TIME);
+    public static DateTimeFormatter dateDisplay = DateTimeFormatter.ofPattern(FORMAT_DATE_DISPLAY);
 
     /**
      * Initializes task list from provided file and display greeting message.
@@ -108,7 +110,7 @@ public class InvictaBot {
      * If only date is provided, the time is set to midnight.
      *
      * @param dateTimeString String to be parsed into LocalDateTime object.
-     * @returns dateTime LocalDateTime object based on format in input string.
+     * @return dateTime LocalDateTime object based on format in input string.
      * @throws DateTimeParseException Exception thrown when string is of invalid format.
      */
     private static LocalDateTime handleDateTimeData(String dateTimeString) {
@@ -119,9 +121,48 @@ public class InvictaBot {
         }
     }
 
+    /**
+     * Iterates through user input to extract strings representing start and end times of a period.
+     * If more user arguments in input than expected, they are disregarded.
+     *
+     * @param userInput String array to be parsed into period start and end times.
+     * @return period String array containing the strings representing start and end times of a period.
+     */
+    private static String[] handlePeriodInput(String[] userInput) {
+        String[] period = new String[2];
+        StringBuilder periodStartTimeString = new StringBuilder();
+        StringBuilder periodEndTimeString = new StringBuilder();
+        // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
+        boolean eventStartDone = false;
+        int argsDoneFlag = 2;
+        // Start counting from index 1 to ignore event command
+        for (int i = 1; i < userInput.length; i++) {
+            String word = userInput[i];
+            if (word.equals("/from")) {
+                argsDoneFlag -= 1;
+                if (argsDoneFlag < 1) {
+                    break;
+                }
+            } else if (word.equals("/to")) {
+                eventStartDone = true;
+                argsDoneFlag -= 1;
+                if (argsDoneFlag < 1) {
+                    break;
+                }
+            } else if (eventStartDone) {
+                periodEndTimeString.append(word).append(" ");
+            } else {
+                periodStartTimeString.append(word).append(" ");
+            }
+        }
+        period[0] = periodStartTimeString.toString();
+        period[1] = periodEndTimeString.toString();
+        return period;
+    }
+
 
     /**
-     * Updates task list file upon changes to task list.
+     * Writes into task list file to reflect changes in task list.
      */
     private static void updateTaskListFile() {
         try {
@@ -238,7 +279,9 @@ public class InvictaBot {
                                     + "\tunmark <index> - mask task as not done\n"
                                     + "\ttodo <name> - add a to-do task\n"
                                     + "\tdeadline <name> /by <deadline> - add a deadline task\n"
-                                    + "\tevent <name> /from <start> /to <end> - add an event\n\n"
+                                    + "\tevent <name> /from <start> /to <end> - add an event\n"
+                                    + "\tday <end> - display tasks on date\n"
+                                    + "\tperiod /from <start> /to <end> - display tasks within period\n\n"
                                     + "\tList of available date time formats:\n"
                                     + "\tyyyy-MM-dd\n"
                                     + "\tyyyy-MM-dd HH:mm\n"
@@ -351,46 +394,30 @@ public class InvictaBot {
                                         + "_".repeat(100));
                             } else {
                                 StringBuilder taskName = new StringBuilder();
-                                StringBuilder eventStartTimeString = new StringBuilder();
-                                StringBuilder eventEndTimeString = new StringBuilder();
-                                // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
-                                boolean taskNameDone = false;
-                                boolean eventStartDone = false;
-                                int argsDoneFlag = 2;
-                                // Start counting from index 1 to ignore event command
+                                int taskNameLength = 0; // to be used later to pass user input words after task name
                                 for (int i = 1; i < userInput.length; i++) {
                                     String word = userInput[i];
                                     if (word.equals("/from")) {
-                                        taskNameDone = true;
-                                        argsDoneFlag -= 1;
-                                        if (argsDoneFlag < 0) {
-                                            break;
-                                        }
-                                    } else if (word.equals("/to")) {
-                                        eventStartDone = true;
-                                        argsDoneFlag -= 1;
-                                        if (argsDoneFlag < 0) {
-                                            break;
-                                        }
-                                    } else if (taskNameDone && !eventStartDone) {
-                                        eventStartTimeString.append(word).append(" ");
-                                    } else if (eventStartDone) {
-                                        eventEndTimeString.append(word).append(" ");
+                                        break;
                                     } else {
                                         taskName.append(word).append(" ");
+                                        taskNameLength++;
                                     }
                                 }
-                                if (eventStartTimeString.isEmpty()) {
+                                // pass remaining user input to extract period
+                                String[] periodInput = Arrays.copyOfRange(userInput, taskNameLength + 1, userInput.length);
+                                String[] period = handlePeriodInput(periodInput);
+                                if (period[0].isEmpty()) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)\n"
                                             + "_".repeat(100));
-                                } else if (eventEndTimeString.isEmpty()) {
+                                } else if (period[1].isEmpty()) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n"
                                             + "_".repeat(100));
                                 } else {
-                                    LocalDateTime eventStartTime = handleDateTimeData(eventStartTimeString.toString().trim());
-                                    LocalDateTime eventEndTime = handleDateTimeData(eventEndTimeString.toString().trim());
+                                    LocalDateTime eventStartTime = handleDateTimeData(period[0].toString().trim());
+                                    LocalDateTime eventEndTime = handleDateTimeData(period[1].toString().trim());
                                     Event ev = new Event(taskName.toString().trim(),
                                             eventStartTime,
                                             eventEndTime);
@@ -458,6 +485,123 @@ public class InvictaBot {
                                 taskList.add(td);
                                 updateTaskListFile();
                                 added(td);
+                            }
+                            break;
+                        }
+                        case DAY: {
+                            LocalDate dateToSearch;
+                            StringBuilder dateToSearchString = new StringBuilder();
+                            if (taskList.isEmpty()) {
+                                System.out.println("_".repeat(100)
+                                        + "\n\tYour task list is empty! Add a few tasks!\n"
+                                        + "_".repeat(100));
+
+                            } else if (userInput.length < 2) {
+                                throw new InvictaException("_".repeat(100)
+                                        + "\n\tMissing date! (usage: day <date>)\n"
+                                        + "_".repeat(100));
+                            } else {
+                                for (int i = 1; i < userInput.length; i++) {
+                                    String word = userInput[i];
+                                    dateToSearchString.append(word).append(" ");
+                                }
+                            }
+                            dateToSearch = handleDateTimeData(dateToSearchString
+                                    .toString().trim()).toLocalDate(); // time values are disregarded
+
+                            ArrayList<Task> onDateTasks = new ArrayList<>();
+                            // add the tasks to temp ArrayList of Tasks to be displayed
+                            for (Task t : taskList) {
+                                if (t instanceof Deadline) {
+                                    if (((Deadline) t).getDeadline().toLocalDate().isEqual(dateToSearch)) {
+                                        onDateTasks.add(t);
+                                    }
+                                }
+                                if (t instanceof Event) {
+                                    // using inclusive checks ensures not missing events that fall on the start and end dates
+                                    if ((((Event) t).getStart().toLocalDate().isEqual(dateToSearch)
+                                            || ((Event) t).getStart().toLocalDate().isBefore(dateToSearch))
+                                            && (((Event) t).getEnd().toLocalDate().isEqual(dateToSearch)
+                                            || ((Event) t).getEnd().toLocalDate().isAfter(dateToSearch))) {
+                                        onDateTasks.add(t);
+                                    }
+                                }
+                            }
+                            int number = 0;
+                            if (onDateTasks.isEmpty()) {
+                                System.out.println("_".repeat(100)
+                                        + "\n\tThere are no events on that day. Wanna add a task?\n"
+                                        + "_".repeat(100));
+                            } else {
+                                System.out.println("_".repeat(100)
+                                        + "\n\tHere is a list of your tasks that you have on "
+                                        + dateToSearch.format(dateDisplay) + ": ");
+                                for (Task t : onDateTasks) {
+                                    number += 1;
+                                    System.out.println("\t" + number + ". " + t.toString());
+                                }
+                                System.out.println("_".repeat(100));
+                            }
+                            break;
+                        }
+                        case PERIOD: {
+                            if (taskList.isEmpty()) {
+                                System.out.println("_".repeat(100)
+                                        + "\n\tYour task list is empty! Add a few tasks!\n"
+                                        + "_".repeat(100));
+
+                            } else if (userInput.length < 2) {
+                                throw new InvictaException("_".repeat(100)
+                                        + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
+                                        + "_".repeat(100));
+                            } else {
+                                String[] periodInput = Arrays.copyOfRange(userInput,1, userInput.length);
+                                String[] period = handlePeriodInput(periodInput);
+                                if (period[0].isEmpty()) {
+                                    throw new InvictaException("_".repeat(100)
+                                            + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
+                                            + "_".repeat(100));
+                                } else if (period[1].isEmpty()) {
+                                    throw new InvictaException("_".repeat(100)
+                                            + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
+                                            + "_".repeat(100));
+                                } else {
+                                    LocalDateTime periodStartTime = handleDateTimeData(period[0].trim());
+                                    LocalDateTime periodEndTime = handleDateTimeData(period[1].trim());
+                                    ArrayList<Task> inPeriodTasks = new ArrayList<>();
+                                    // add the tasks to temp ArrayList of Tasks to be displayed
+                                    for (Task t : taskList) {
+                                        if (t instanceof Deadline) {
+                                            if ((((Deadline) t).getDeadline().isEqual(periodStartTime)
+                                                    || ((Deadline) t).getDeadline().isAfter(periodStartTime))
+                                                    && ((((Deadline) t).getDeadline().isEqual(periodEndTime)
+                                                    || ((Deadline) t).getDeadline().isBefore(periodEndTime)))) {
+                                                inPeriodTasks.add(t);
+                                            }
+                                        }
+                                        if (t instanceof Event) {
+                                            // using inclusive checks and start time to check ensures not missing events that extend beyond period
+                                            if ((((Event) t).getStart().isEqual(periodStartTime) || ((Event) t).getEnd().isEqual(periodStartTime))
+                                                    || (((Event) t).getStart().isEqual(periodEndTime) || ((Event) t).getEnd().isEqual(periodEndTime))
+                                                    || (((Event) t).getEnd().isAfter(periodStartTime)) && ((Event) t).getStart().isBefore(periodStartTime)
+                                                    || (((Event) t).getStart().isAfter(periodStartTime)) && ((Event) t).getEnd().isBefore(periodEndTime)
+                                                    || (((Event) t).getStart().isBefore(periodEndTime)) && ((Event) t).getEnd().isAfter(periodEndTime)
+                                                    || (((Event) t).getStart().isBefore(periodStartTime)) && ((Event) t).getEnd().isAfter(periodEndTime)) {
+                                                inPeriodTasks.add(t);
+                                            }
+                                        }
+                                    }
+                                    int number = 0;
+                                    System.out.println("_".repeat(100)
+                                            + "\n\tHere is a list of your tasks that fall within "
+                                            + periodStartTime.format(dateDisplay) + " to " + periodEndTime.format(dateDisplay) + ": ");
+                                    for (Task t : inPeriodTasks) {
+                                        number += 1;
+                                        System.out.println("\t" + number + ". " + t.toString());
+                                    }
+                                    System.out.println("_".repeat(100));
+                                    break;
+                                }
                             }
                             break;
                         }
