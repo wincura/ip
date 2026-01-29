@@ -1,11 +1,22 @@
 // CS2103T Individual Project by William Scott Win A0273291A
 
-// Imports to use collections, handle files and user input
-import java.io.IOException;
+// Imports to use data structures
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+
+// Imports to handle files and user input
+import java.io.IOException;
+import java.util.Date;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
+
+// Imports to handle time data
+import java.time.format.DateTimeParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 
 public class InvictaBot {
@@ -13,6 +24,10 @@ public class InvictaBot {
     private static ArrayList<Task> taskList = new ArrayList<>();
     private static final String DATA_DIR_PATH = "./data";
     private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
+    public static final String FORMAT_DATE_ONLY = "yyyy-MM-dd";
+    public static final String FORMAT_DATE_AND_TIME = "yyyy-MM-dd HH:mm";
+    public static DateTimeFormatter dateOnly = DateTimeFormatter.ofPattern(FORMAT_DATE_ONLY);
+    public static DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern(FORMAT_DATE_AND_TIME);
 
     /**
      * Initializes task list from provided file and display greeting message.
@@ -46,7 +61,7 @@ public class InvictaBot {
                             case DEADLINE: {
                                 boolean isDone = input[1].equals("1");
                                 String name = input[2];
-                                String deadline = input[3];
+                                LocalDateTime deadline = handleDateTimeData(input[3]);
                                 Deadline toAdd = new Deadline(name, deadline);
                                 if (isDone) {
                                     toAdd.setDone(true);
@@ -57,8 +72,8 @@ public class InvictaBot {
                             case EVENT: {
                                 boolean isDone = input[1].equals("1");
                                 String name = input[2];
-                                String start = input[3];
-                                String end = input[4];
+                                LocalDateTime start = handleDateTimeData(input[3]);
+                                LocalDateTime end = handleDateTimeData(input[4]);
                                 Event toAdd = new Event(name, start, end);
                                 if (isDone) {
                                     toAdd.setDone(true);
@@ -88,6 +103,22 @@ public class InvictaBot {
         System.out.println("Hello from\n" + logo);
     }
 
+    /**
+     * Returns a LocalDateTime object based on String provided.
+     * If only date is provided, the time is set to midnight.
+     *
+     * @param dateTimeString String to be parsed into LocalDateTime object.
+     * @returns dateTime LocalDateTime object based on format in input string.
+     * @throws DateTimeParseException Exception thrown when string is of invalid format.
+     */
+    private static LocalDateTime handleDateTimeData(String dateTimeString) {
+        if (dateTimeString.length() <= 10) {
+            return LocalDate.parse(dateTimeString, dateOnly).atStartOfDay();
+        } else {
+            return LocalDateTime.parse(dateTimeString, dateAndTime);
+        }
+    }
+
 
     /**
      * Updates task list file upon changes to task list.
@@ -103,12 +134,12 @@ public class InvictaBot {
                     fw.write(System.lineSeparator() + toAdd);
                 } else if (t instanceof Deadline) {
                     String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                            ((Deadline) t).getDeadline()};
+                            ((Deadline) t).getDeadline().format(dateAndTime)};
                     toAdd = String.join(";", values);
                     fw.write(System.lineSeparator() + toAdd);
                 } else if (t instanceof Event) {
                     String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                            ((Event) t).getStart(), ((Event) t).getEnd()};
+                            ((Event) t).getStart().format(dateAndTime), ((Event) t).getEnd().format(dateAndTime)};
                     toAdd = String.join(";", values);
                     fw.write(System.lineSeparator() + toAdd);
                 }
@@ -166,7 +197,7 @@ public class InvictaBot {
                 // Obtaining user's name, with validation to handle empty names
                 username = s.nextLine().trim();
                 if (username.isEmpty()) {
-                    throw new InvictaException("Surely you're not a nameless person! Come again?");
+                    throw new InvictaException("\tSurely you're not a nameless person! Come again?");
                 } else {
                     // Exit loop and continue to chatbot program
                     System.out.println("_".repeat(100)
@@ -207,7 +238,10 @@ public class InvictaBot {
                                     + "\tunmark <index> - mask task as not done\n"
                                     + "\ttodo <name> - add a to-do task\n"
                                     + "\tdeadline <name> /by <deadline> - add a deadline task\n"
-                                    + "\tevent <name> /from <start> /to <end> - add an event\n"
+                                    + "\tevent <name> /from <start> /to <end> - add an event\n\n"
+                                    + "\tList of available date time formats:\n"
+                                    + "\tyyyy-MM-dd\n"
+                                    + "\tyyyy-MM-dd HH:mm\n"
                                     + "_".repeat(100));
                             break;
                         }
@@ -317,8 +351,8 @@ public class InvictaBot {
                                         + "_".repeat(100));
                             } else {
                                 StringBuilder taskName = new StringBuilder();
-                                StringBuilder eventStartTime = new StringBuilder();
-                                StringBuilder eventEndTime = new StringBuilder();
+                                StringBuilder eventStartTimeString = new StringBuilder();
+                                StringBuilder eventEndTimeString = new StringBuilder();
                                 // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
                                 boolean taskNameDone = false;
                                 boolean eventStartDone = false;
@@ -339,25 +373,27 @@ public class InvictaBot {
                                             break;
                                         }
                                     } else if (taskNameDone && !eventStartDone) {
-                                        eventStartTime.append(word).append(" ");
+                                        eventStartTimeString.append(word).append(" ");
                                     } else if (eventStartDone) {
-                                        eventEndTime.append(word).append(" ");
+                                        eventEndTimeString.append(word).append(" ");
                                     } else {
                                         taskName.append(word).append(" ");
                                     }
                                 }
-                                if (eventStartTime.isEmpty()) {
+                                if (eventStartTimeString.isEmpty()) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)\n"
                                             + "_".repeat(100));
-                                } else if (eventEndTime.isEmpty()) {
+                                } else if (eventEndTimeString.isEmpty()) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n"
                                             + "_".repeat(100));
                                 } else {
+                                    LocalDateTime eventStartTime = handleDateTimeData(eventStartTimeString.toString().trim());
+                                    LocalDateTime eventEndTime = handleDateTimeData(eventEndTimeString.toString().trim());
                                     Event ev = new Event(taskName.toString().trim(),
-                                            eventStartTime.toString().trim(),
-                                            eventEndTime.toString().trim());
+                                            eventStartTime,
+                                            eventEndTime);
                                     taskList.add(ev);
                                     updateTaskListFile();
                                     added(ev);
@@ -372,7 +408,7 @@ public class InvictaBot {
                                         + "_".repeat(100));
                             } else {
                                 StringBuilder taskName = new StringBuilder();
-                                StringBuilder deadlineTime = new StringBuilder();
+                                StringBuilder deadlineTimeString = new StringBuilder();
                                 // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
                                 boolean taskNameDone = false;
                                 int argsDoneFlag = 1;
@@ -386,18 +422,19 @@ public class InvictaBot {
                                             break;
                                         }
                                     } else if (taskNameDone) {
-                                        deadlineTime.append(word).append(" ");
+                                        deadlineTimeString.append(word).append(" ");
                                     } else {
                                         taskName.append(word).append(" ");
                                     }
                                 }
-                                if (deadlineTime.isEmpty()) {
+                                if (deadlineTimeString.isEmpty()) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tMissing deadline! (usage: deadline <name> /by <deadline>)\n"
                                             + "_".repeat(100));
                                 } else {
+                                    LocalDateTime deadlineTime = handleDateTimeData(deadlineTimeString.toString().trim());
                                     Deadline dl = new Deadline(taskName.toString().trim(),
-                                            deadlineTime.toString().trim());
+                                            deadlineTime);
                                     taskList.add(dl);
                                     updateTaskListFile();
                                     added(dl);
@@ -432,6 +469,10 @@ public class InvictaBot {
             } catch (NumberFormatException e) {
                 System.out.println("_".repeat(100)
                         + "\n\tAn index is a number, so go put one! (usage: mark/unmark <int as index>)\n"
+                        + "_".repeat(100));
+            } catch (DateTimeParseException e) {
+                System.out.println("_".repeat(100)
+                        + "\n\tInvalid date time format! Type 'help' to view acceptable formats.\n"
                         + "_".repeat(100));
             } catch (InvictaException e) {
                 System.out.println(e.getMessage());
