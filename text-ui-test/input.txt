@@ -15,16 +15,16 @@ mark 1
 deadline
 deadline Homework
 deadline Homework /by
-deadline Homework /by Sunday
-deadline Project /by Monday /by me
+deadline Homework /by 2026-02-20
+deadline Project /by 2026-02-24 /by me
 delete 3
 event
 event CCA Festival
 event CCA Festival /from
-event CCA Festival /from Tuesday 4pm
-event CCA Festival /from Tuesday 4pm /to
-event CCA Festival /from Tuesday 4pm /to Wednesday 5pm
-event Marathon /from Monday 5am /to Monday 8am /from here /to there
+event CCA Festival /from 2026-03-21 18:30
+event CCA Festival /from 2026-03-21 18:30 /to
+event CCA Festival /from 2026-03-21 18:30 /to 2026-03-21 20:30
+event Marathon /from 2026-03-23 04:30 /to 2026-03-23 09:30 /from here /to there
 list
 mark 3
 unmark 3
@@ -36,5 +36,41 @@ delete 2
 delete 1
 delete 1
 delete 0
+list
+todo Buy Books
+todo Make Task List
+todo Buy Birthday Gifts
+deadline Homework 1 /by 2026-02-20
+deadline Homework 2 /by 2026-02-20 23:59
+deadline Quiz 1 /by 2026-02-21 23:59
+deadline Problem Set 1 /by 2026-02-21 23:59
+event CCA Recruitment Drive /from 2026-02-19 18:30 /to 2026-03-28 20:30
+event CCA Event /from 2026-02-21 18:30 /to 2026-02-21 20:30
+event CCA Meeting /from 2026-02-25 10:30 /to 2026-02-25 20:30
+event CCA Festival /from 2026-03-21 18:30 /to 2026-03-21 20:30
+event CCA Briefing /from 2026-03-27 18:30 /to 2026-03-27 20:30
+list
+period
+period /from
+period /from aaa
+period /from aaa /to aaa
+period /from 2026-02-21
+period /from 2026-02-21 /to 2026-03-23
+day aaa
+day 2026-02-20
+day 2026-02-21
+day 2026-03-21
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
+delete 1
 list
 bye

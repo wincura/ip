@@ -7,6 +7,8 @@ public enum Command {
     TODO("todo"),
     DEADLINE("deadline"),
     EVENT("event"),
+    DAY("day"),
+    PERIOD("period"),
     HELP("help");
 
     private final String word;
