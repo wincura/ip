@@ -8,226 +8,38 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.io.File;
-import java.io.FileWriter;
 
 // Imports to handle time data
 import java.time.format.DateTimeParseException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 
 public class InvictaBot {
-    // data structures and file paths to be used by chatbot
-    private static ArrayList<Task> taskList = new ArrayList<>();
-    private static final String DATA_DIR_PATH = "./data";
+    // data structures and file paths to be used by
     private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
 
-    // date time formats and formatters to be used by the chatbot
-    public static final String FORMAT_DATE_ONLY = "yyyy-MM-dd";
-    public static final String FORMAT_DATE_AND_TIME = "yyyy-MM-dd HH:mm";
-    public static final String FORMAT_DATE_DISPLAY = "MMM dd yyyy (EEE)";
-    public static DateTimeFormatter dateOnly = DateTimeFormatter.ofPattern(FORMAT_DATE_ONLY);
-    public static DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern(FORMAT_DATE_AND_TIME);
-    public static DateTimeFormatter dateDisplay = DateTimeFormatter.ofPattern(FORMAT_DATE_DISPLAY);
+    // More OOP Objects
+    private Ui invictaUi;
+    private Storage invictaStorage;
+    private TaskList invictaTasks;
 
-    /**
-     * Initializes task list from provided file and display greeting message.
-     * If the file does not exist, it is created.
-     *
-     * @param taskListFile File on which Task List is stored.
-     */
-    private static void invictaBotInit(File taskListFile) {
+    public InvictaBot(String filePath) {
         try {
-            if (taskListFile.createNewFile()) {
-                System.out.println("Task list file created at: " + taskListFile.getAbsolutePath());
-            } else {
-                System.out.println("Task list file found at: " + taskListFile.getAbsolutePath()
-                        + "\nLoading data from file into Invicta...");
-                Scanner s = new Scanner(taskListFile);
-                while (s.hasNext()) {
-                    String[] input = s.nextLine().split(";");
-                    try {
-                        Type type = Type.fromString(input[0]);
-                        switch (type) {
-                            case TODO: {
-                                boolean isDone = input[1].equals("1");
-                                String name = input[2];
-                                Todo toAdd = new Todo(name);
-                                if (isDone) {
-                                    toAdd.setDone(true);
-                                }
-                                taskList.add(toAdd);
-                                break;
-                            }
-                            case DEADLINE: {
-                                boolean isDone = input[1].equals("1");
-                                String name = input[2];
-                                LocalDateTime deadline = handleDateTimeData(input[3]);
-                                Deadline toAdd = new Deadline(name, deadline);
-                                if (isDone) {
-                                    toAdd.setDone(true);
-                                }
-                                taskList.add(toAdd);
-                                break;
-                            }
-                            case EVENT: {
-                                boolean isDone = input[1].equals("1");
-                                String name = input[2];
-                                LocalDateTime start = handleDateTimeData(input[3]);
-                                LocalDateTime end = handleDateTimeData(input[4]);
-                                Event toAdd = new Event(name, start, end);
-                                if (isDone) {
-                                    toAdd.setDone(true);
-                                }
-                                taskList.add(toAdd);
-                                break;
-                            }
-                        }
-                    } catch (InvictaException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                System.out.println("Task list file data successfully loaded into Invicta.\n\n\n");
-            }
+            invictaUi = new Ui();
+            invictaStorage = new Storage(TASK_LIST_FILE_PATH);
+            invictaTasks = new TaskList(invictaStorage.load());
         } catch (IOException e) {
-            System.out.print("Error occurred while reading file: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        // Logo below generated with the help of an external tool from https://patorjk.com/software/taag/
-        String logo =   ".___            .__        __        __________        __\n"
-                + "|   | _______  _|__| _____/  |______ \\______   \\ _____/  |_\n"
-                + "|   |/    \\  \\/ /  |/ ___\\   __\\__  \\ |    |  _//  _ \\   __\\\n"
-                + "|   |   |  \\   /|  \\  \\___|  |  / __ \\|    |   (  <_> )  |\n"
-                + "|___|___|  /\\_/ |__|\\___  >__| (____  /______  /\\____/|__|\n"
-                + "         \\/             \\/          \\/       \\/\n";
-        System.out.println("Hello from\n" + logo);
-    }
-
-    /**
-     * Returns a LocalDateTime object based on String provided.
-     * If only date is provided, the time is set to midnight.
-     *
-     * @param dateTimeString String to be parsed into LocalDateTime object.
-     * @return dateTime LocalDateTime object based on format in input string.
-     * @throws DateTimeParseException Exception thrown when string is of invalid format.
-     */
-    private static LocalDateTime handleDateTimeData(String dateTimeString) {
-        if (dateTimeString.length() <= 10) {
-            return LocalDate.parse(dateTimeString, dateOnly).atStartOfDay();
-        } else {
-            return LocalDateTime.parse(dateTimeString, dateAndTime);
+            invictaUi.showLoadingError(e);
+            invictaTasks = new TaskList(new ArrayList<>());
+        } catch (InvictaException e) {
+            invictaUi.showException(e);
+            invictaTasks = new TaskList(new ArrayList<>());
         }
     }
 
-    /**
-     * Iterates through user input to extract strings representing start and end times of a period.
-     * If more user arguments in input than expected, they are disregarded.
-     *
-     * @param userInput String array to be parsed into period start and end times.
-     * @return period String array containing the strings representing start and end times of a period.
-     */
-    private static String[] handlePeriodInput(String[] userInput) {
-        String[] period = new String[2];
-        StringBuilder periodStartTimeString = new StringBuilder();
-        StringBuilder periodEndTimeString = new StringBuilder();
-        // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
-        boolean eventStartDone = false;
-        int argsDoneFlag = 2;
-        // Start counting from index 1 to ignore event command
-        for (int i = 1; i < userInput.length; i++) {
-            String word = userInput[i];
-            if (word.equals("/from")) {
-                argsDoneFlag -= 1;
-                if (argsDoneFlag < 1) {
-                    break;
-                }
-            } else if (word.equals("/to")) {
-                eventStartDone = true;
-                argsDoneFlag -= 1;
-                if (argsDoneFlag < 1) {
-                    break;
-                }
-            } else if (eventStartDone) {
-                periodEndTimeString.append(word).append(" ");
-            } else {
-                periodStartTimeString.append(word).append(" ");
-            }
-        }
-        period[0] = periodStartTimeString.toString();
-        period[1] = periodEndTimeString.toString();
-        return period;
-    }
-
-
-    /**
-     * Writes into task list file to reflect changes in task list.
-     */
-    private static void updateTaskListFile() {
-        try {
-            FileWriter fw = new FileWriter(TASK_LIST_FILE_PATH);
-            String toAdd;
-            for (Task t : taskList) {
-                if (t instanceof Todo) {
-                    String[] values = {Type.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
-                    toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
-                } else if (t instanceof Deadline) {
-                    String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                            ((Deadline) t).getDeadline().format(dateAndTime)};
-                    toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
-                } else if (t instanceof Event) {
-                    String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                            ((Event) t).getStart().format(dateAndTime), ((Event) t).getEnd().format(dateAndTime)};
-                    toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
-                }
-            }
-            fw.close();
-        } catch (IOException e) {
-            System.out.print("Error occurred while writing to file: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Displays goodbye message with username.
-     */
-    private static void bye(String username) {
-        System.out.println("_".repeat(100)
-                + "\n\tBye bye now! You take care, " + username + "!\n"
-                + "_".repeat(100));
-    }
-
-    /**
-     * Displays message when adding tasks, including count.
-     */
-    private static void added(Task t) {
-        System.out.println("_".repeat(100)
-                + "\n\tOkay! I've added this task: \n\t\t" + t.toString()
-                + "\n\tYou've got " + taskList.size() + " tasks in your list now.\n"
-                + "_".repeat(100));
-    }
-
-    public static void main(String[] args) {
-        // Method to initialize chatbot upon execution
-        File dataDir = new File(DATA_DIR_PATH);
-        if (!dataDir.exists()) {
-            if (dataDir.mkdir()) {
-                System.out.println("Data directory created at: " + dataDir.getAbsolutePath());
-            } else {
-                System.out.println("Failed to create new directory.");
-            }
-        } else {
-            System.out.println("Data directory found at: " + dataDir.getAbsolutePath());
-        }
-        File taskListFile = new File(TASK_LIST_FILE_PATH);
-
-        invictaBotInit(taskListFile);
-
+    public void run() {
         // Loop to prompt user for username input until valid
+        invictaUi.logo();
         System.out.println("_".repeat(100)
                 + "\n\tHowdy! I'm InvictaBot!\n\tHow might I address you, pal?\n"
                 + "_".repeat(100));
@@ -237,12 +49,13 @@ public class InvictaBot {
             try {
                 // Obtaining user's name, with validation to handle empty names
                 username = s.nextLine().trim();
+                invictaUi.setUsername(username);
                 if (username.isEmpty()) {
                     throw new InvictaException("\tSurely you're not a nameless person! Come again?");
                 } else {
                     // Exit loop and continue to chatbot program
                     System.out.println("_".repeat(100)
-                            + "\n\tIt's a pleasure, " + username + "! What can I do you for?\n"
+                            + "\n\tIt's a pleasure, " + invictaUi.getUsername() + "! What can I do you for?\n"
                             + "_".repeat(100));
                     break;
                 }
@@ -265,7 +78,7 @@ public class InvictaBot {
                     Command c = Command.fromString(userInput[0]);
                     switch (c) {
                         case BYE: {
-                            bye(username);
+                            invictaUi.bye();
                             // Exit loop
                             break appLoop;
                         }
@@ -290,14 +103,14 @@ public class InvictaBot {
                         }
                         case LIST: {
                             int number = 0;
-                            if (taskList.isEmpty()) {
+                            if (invictaTasks.getTaskList().isEmpty()) {
                                 System.out.println("_".repeat(100)
                                         + "\n\tYour task list is empty! Add a few tasks!\n"
                                         + "_".repeat(100));
                             } else {
                                 System.out.println("_".repeat(100)
                                         + "\n\tHere is a list of your tasks: ");
-                                for (Task t : taskList) {
+                                for (Task t : invictaTasks.getTaskList()) {
                                     number += 1;
                                     System.out.println("\t" + number + ". " + t.toString());
                                 }
@@ -312,19 +125,19 @@ public class InvictaBot {
                                         + "_".repeat(100));
                             } else {
                                 int index = Integer.parseInt(userInput[1]) - 1;
-                                if (index < 0 | index > taskList.size() - 1) {
+                                if (index < 0 | index > invictaTasks.getTaskList().size() - 1) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tYou want me to do what? "
                                             + "Put a valid index! (check task list using 'list' command)\n"
                                             + "_".repeat(100));
                                 } else {
-                                    Task temp = taskList.get(index);
+                                    Task temp = invictaTasks.getTaskList().get(index);
                                     String deleteTask = temp.toString();
-                                    taskList.remove(index);
-                                    updateTaskListFile();
+                                    invictaTasks.getTaskList().remove(index);
+                                    invictaStorage.updateTaskListFile(invictaTasks);
                                     System.out.println("_".repeat(100)
                                             + "\n\tInto the trash! This task has been deleted: \n"
-                                            + "\t\t" + deleteTask + "\n\tYou've got " + taskList.size()
+                                            + "\t\t" + deleteTask + "\n\tYou've got " + invictaTasks.getSize()
                                             + " tasks in your list now.\n"
                                             + "_".repeat(100));
                                 }
@@ -338,19 +151,19 @@ public class InvictaBot {
                                         + "_".repeat(100));
                             } else {
                                 int index = Integer.parseInt(userInput[1]) - 1;
-                                if (index < 0 | index > taskList.size() - 1) {
+                                if (index < 0 | index > invictaTasks.getSize() - 1) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
                                             + "_".repeat(100));
                                 } else {
-                                    Task t = taskList.get(index);
+                                    Task t = invictaTasks.getTaskList().get(index);
                                     if (t.getDone()) {
                                         System.out.println("_".repeat(100)
                                                 + "\n\tThis task is already marked as done: " + "\n\t\t" + t + "\n"
                                                 + "_".repeat(100));
                                     } else {
                                         t.setDone(true);
-                                        updateTaskListFile();
+                                        invictaStorage.updateTaskListFile(invictaTasks);
                                         System.out.println("_".repeat(100)
                                                 + "\n\tGreat! I've marked this as done:  \n\t\t" + t + "\n"
                                                 + "_".repeat(100));
@@ -366,19 +179,19 @@ public class InvictaBot {
                                         + "_".repeat(100));
                             } else {
                                 int index = Integer.parseInt(userInput[1]) - 1;
-                                if (index < 0 | index > taskList.size() - 1) {
+                                if (index < 0 | index > invictaTasks.getSize() - 1) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
                                             + "_".repeat(100));
                                 } else {
-                                    Task t = taskList.get(index);
+                                    Task t = invictaTasks.getTaskList().get(index);
                                     if (!t.getDone()) {
                                         System.out.println("_".repeat(100)
                                                 + "\n\tThis task is already marked as not done: \n\t\t" + t + "\n"
                                                 + "_".repeat(100));
                                     } else {
                                         t.setDone(false);
-                                        updateTaskListFile();
+                                        invictaStorage.updateTaskListFile(invictaTasks);
                                         System.out.println("_".repeat(100)
                                                 + "\n\tOh I see! I've marked this as not done: \n\t\t" + t + "\n"
                                                 + "_".repeat(100));
@@ -406,7 +219,7 @@ public class InvictaBot {
                                 }
                                 // pass remaining user input to extract period
                                 String[] periodInput = Arrays.copyOfRange(userInput, taskNameLength + 1, userInput.length);
-                                String[] period = handlePeriodInput(periodInput);
+                                String[] period = Parser.handlePeriodInput(periodInput);
                                 if (period[0].isEmpty()) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)\n"
@@ -416,14 +229,14 @@ public class InvictaBot {
                                             + "\n\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n"
                                             + "_".repeat(100));
                                 } else {
-                                    LocalDateTime eventStartTime = handleDateTimeData(period[0].toString().trim());
-                                    LocalDateTime eventEndTime = handleDateTimeData(period[1].toString().trim());
+                                    LocalDateTime eventStartTime = Parser.handleDateTimeData(period[0].toString().trim());
+                                    LocalDateTime eventEndTime = Parser.handleDateTimeData(period[1].toString().trim());
                                     Event ev = new Event(taskName.toString().trim(),
                                             eventStartTime,
                                             eventEndTime);
-                                    taskList.add(ev);
-                                    updateTaskListFile();
-                                    added(ev);
+                                    invictaTasks.getTaskList().add(ev);
+                                    invictaStorage.updateTaskListFile(invictaTasks);
+                                    invictaUi.added(ev, invictaTasks);
                                 }
                             }
                             break;
@@ -459,12 +272,12 @@ public class InvictaBot {
                                             + "\n\tMissing deadline! (usage: deadline <name> /by <deadline>)\n"
                                             + "_".repeat(100));
                                 } else {
-                                    LocalDateTime deadlineTime = handleDateTimeData(deadlineTimeString.toString().trim());
+                                    LocalDateTime deadlineTime = Parser.handleDateTimeData(deadlineTimeString.toString().trim());
                                     Deadline dl = new Deadline(taskName.toString().trim(),
                                             deadlineTime);
-                                    taskList.add(dl);
-                                    updateTaskListFile();
-                                    added(dl);
+                                    invictaTasks.getTaskList().add(dl);
+                                    invictaStorage.updateTaskListFile(invictaTasks);
+                                    invictaUi.added(dl, invictaTasks);
                                 }
                             }
                             break;
@@ -482,16 +295,16 @@ public class InvictaBot {
                                     taskName.append(word).append(" ");
                                 }
                                 Todo td = new Todo(taskName.toString().trim());
-                                taskList.add(td);
-                                updateTaskListFile();
-                                added(td);
+                                invictaTasks.getTaskList().add(td);
+                                invictaStorage.updateTaskListFile(invictaTasks);
+                                invictaUi.added(td, invictaTasks);
                             }
                             break;
                         }
                         case DAY: {
                             LocalDate dateToSearch;
                             StringBuilder dateToSearchString = new StringBuilder();
-                            if (taskList.isEmpty()) {
+                            if (invictaTasks.getTaskList().isEmpty()) {
                                 System.out.println("_".repeat(100)
                                         + "\n\tYour task list is empty! Add a few tasks!\n"
                                         + "_".repeat(100));
@@ -506,12 +319,12 @@ public class InvictaBot {
                                     dateToSearchString.append(word).append(" ");
                                 }
                             }
-                            dateToSearch = handleDateTimeData(dateToSearchString
+                            dateToSearch = Parser.handleDateTimeData(dateToSearchString
                                     .toString().trim()).toLocalDate(); // time values are disregarded
 
                             ArrayList<Task> onDateTasks = new ArrayList<>();
                             // add the tasks to temp ArrayList of Tasks to be displayed
-                            for (Task t : taskList) {
+                            for (Task t : invictaTasks.getTaskList()) {
                                 if (t instanceof Deadline) {
                                     if (((Deadline) t).getDeadline().toLocalDate().isEqual(dateToSearch)) {
                                         onDateTasks.add(t);
@@ -535,7 +348,7 @@ public class InvictaBot {
                             } else {
                                 System.out.println("_".repeat(100)
                                         + "\n\tHere is a list of your tasks that you have on "
-                                        + dateToSearch.format(dateDisplay) + ": ");
+                                        + dateToSearch.format(Parser.dateDisplay) + ": ");
                                 for (Task t : onDateTasks) {
                                     number += 1;
                                     System.out.println("\t" + number + ". " + t.toString());
@@ -545,7 +358,7 @@ public class InvictaBot {
                             break;
                         }
                         case PERIOD: {
-                            if (taskList.isEmpty()) {
+                            if (invictaTasks.getTaskList().isEmpty()) {
                                 System.out.println("_".repeat(100)
                                         + "\n\tYour task list is empty! Add a few tasks!\n"
                                         + "_".repeat(100));
@@ -556,7 +369,7 @@ public class InvictaBot {
                                         + "_".repeat(100));
                             } else {
                                 String[] periodInput = Arrays.copyOfRange(userInput,1, userInput.length);
-                                String[] period = handlePeriodInput(periodInput);
+                                String[] period = Parser.handlePeriodInput(periodInput);
                                 if (period[0].isEmpty()) {
                                     throw new InvictaException("_".repeat(100)
                                             + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
@@ -566,11 +379,11 @@ public class InvictaBot {
                                             + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
                                             + "_".repeat(100));
                                 } else {
-                                    LocalDateTime periodStartTime = handleDateTimeData(period[0].trim());
-                                    LocalDateTime periodEndTime = handleDateTimeData(period[1].trim());
+                                    LocalDateTime periodStartTime = Parser.handleDateTimeData(period[0].trim());
+                                    LocalDateTime periodEndTime = Parser.handleDateTimeData(period[1].trim());
                                     ArrayList<Task> inPeriodTasks = new ArrayList<>();
                                     // add the tasks to temp ArrayList of Tasks to be displayed
-                                    for (Task t : taskList) {
+                                    for (Task t : invictaTasks.getTaskList()) {
                                         if (t instanceof Deadline) {
                                             if ((((Deadline) t).getDeadline().isEqual(periodStartTime)
                                                     || ((Deadline) t).getDeadline().isAfter(periodStartTime))
@@ -594,7 +407,7 @@ public class InvictaBot {
                                     int number = 0;
                                     System.out.println("_".repeat(100)
                                             + "\n\tHere is a list of your tasks that fall within "
-                                            + periodStartTime.format(dateDisplay) + " to " + periodEndTime.format(dateDisplay) + ": ");
+                                            + periodStartTime.format(Parser.dateDisplay) + " to " + periodEndTime.format(Parser.dateDisplay) + ": ");
                                     for (Task t : inPeriodTasks) {
                                         number += 1;
                                         System.out.println("\t" + number + ". " + t.toString());
@@ -606,7 +419,7 @@ public class InvictaBot {
                             break;
                         }
                         default: {
-                            bye(username);
+                            invictaUi.bye();;
                         }
                     }
                 }
@@ -622,5 +435,10 @@ public class InvictaBot {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    public static void main(String[] args) {
+        new InvictaBot(TASK_LIST_FILE_PATH).run();
+
     }
 }
