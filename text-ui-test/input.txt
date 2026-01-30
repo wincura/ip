@@ -14,7 +14,7 @@ todo Buy Books
 mark 1
 deadline
 deadline Homework
-deadline Homework /by
+deadline Homework
 deadline Homework /by 2026-02-20
 deadline Project /by 2026-02-24 /by me
 delete 3

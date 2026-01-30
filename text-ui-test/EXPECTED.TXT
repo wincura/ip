@@ -1,5 +1,5 @@
-Data directory found at: C:\Users\augus\Documents\CS2103T\ip\text-ui-test\.\data
-Task list file found at: C:\Users\augus\Documents\CS2103T\ip\text-ui-test\.\data\tasklist.txt
+Data directory found at: C:\Users\winch\Documents\CS2103T\ip\text-ui-test\.\data
+Task list file found at: C:\Users\winch\Documents\CS2103T\ip\text-ui-test\.\data\tasklist.txt
 Loading data from file into Invicta...
 Task list file data successfully loaded into Invicta.
 
