@@ -1,3 +1,7 @@
+package invicta.command;
+
+import invicta.app.InvictaException;
+
 public enum CommandType {
     BYE("bye"),
     LIST("list"),
@@ -17,7 +21,7 @@ public enum CommandType {
         this.word = word;
     }
 
-    // Declared a static method to create a Command from a String, throwing an exception if it does not match
+    // Declared a static method to create a invicta.command.Command from a String, throwing an exception if it does not match
     public static CommandType fromString(String word) throws InvictaException {
         for (CommandType c : CommandType.values()) {
             if (c.word.equals(word)) {
@@ -26,7 +30,7 @@ public enum CommandType {
         }
         throw new InvictaException("_".repeat(100)
                 + "\n\tWhat are you talking about? I do not understand: "
-                + word + "\n\tType 'help' for a list of commands and their usage.\n"
+                + word + "\n\tinvicta.app.Type 'help' for a list of commands and their usage.\n"
                 + "_".repeat(100));
     }
 }
