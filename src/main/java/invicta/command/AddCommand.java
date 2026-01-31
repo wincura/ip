@@ -1,3 +1,11 @@
+package invicta.command;
+
+import invicta.app.InvictaException;
+import invicta.app.Storage;
+import invicta.app.Ui;
+import invicta.task.Task;
+import invicta.task.TaskList;
+
 public class AddCommand extends Command {
     private Task toAdd;
 

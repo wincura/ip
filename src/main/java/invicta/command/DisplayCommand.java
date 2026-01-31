@@ -1,3 +1,11 @@
+package invicta.command;
+
+import invicta.app.InvictaException;
+import invicta.app.Storage;
+import invicta.app.Ui;
+import invicta.task.Task;
+import invicta.task.TaskList;
+
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,7 +35,7 @@ public class DisplayCommand extends Command {
         switch (this.commandType) {
             case HELP: {
                 System.out.println("_".repeat(100)
-                        + "\n\tList of commands in InvictaBot:\n"
+                        + "\n\tList of commands in invicta.InvictaBot:\n"
                         + "\tbye - exit app\n"
                         + "\tlist - display task list\n"
                         + "\tdelete - delete the task\n"

@@ -1,8 +1,14 @@
+package invicta.app;
+
+import invicta.command.*;
+import invicta.task.Deadline;
+import invicta.task.Event;
+import invicta.task.Todo;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Parser {
@@ -17,7 +23,7 @@ public class Parser {
     public static Command handleCommandData(String[] commandString, CommandType commandType) throws InvictaException {
         if (commandString.length == 0) {
             throw new InvictaException("_".repeat(100)
-                    + "\n\tWhat? Did you say something? Type a message!\n"
+                    + "\n\tWhat? Did you say something? invicta.app.Type a message!\n"
                     + "_".repeat(100));
         } else {
             switch (commandType) {

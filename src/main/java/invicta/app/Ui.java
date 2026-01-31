@@ -1,3 +1,8 @@
+package invicta.app;
+
+import invicta.task.Task;
+import invicta.task.TaskList;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,8 +50,8 @@ public class Ui {
     /**
      * Displays message when adding tasks, including count.
      *
-     * @param t Task whose details are to be printed.
-     * @param taskList Task list whose count are to be printed.
+     * @param t invicta.task.Task whose details are to be printed.
+     * @param taskList invicta.task.Task list whose count are to be printed.
      */
     public void added(Task t, TaskList taskList) {
         System.out.println("_".repeat(100)
@@ -156,7 +161,7 @@ public class Ui {
      */
     public void readUsername(Scanner s) {
         System.out.println("_".repeat(100)
-                + "\n\tHowdy! I'm InvictaBot!\n\tHow might I address you, pal?\n"
+                + "\n\tHowdy! I'm invicta.InvictaBot!\n\tHow might I address you, pal?\n"
                 + "_".repeat(100));
         String username;
         while (true) {
@@ -184,7 +189,7 @@ public class Ui {
         String[] userInput = raw.split(" ");
         if (raw.isEmpty()) {
             throw new InvictaException("_".repeat(100)
-                    + "\n\tWhat? Did you say something? Type a message!\n"
+                    + "\n\tWhat? Did you say something? invicta.app.Type a message!\n"
                     + "_".repeat(100));
         } else {
             return userInput;
