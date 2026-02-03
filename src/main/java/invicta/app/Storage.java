@@ -24,7 +24,7 @@ public class Storage {
      * If the file does not exist, it is created.
      * Exceptions are caught and handled in calling method.
      *
-     * @return loaded invicta.task.Task List loaded with stored task data in file.
+     * @return loaded Task List loaded with stored task data in file.
      */
     public ArrayList<Task> load() throws IOException, InvictaException {
         ArrayList<Task> loaded = new ArrayList<>();
@@ -41,9 +41,9 @@ public class Storage {
 
         File file = new File(this.filePath);
         if (file.createNewFile()) {
-            System.out.println("invicta.task.Task list file created at: " + file.getAbsolutePath());
+            System.out.println("Task list file created at: " + file.getAbsolutePath());
         } else {
-            System.out.println("invicta.task.Task list file found at: " + file.getAbsolutePath()
+            System.out.println("Task list file found at: " + file.getAbsolutePath()
                     + "\nLoading data from file into Invicta...");
             Scanner s = new Scanner(file);
             while (s.hasNext()) {
@@ -85,7 +85,7 @@ public class Storage {
                     }
                 }
             }
-            System.out.println("invicta.task.Task list file data successfully loaded into Invicta.\n\n\n");
+            System.out.println("Task list file data successfully loaded into Invicta.\n\n\n");
         }
         return loaded;
     }

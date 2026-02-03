@@ -23,7 +23,7 @@ public class Parser {
     public static Command handleCommandData(String[] commandString, CommandType commandType) throws InvictaException {
         if (commandString.length == 0) {
             throw new InvictaException("_".repeat(100)
-                    + "\n\tWhat? Did you say something? invicta.app.Type a message!\n"
+                    + "\n\tWhat? Did you say something? Type a message!\n"
                     + "_".repeat(100));
         } else {
             switch (commandType) {
@@ -194,10 +194,13 @@ public class Parser {
                         return new DisplayCommand(commandType, periodStartTime, periodEndTime);
                     }
                 }
+                default: {
+                    throw new InvictaException("_".repeat(100)
+                            + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
+                            + "_".repeat(100));
+                }
             }
         }
-        System.out.println("How??");
-        return new ExitCommand();
     }
 
 
