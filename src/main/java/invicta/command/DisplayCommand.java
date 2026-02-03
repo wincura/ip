@@ -35,7 +35,7 @@ public class DisplayCommand extends Command {
         switch (this.commandType) {
             case HELP: {
                 System.out.println("_".repeat(100)
-                        + "\n\tList of commands in invicta.InvictaBot:\n"
+                        + "\n\tList of commands in InvictaBot:\n"
                         + "\tbye - exit app\n"
                         + "\tlist - display task list\n"
                         + "\tdelete - delete the task\n"

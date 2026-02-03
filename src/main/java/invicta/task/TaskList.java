@@ -93,7 +93,7 @@ public class TaskList {
     }
 
     /**
-     * Prints the details of each task in provided invicta.task.Task List.
+     * Prints the details of each task in provided Task List.
      */
     public void printTasks() {
         int number = 0;

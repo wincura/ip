@@ -66,7 +66,7 @@ public class InvictaBot {
                         + "_".repeat(100));
             } catch (DateTimeParseException e) {
                 System.out.println("_".repeat(100)
-                        + "\n\tInvalid date time format! wType 'help' to view acceptable formats.\n"
+                        + "\n\tInvalid date time format! Type 'help' to view acceptable formats.\n"
                         + "_".repeat(100));
             } catch (InvictaException e) {
                 System.out.println(e.getMessage());
