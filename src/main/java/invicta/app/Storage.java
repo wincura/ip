@@ -102,17 +102,17 @@ public class Storage {
                 if (t instanceof Todo) {
                     String[] values = {Type.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
                     toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
+                    fw.write(toAdd + System.lineSeparator());
                 } else if (t instanceof Deadline) {
                     String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                             ((Deadline) t).getDeadline().format(Parser.dateAndTime)};
                     toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
+                    fw.write(toAdd + System.lineSeparator());
                 } else if (t instanceof Event) {
                     String[] values = {Type.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                             ((Event) t).getStart().format(Parser.dateAndTime), ((Event) t).getEnd().format(Parser.dateAndTime)};
                     toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
+                    fw.write(toAdd + System.lineSeparator());
                 }
             }
             fw.close();

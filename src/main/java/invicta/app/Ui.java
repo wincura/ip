@@ -205,7 +205,7 @@ public class Ui {
     /**
      * Displays error message for taskbot specific errors occurring during operations.
      */
-    public void showException (InvictaException e) {
+    public void showException (Exception e) {
         System.out.println(e.getMessage());
     }
 

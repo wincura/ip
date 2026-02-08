@@ -13,6 +13,7 @@ import invicta.command.CommandType;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
+
 import java.util.ArrayList;
 
 // Imports to handle files and user input
@@ -28,25 +29,21 @@ public class InvictaBot {
     private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
 
     // More OOP Objects
-    private Ui invictaUi;
+    private Ui invictaUi;;
     private Storage invictaStorage;
     private TaskList invictaTasks;
 
     public InvictaBot(String filePath) {
         try {
-            invictaStorage = new Storage(TASK_LIST_FILE_PATH);
-            ArrayList<Task> loaded = new ArrayList<>(invictaStorage.load());
-            invictaTasks = new TaskList(new ArrayList<Task>());
-            for (Task t : loaded) {
-                invictaTasks.addTask(t);
-            }
-            invictaUi = new Ui();
+            this.invictaUi = new Ui();
+            this.invictaStorage = new Storage(TASK_LIST_FILE_PATH);
+            invictaTasks = new TaskList(invictaStorage.load());
         } catch (IOException e) {
             invictaUi.showLoadingError(e);
-            invictaTasks = new TaskList(new ArrayList<Task>());
+            invictaTasks = new TaskList();
         } catch (InvictaException e) {
             invictaUi.showException(e);
-            invictaTasks = new TaskList(new ArrayList<Task>());
+            invictaTasks = new TaskList();
         }
     }
 
@@ -80,6 +77,7 @@ public class InvictaBot {
     }
 
     public static void main(String[] args) {
-        new InvictaBot(TASK_LIST_FILE_PATH).run();
+        InvictaBot invicta = new InvictaBot(TASK_LIST_FILE_PATH);
+        invicta.run();
     }
 }
