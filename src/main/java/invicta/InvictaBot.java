@@ -56,7 +56,7 @@ public class InvictaBot {
             try {
                 String[] commandString = invictaUi.readCommand(s);
                 CommandType commandType = CommandType.fromString(commandString[0]);
-                Command c = Parser.handleCommandData(commandString, commandType);
+                Command c = Parser.parseCommandData(commandString, commandType);
                 c.execute(invictaTasks, invictaStorage, invictaUi);
                 isExit = Command.isExit(c);
             }

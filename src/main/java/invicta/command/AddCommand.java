@@ -1,6 +1,5 @@
 package invicta.command;
 
-import invicta.app.InvictaException;
 import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.task.Task;
@@ -15,7 +14,7 @@ public class AddCommand extends Command {
 
     public void execute(TaskList taskList, Storage storage, Ui ui) {
         taskList.addTask(toAdd);
-        storage.updateTaskListFile(taskList);
+        storage.update(taskList);
         ui.added(toAdd, taskList);
     }
 }

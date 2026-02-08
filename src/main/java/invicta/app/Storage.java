@@ -63,7 +63,7 @@ public class Storage {
                     case DEADLINE: {
                         boolean isDone = input[1].equals("1");
                         String name = input[2];
-                        LocalDateTime deadline = Parser.handleDateTimeData(input[3]);
+                        LocalDateTime deadline = Parser.parseDateTimeData(input[3]);
                         Deadline toAdd = new Deadline(name, deadline);
                         if (isDone) {
                             toAdd.setDone(true);
@@ -74,8 +74,8 @@ public class Storage {
                     case EVENT: {
                         boolean isDone = input[1].equals("1");
                         String name = input[2];
-                        LocalDateTime start = Parser.handleDateTimeData(input[3]);
-                        LocalDateTime end = Parser.handleDateTimeData(input[4]);
+                        LocalDateTime start = Parser.parseDateTimeData(input[3]);
+                        LocalDateTime end = Parser.parseDateTimeData(input[4]);
                         Event toAdd = new Event(name, start, end);
                         if (isDone) {
                             toAdd.setDone(true);
@@ -93,7 +93,7 @@ public class Storage {
     /**
      * Writes into task list file to reflect changes in task list.
      */
-    public void updateTaskListFile(TaskList taskList) {
+    public void update(TaskList taskList) {
         ArrayList<Task> updatedTaskList = taskList.getTaskList();
         try {
             FileWriter fw = new FileWriter(this.filePath);

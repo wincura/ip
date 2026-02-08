@@ -4,38 +4,39 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
+    private Task
     @BeforeEach
     public void setUp() {
 
     }
 
     @Test
-    public void handleCommandData_validCommandDataString_returnCorrectCommand() {
+    public void parseCommandData_validCommandDataString_returnCorrectCommand() {
 
     }
 
     @Test
-    public void handleCommandData_invalidCommandDataString_throwInvictaException() {
+    public void parseCommandData_invalidCommandDataString_throwInvictaException() {
 
     }
 
     @Test
-    public void handleDateTimeData_validDateTimeString_returnCorrectDateTime() {
+    public void parseDateTimeData_validDateTimeString_returnCorrectDateTime() {
 
     }
 
     @Test
-    public void handleDateTimeData_invalidDateTimeData_throwDateTimeParseException() {
+    public void parseDateTimeData_invalidDateTimeData_throwDateTimeParseException() {
 
     }
 
     @Test
-    public void handlePeriodData_validPeriod_returnCorrectPeriodStringArray() {
+    public void parsePeriodData_validPeriod_returnCorrectPeriodStringArray() {
 
     }
 
     @Test
-    public void handlePeriodData_invalidPeriod_throwInvictaException() {
+    public void parsePeriodData_invalidPeriod_throwInvictaException() {
 
     }
 }
