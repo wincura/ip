@@ -50,39 +50,39 @@ public class Storage {
                 String[] input = s.nextLine().split(";");
                 Type type = Type.fromString(input[0]);
                 switch (type) {
-                    case TODO: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        Todo toAdd = new Todo(name);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
+                case TODO: {
+                    boolean isDone = input[1].equals("1");
+                    String name = input[2];
+                    Todo toAdd = new Todo(name);
+                    if (isDone) {
+                        toAdd.setDone(true);
                     }
-                    case DEADLINE: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        LocalDateTime deadline = Parser.parseDateTimeData(input[3]);
-                        Deadline toAdd = new Deadline(name, deadline);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
+                    loaded.add(toAdd);
+                    break;
+                }
+                case DEADLINE: {
+                    boolean isDone = input[1].equals("1");
+                    String name = input[2];
+                    LocalDateTime deadline = Parser.parseDateTimeData(input[3]);
+                    Deadline toAdd = new Deadline(name, deadline);
+                    if (isDone) {
+                        toAdd.setDone(true);
                     }
-                    case EVENT: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        LocalDateTime start = Parser.parseDateTimeData(input[3]);
-                        LocalDateTime end = Parser.parseDateTimeData(input[4]);
-                        Event toAdd = new Event(name, start, end);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
+                    loaded.add(toAdd);
+                    break;
+                }
+                case EVENT: {
+                    boolean isDone = input[1].equals("1");
+                    String name = input[2];
+                    LocalDateTime start = Parser.parseDateTimeData(input[3]);
+                    LocalDateTime end = Parser.parseDateTimeData(input[4]);
+                    Event toAdd = new Event(name, start, end);
+                    if (isDone) {
+                        toAdd.setDone(true);
                     }
+                    loaded.add(toAdd);
+                    break;
+                }
                 }
             }
             System.out.println("Task list file data successfully loaded into Invicta.\n\n\n");

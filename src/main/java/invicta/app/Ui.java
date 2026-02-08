@@ -62,30 +62,30 @@ public class Ui {
 
     public void marked(int i, String task) {
         switch (i) {
-            case 1: {
-                System.out.println("_".repeat(100)
-                        + "\n\tGreat! I've marked this as done:  \n\t\t" + task + "\n"
-                        + "_".repeat(100));
-                break;
-            }
-            case 2: {
-                System.out.println("_".repeat(100)
-                        + "\n\tThis task is already marked as done: " + "\n\t\t" + task + "\n"
-                        + "_".repeat(100));
-                break;
-            }
-            case 3: {
-                System.out.println("_".repeat(100)
-                        + "\n\tOh I see! I've marked this as not done: \n\t\t" + task + "\n"
-                        + "_".repeat(100));
-                break;
-            }
-            case 4: {
-                System.out.println("_".repeat(100)
-                        + "\n\tThis task is already marked as not done: \n\t\t" + task + "\n"
-                        + "_".repeat(100));
-                break;
-            }
+        case 1: {
+            System.out.println("_".repeat(100)
+                    + "\n\tGreat! I've marked this as done:  \n\t\t" + task + "\n"
+                    + "_".repeat(100));
+            break;
+        }
+        case 2: {
+            System.out.println("_".repeat(100)
+                    + "\n\tThis task is already marked as done: " + "\n\t\t" + task + "\n"
+                    + "_".repeat(100));
+            break;
+        }
+        case 3: {
+            System.out.println("_".repeat(100)
+                    + "\n\tOh I see! I've marked this as not done: \n\t\t" + task + "\n"
+                    + "_".repeat(100));
+            break;
+        }
+        case 4: {
+            System.out.println("_".repeat(100)
+                    + "\n\tThis task is already marked as not done: \n\t\t" + task + "\n"
+                    + "_".repeat(100));
+            break;
+        }
         }
     }
 
