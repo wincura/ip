@@ -60,6 +60,13 @@ public class Ui {
                 + "_".repeat(100));
     }
 
+    /**
+     * Displays the result after attempting to mark/unmark a task as done,
+     * depending on whether it is already marked/unmarked, as well as details of the task.
+     *
+     * @param i Option indicating already marked/unmarked scenarios
+     * @param task Task whose details are to be printed.
+     */
     public void marked(int i, String task) {
         switch (i) {
             case 1: {
