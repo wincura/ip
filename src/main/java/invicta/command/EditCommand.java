@@ -14,6 +14,13 @@ public class EditCommand extends Command {
         this.index = index;
     }
 
+    /**
+     * Executes command to edit tasks in respective ways.
+     *
+     * @param taskList TaskList object that handles task list operations.
+     * @param storage Storage object that handles loading and updating of files.
+     * @param ui Ui object that handles user input and displaying.
+     */
     public void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException {
         switch (this.commandType) {
             case UNMARK: {
@@ -26,7 +33,7 @@ public class EditCommand extends Command {
                         ui.marked(4, taskList.getTaskString(index));
                     } else {
                         taskList.setDone(index, false);
-                        storage.updateTaskListFile(taskList);
+                        storage.update(taskList);
                         ui.marked(3, taskList.getTaskString(index));
                     }
                 }
@@ -42,7 +49,7 @@ public class EditCommand extends Command {
                         ui.marked(2, taskList.getTaskString(index));
                     } else {
                         taskList.setDone(index,true);
-                        storage.updateTaskListFile(taskList);
+                        storage.update(taskList);
                         ui.marked(1, taskList.getTaskString(index));
                     }
                 }
@@ -57,7 +64,7 @@ public class EditCommand extends Command {
                 } else {
                     String deleteTask = taskList.getTaskString(index);
                     taskList.removeTask(index);
-                    storage.updateTaskListFile(taskList);
+                    storage.update(taskList);
                     System.out.println("_".repeat(100)
                             + "\n\tInto the trash! This task has been deleted: \n"
                             + "\t\t" + deleteTask + "\n\tYou've got " + taskList.getSize()

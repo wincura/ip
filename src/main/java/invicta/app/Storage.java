@@ -63,7 +63,7 @@ public class Storage {
                     case DEADLINE: {
                         boolean isDone = input[1].equals("1");
                         String name = input[2];
-                        LocalDateTime deadline = Parser.handleDateTimeData(input[3]);
+                        LocalDateTime deadline = Parser.parseDateTimeData(input[3]);
                         Deadline toAdd = new Deadline(name, deadline);
                         if (isDone) {
                             toAdd.setDone(true);
@@ -74,8 +74,8 @@ public class Storage {
                     case EVENT: {
                         boolean isDone = input[1].equals("1");
                         String name = input[2];
-                        LocalDateTime start = Parser.handleDateTimeData(input[3]);
-                        LocalDateTime end = Parser.handleDateTimeData(input[4]);
+                        LocalDateTime start = Parser.parseDateTimeData(input[3]);
+                        LocalDateTime end = Parser.parseDateTimeData(input[4]);
                         Event toAdd = new Event(name, start, end);
                         if (isDone) {
                             toAdd.setDone(true);
@@ -93,7 +93,7 @@ public class Storage {
     /**
      * Writes into task list file to reflect changes in task list.
      */
-    public void updateTaskListFile(TaskList taskList) {
+    public void update(TaskList taskList) {
         ArrayList<Task> updatedTaskList = taskList.getTaskList();
         try {
             FileWriter fw = new FileWriter(this.filePath);
@@ -102,17 +102,17 @@ public class Storage {
                 if (t instanceof Todo) {
                     String[] values = {Type.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
                     toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
+                    fw.write(toAdd + System.lineSeparator());
                 } else if (t instanceof Deadline) {
                     String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                             ((Deadline) t).getDeadline().format(Parser.dateAndTime)};
                     toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
+                    fw.write(toAdd + System.lineSeparator());
                 } else if (t instanceof Event) {
-                    String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+                    String[] values = {Type.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                             ((Event) t).getStart().format(Parser.dateAndTime), ((Event) t).getEnd().format(Parser.dateAndTime)};
                     toAdd = String.join(";", values);
-                    fw.write(System.lineSeparator() + toAdd);
+                    fw.write(toAdd + System.lineSeparator());
                 }
             }
             fw.close();

@@ -20,7 +20,16 @@ public class Parser {
     public static DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern(FORMAT_DATE_AND_TIME);
     public static DateTimeFormatter dateDisplay = DateTimeFormatter.ofPattern(FORMAT_DATE_DISPLAY);
 
-    public static Command handleCommandData(String[] commandString, CommandType commandType) throws InvictaException {
+    /**
+     * Returns a Command object based on command input String array provided.
+     * The subtype of Command object depends on the command input.
+     *
+     * @param commandString String to be parsed into Command Object.
+     * @param commandType Type of command for which command data is parsed.
+     * @return Command object with respective parameters based on command input string.
+     * @throws InvictaException when command input is of invalid format.
+     */
+    public static Command parseCommandData(String[] commandString, CommandType commandType) throws InvictaException {
         if (commandString.length == 0) {
             throw new InvictaException("_".repeat(100)
                     + "\n\tWhat? Did you say something? Type a message!\n"
@@ -82,7 +91,7 @@ public class Parser {
                         }
                         // pass remaining user input to extract period
                         String[] periodInput = Arrays.copyOfRange(commandString, taskNameLength + 1, commandString.length);
-                        String[] period = Parser.handlePeriodInput(periodInput);
+                        String[] period = Parser.parsePeriodData(periodInput);
                         if (period[0].isEmpty()) {
                             throw new InvictaException("_".repeat(100)
                                     + "\n\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)\n"
@@ -92,8 +101,8 @@ public class Parser {
                                     + "\n\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n"
                                     + "_".repeat(100));
                         } else {
-                            LocalDateTime eventStartTime = Parser.handleDateTimeData(period[0].toString().trim());
-                            LocalDateTime eventEndTime = Parser.handleDateTimeData(period[1].toString().trim());
+                            LocalDateTime eventStartTime = Parser.parseDateTimeData(period[0].toString().trim());
+                            LocalDateTime eventEndTime = Parser.parseDateTimeData(period[1].toString().trim());
                             Event ev = new Event(taskName.toString().trim(),
                                     eventStartTime,
                                     eventEndTime);
@@ -132,7 +141,7 @@ public class Parser {
                                     + "\n\tMissing deadline! (usage: deadline <name> /by <deadline>)\n"
                                     + "_".repeat(100));
                         } else {
-                            LocalDateTime deadlineTime = Parser.handleDateTimeData(deadlineTimeString.toString().trim());
+                            LocalDateTime deadlineTime = Parser.parseDateTimeData(deadlineTimeString.toString().trim());
                             Deadline dl = new Deadline(taskName.toString().trim(),
                                     deadlineTime);
                             return new AddCommand(dl);
@@ -167,7 +176,7 @@ public class Parser {
                             String word = commandString[i];
                             dateToSearchString.append(word).append(" ");
                         }
-                        dateToSearch = Parser.handleDateTimeData(dateToSearchString
+                        dateToSearch = Parser.parseDateTimeData(dateToSearchString
                                 .toString().trim()).toLocalDate(); // time values are disregarded
                         return new DisplayCommand(commandType, dateToSearch);
                     }
@@ -179,7 +188,7 @@ public class Parser {
                                 + "_".repeat(100));
                     } else {
                         String[] periodInput = Arrays.copyOfRange(commandString,1, commandString.length);
-                        String[] period = Parser.handlePeriodInput(periodInput);
+                        String[] period = Parser.parsePeriodData(periodInput);
                         if (period[0].isEmpty()) {
                             throw new InvictaException("_".repeat(100)
                                     + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
@@ -189,8 +198,8 @@ public class Parser {
                                     + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
                                     + "_".repeat(100));
                         }
-                        LocalDateTime periodStartTime = Parser.handleDateTimeData(period[0].trim());
-                        LocalDateTime periodEndTime = Parser.handleDateTimeData(period[1].trim());
+                        LocalDateTime periodStartTime = Parser.parseDateTimeData(period[0].trim());
+                        LocalDateTime periodEndTime = Parser.parseDateTimeData(period[1].trim());
                         return new DisplayCommand(commandType, periodStartTime, periodEndTime);
                     }
                 }
@@ -210,9 +219,9 @@ public class Parser {
      *
      * @param dateTimeString String to be parsed into LocalDateTime object.
      * @return dateTime LocalDateTime object based on format in input string.
-     * @throws DateTimeParseException Exception thrown when string is of invalid format.
+     * @throws DateTimeParseException when string is of invalid format.
      */
-    public static LocalDateTime handleDateTimeData(String dateTimeString) {
+    public static LocalDateTime parseDateTimeData(String dateTimeString) {
         if (dateTimeString.length() <= 10) {
             return LocalDate.parse(dateTimeString, dateOnly).atStartOfDay();
         } else {
@@ -227,7 +236,7 @@ public class Parser {
      * @param userInput String array to be parsed into period start and end times.
      * @return period String array containing the strings representing start and end times of a period.
      */
-    public static String[] handlePeriodInput(String[] userInput) {
+    public static String[] parsePeriodData(String[] userInput) {
         String[] period = new String[2];
         StringBuilder periodStartTimeString = new StringBuilder();
         StringBuilder periodEndTimeString = new StringBuilder();

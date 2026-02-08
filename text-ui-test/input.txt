@@ -38,14 +38,14 @@ delete 1
 delete 0
 list
 todo Buy Books
-todo Make invicta.task.Task List
+todo Make Task List
 todo Buy Birthday Gifts
 deadline Homework 1 /by 2026-02-20
 deadline Homework 2 /by 2026-02-20 23:59
 deadline Quiz 1 /by 2026-02-21 23:59
 deadline Problem Set 1 /by 2026-02-21 23:59
 event CCA Recruitment Drive /from 2026-02-19 18:30 /to 2026-03-28 20:30
-event CCA invicta.task.Event /from 2026-02-21 18:30 /to 2026-02-21 20:30
+event CCA Event /from 2026-02-21 18:30 /to 2026-02-21 20:30
 event CCA Meeting /from 2026-02-25 10:30 /to 2026-02-25 20:30
 event CCA Festival /from 2026-03-21 18:30 /to 2026-03-21 20:30
 event CCA Briefing /from 2026-03-27 18:30 /to 2026-03-27 20:30

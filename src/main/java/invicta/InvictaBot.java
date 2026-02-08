@@ -10,7 +10,9 @@ import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.command.Command;
 import invicta.command.CommandType;
+import invicta.task.Task;
 import invicta.task.TaskList;
+
 
 import java.util.ArrayList;
 
@@ -27,21 +29,21 @@ public class InvictaBot {
     private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
 
     // More OOP Objects
-    private Ui invictaUi;
+    private Ui invictaUi;;
     private Storage invictaStorage;
     private TaskList invictaTasks;
 
     public InvictaBot(String filePath) {
         try {
-            invictaUi = new Ui();
-            invictaStorage = new Storage(TASK_LIST_FILE_PATH);
+            this.invictaUi = new Ui();
+            this.invictaStorage = new Storage(TASK_LIST_FILE_PATH);
             invictaTasks = new TaskList(invictaStorage.load());
         } catch (IOException e) {
             invictaUi.showLoadingError(e);
-            invictaTasks = new TaskList(new ArrayList<>());
+            invictaTasks = new TaskList();
         } catch (InvictaException e) {
             invictaUi.showException(e);
-            invictaTasks = new TaskList(new ArrayList<>());
+            invictaTasks = new TaskList();
         }
     }
 
@@ -56,7 +58,7 @@ public class InvictaBot {
             try {
                 String[] commandString = invictaUi.readCommand(s);
                 CommandType commandType = CommandType.fromString(commandString[0]);
-                Command c = Parser.handleCommandData(commandString, commandType);
+                Command c = Parser.parseCommandData(commandString, commandType);
                 c.execute(invictaTasks, invictaStorage, invictaUi);
                 isExit = Command.isExit(c);
             }
@@ -75,6 +77,7 @@ public class InvictaBot {
     }
 
     public static void main(String[] args) {
-        new InvictaBot(TASK_LIST_FILE_PATH).run();
+        InvictaBot invicta = new InvictaBot(TASK_LIST_FILE_PATH);
+        invicta.run();
     }
 }

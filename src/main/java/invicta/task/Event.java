@@ -28,4 +28,17 @@ public class Event extends Task {
     public String toString() {
         return "[E]" + super.toString() + " (from: " + this.start.format(dateAndTime) + " to: " + this.end.format(dateAndTime) + ")";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Event event)) {
+            return false;
+        }
+
+        return isDone == event.isDone && description.equals(event.description)
+                && start.equals(event.start) && end.equals(event.end);
+    }
 }

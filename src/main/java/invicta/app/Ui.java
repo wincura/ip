@@ -184,6 +184,12 @@ public class Ui {
         }
     }
 
+    /**
+     * Reads user input from scanner into a string array.
+     *
+     * @param s scanner object with raw user input.
+     * @return userInput string array containing user input split by spaces.
+     */
     public String[] readCommand(Scanner s) throws InvictaException {
         String raw = s.nextLine().trim();
         String[] userInput = raw.split(" ");
@@ -199,7 +205,7 @@ public class Ui {
     /**
      * Displays error message for taskbot specific errors occurring during operations.
      */
-    public void showException (InvictaException e) {
+    public void showException (Exception e) {
         System.out.println(e.getMessage());
     }
 
