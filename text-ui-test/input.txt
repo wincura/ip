@@ -38,7 +38,7 @@ delete 1
 delete 0
 list
 todo Buy Books
-todo Make invicta.task.Task List
+todo Make Task List
 todo Buy Birthday Gifts
 deadline Homework 1 /by 2026-02-20
 deadline Homework 2 /by 2026-02-20 23:59

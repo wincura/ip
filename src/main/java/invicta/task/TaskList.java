@@ -7,8 +7,11 @@ import java.util.ArrayList;
 public class TaskList {
     private ArrayList<Task> taskList;
 
-    public TaskList(ArrayList<Task> storage) {
-        this.taskList = new ArrayList<>();
+    public TaskList(ArrayList<Task> taskList) {
+        this.taskList = new ArrayList<Task>();
+        for (Task t : taskList) {
+            taskList.add(t);
+        }
     }
 
     public boolean isEmpty() {

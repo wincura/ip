@@ -20,6 +20,15 @@ public class Parser {
     public static DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern(FORMAT_DATE_AND_TIME);
     public static DateTimeFormatter dateDisplay = DateTimeFormatter.ofPattern(FORMAT_DATE_DISPLAY);
 
+    /**
+     * Returns a Command object based on command input String array provided.
+     * The subtype of Command object depends on the command input.
+     *
+     * @param commandString String to be parsed into Command Object.
+     * @param commandType Type of command for which command data is parsed.
+     * @return Command object with respective parameters based on command input string.
+     * @throws InvictaException when command input is of invalid format.
+     */
     public static Command parseCommandData(String[] commandString, CommandType commandType) throws InvictaException {
         if (commandString.length == 0) {
             throw new InvictaException("_".repeat(100)
@@ -210,7 +219,7 @@ public class Parser {
      *
      * @param dateTimeString String to be parsed into LocalDateTime object.
      * @return dateTime LocalDateTime object based on format in input string.
-     * @throws DateTimeParseException Exception thrown when string is of invalid format.
+     * @throws DateTimeParseException when string is of invalid format.
      */
     public static LocalDateTime parseDateTimeData(String dateTimeString) {
         if (dateTimeString.length() <= 10) {

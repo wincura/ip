@@ -109,7 +109,7 @@ public class Storage {
                     toAdd = String.join(";", values);
                     fw.write(System.lineSeparator() + toAdd);
                 } else if (t instanceof Event) {
-                    String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+                    String[] values = {Type.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                             ((Event) t).getStart().format(Parser.dateAndTime), ((Event) t).getEnd().format(Parser.dateAndTime)};
                     toAdd = String.join(";", values);
                     fw.write(System.lineSeparator() + toAdd);

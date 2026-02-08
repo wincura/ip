@@ -12,6 +12,13 @@ public class AddCommand extends Command {
         this.toAdd = toAdd;
     }
 
+    /**
+     * Executes command to add tasks of respective types.
+     *
+     * @param taskList TaskList object that handles task list operations.
+     * @param storage Storage object that handles loading and updating of files.
+     * @param ui Ui object that handles user input and displaying.
+     */
     public void execute(TaskList taskList, Storage storage, Ui ui) {
         taskList.addTask(toAdd);
         storage.update(taskList);

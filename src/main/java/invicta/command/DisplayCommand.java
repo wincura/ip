@@ -31,6 +31,13 @@ public class DisplayCommand extends Command {
         this.periodEndTime = periodEndTime;
     }
 
+    /**
+     * Executes display-related command based on command type.
+     *
+     * @param taskList TaskList object that handles task list operations.
+     * @param storage Storage object that handles loading and updating of files.
+     * @param ui Ui object that handles user input and displaying.
+     */
     public void execute(TaskList taskList, Storage storage, Ui ui) {
         switch (this.commandType) {
             case HELP: {

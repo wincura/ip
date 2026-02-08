@@ -10,6 +10,7 @@ import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.command.Command;
 import invicta.command.CommandType;
+import invicta.task.Task;
 import invicta.task.TaskList;
 
 import java.util.ArrayList;
@@ -33,15 +34,19 @@ public class InvictaBot {
 
     public InvictaBot(String filePath) {
         try {
-            invictaUi = new Ui();
             invictaStorage = new Storage(TASK_LIST_FILE_PATH);
-            invictaTasks = new TaskList(invictaStorage.load());
+            ArrayList<Task> loaded = new ArrayList<>(invictaStorage.load());
+            invictaTasks = new TaskList(new ArrayList<Task>());
+            for (Task t : loaded) {
+                invictaTasks.addTask(t);
+            }
+            invictaUi = new Ui();
         } catch (IOException e) {
             invictaUi.showLoadingError(e);
-            invictaTasks = new TaskList(new ArrayList<>());
+            invictaTasks = new TaskList(new ArrayList<Task>());
         } catch (InvictaException e) {
             invictaUi.showException(e);
-            invictaTasks = new TaskList(new ArrayList<>());
+            invictaTasks = new TaskList(new ArrayList<Task>());
         }
     }
 

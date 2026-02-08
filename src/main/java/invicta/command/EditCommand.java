@@ -14,6 +14,13 @@ public class EditCommand extends Command {
         this.index = index;
     }
 
+    /**
+     * Executes command to edit tasks in respective ways.
+     *
+     * @param taskList TaskList object that handles task list operations.
+     * @param storage Storage object that handles loading and updating of files.
+     * @param ui Ui object that handles user input and displaying.
+     */
     public void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException {
         switch (this.commandType) {
             case UNMARK: {
