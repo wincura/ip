@@ -5,6 +5,10 @@ import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.task.TaskList;
 
+/**
+ * Represents a generic command input by user to InvictaBot.
+ * Serves as base for specific command types.
+ */
 public abstract class Command {
     public abstract void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException;
 

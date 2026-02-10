@@ -5,6 +5,9 @@ import invicta.app.Ui;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
+/**
+ * Represents a command that adds tasks to task list.
+ */
 public class AddCommand extends Command {
     private Task toAdd;
 

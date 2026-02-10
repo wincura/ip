@@ -3,6 +3,9 @@ package invicta.task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task with a set deadline.
+ */
 public class Deadline extends Task {
     private LocalDateTime deadlineTime;
     private DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern("MMM dd yyyy (EEE) hh:mm a ");

@@ -23,7 +23,10 @@ import java.util.Scanner;
 // Imports to handle time data
 import java.time.format.DateTimeParseException;
 
-
+/**
+ * Represents the main entry point of InvictaBot.
+ * Coordinates user interactions, command parsing and command execution.
+ */
 public class InvictaBot {
     // data structures and file paths to be used by
     private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
@@ -47,6 +50,11 @@ public class InvictaBot {
         }
     }
 
+    /**
+     * Runs the app.
+     * Accepts user input for username, then user input for commands.
+     * Parses the commands based on command type, and executes the command.
+     */
     public void run() {
         Scanner s = new Scanner(System.in);
         boolean isExit = false;
@@ -76,6 +84,9 @@ public class InvictaBot {
         }
     }
 
+    /**
+     * Main method of InvictaBot and executes the run method.
+     */
     public static void main(String[] args) {
         InvictaBot invicta = new InvictaBot(TASK_LIST_FILE_PATH);
         invicta.run();

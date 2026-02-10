@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Handles user interactions with InvictaBot.
+ */
 public class Ui {
     private String username;
 
@@ -25,7 +28,7 @@ public class Ui {
     }
 
     /**
-     * Displays chatbot logo.
+     * Displays InvictaBot logo.
      */
     public void logo() {
         // Logo below generated with the help of an external tool from https://patorjk.com/software/taag/
@@ -60,6 +63,13 @@ public class Ui {
                 + "_".repeat(100));
     }
 
+    /**
+     * Displays the result after attempting to mark/unmark a task as done,
+     * depending on whether it is already marked/unmarked, as well as details of the task.
+     *
+     * @param i Option indicating already marked/unmarked scenarios
+     * @param task Task whose details are to be printed.
+     */
     public void marked(int i, String task) {
         switch (i) {
             case 1: {

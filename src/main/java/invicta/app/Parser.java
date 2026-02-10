@@ -11,6 +11,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
+/**
+ * Handles parsing of user input to return commands or date time data
+ */
 public class Parser {
     // date time formats and formatters to be used by the chatbot
     public static final String FORMAT_DATE_ONLY = "yyyy-MM-dd";
@@ -230,7 +233,8 @@ public class Parser {
     }
 
     /**
-     * Iterates through user input to extract strings representing start and end times of a period.
+     * Returns the start and end times of a period in a string array by
+     * iterating through user input to extract strings representing start and end times of a period.
      * If more user arguments in input than expected, they are disregarded.
      *
      * @param userInput String array to be parsed into period start and end times.

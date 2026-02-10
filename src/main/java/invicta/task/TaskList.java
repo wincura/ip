@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * Represents a collection of tasks.
+ * Handles adding, modifying, removing and querying of tasks.
+ */
 public class TaskList {
     private ArrayList<Task> taskList;
 
@@ -47,6 +51,14 @@ public class TaskList {
         this.taskList.get(i).setDone(newStatus);
     }
 
+    /**
+     * Returns a collection of tasks that fall on the date.
+     * Includes Deadline tasks with equal deadline date to the given date,
+     * and any Event tasks whose duration touches the given date.
+     *
+     * @param dateToSearch date to be searched.
+     * @return Collection of tasks that fall on the date.
+     */
     public ArrayList<Task> getOnDateTasks(LocalDate dateToSearch) {
         ArrayList<Task> foundTasks = new ArrayList<>();
         // add the tasks to temp ArrayList of Tasks to be displayed
@@ -69,6 +81,15 @@ public class TaskList {
         return foundTasks;
     }
 
+    /**
+     * Returns a collection of tasks that fall within the given period.
+     * Includes Deadline tasks with deadline date within the given period,
+     * and any Event tasks whose duration touches the given period.
+     *
+     * @param periodStartTime start time of period to be searched.
+     * @param periodEndTime end time of period to be searched.
+     * @return Collection of tasks that fall on the date.
+     */
     public ArrayList<Task> getInPeriodTasks(LocalDateTime periodStartTime, LocalDateTime periodEndTime) {
         ArrayList<Task> foundTasks = new ArrayList<>();
         // add the tasks to temp ArrayList of Tasks to be displayed
