@@ -41,8 +41,10 @@ public class StorageTest {
         baseTaskList.addTask(new Deadline("Placeholder 2", LocalDateTime.of(
                 LocalDate.of(2026, Month.MARCH, 28), LocalTime.of(20, 30))));
         baseTaskList.addTask(new Event("Placeholder 3",
-                LocalDateTime.of(LocalDate.of(2026, Month.MARCH, 28), LocalTime.of(20, 30)),
-                LocalDateTime.of(LocalDate.of(2026, Month.MARCH, 28), LocalTime.of(22, 30))));
+                LocalDateTime.of(
+                        LocalDate.of(2026, Month.MARCH, 28), LocalTime.of(20, 30)),
+                LocalDateTime.of(
+                        LocalDate.of(2026, Month.MARCH, 28), LocalTime.of(22, 30))));
         testLoadStorage = null;
         testUpdateStorage = null;
         try {

@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Deadline extends Task {
-    private LocalDateTime deadlineTime;
-    private DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern("MMM dd yyyy (EEE) hh:mm a ");
+    private final LocalDateTime deadlineTime;
+    private final DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern("MMM dd yyyy (EEE) hh:mm a ");
 
     public Deadline(String description, LocalDateTime deadline) {
         super(description);
@@ -21,7 +21,8 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + this.deadlineTime.format(dateAndTime) + ")";
+        return "[D]" + super.toString()
+                + " (by: " + this.deadlineTime.format(dateAndTime) + ")";
     }
 
     @Override

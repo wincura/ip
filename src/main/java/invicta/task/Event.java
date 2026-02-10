@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Event extends Task {
-    private LocalDateTime start;
-    private LocalDateTime end;
-    private DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern("MMM dd yyyy (EEE) hh:mm a ");
+    private final LocalDateTime start;
+    private final LocalDateTime end;
+    private final DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern("MMM dd yyyy (EEE) hh:mm a ");
 
     public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
@@ -27,7 +27,9 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + this.start.format(dateAndTime) + " to: " + this.end.format(dateAndTime) + ")";
+        return "[E]" + super.toString()
+                + " (from: " + this.start.format(dateAndTime)
+                + " to: " + this.end.format(dateAndTime) + ")";
     }
 
     @Override

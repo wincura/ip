@@ -151,7 +151,8 @@ public class Ui {
         } else {
             System.out.println("_".repeat(100)
                     + "\n\tHere is a list of your tasks that fall within "
-                    + periodStartTime.format(Parser.dateDisplay) + " to " + periodEndTime.format(Parser.dateDisplay) + ": ");
+                    + periodStartTime.format(Parser.dateDisplay) + " to "
+                    + periodEndTime.format(Parser.dateDisplay) + ": ");
             for (Task t : taskList) {
                 number += 1;
                 System.out.println("\t" + number + ". " + t.toString());
@@ -181,7 +182,8 @@ public class Ui {
                 } else {
                     // Exit loop and continue to chatbot program
                     System.out.println("_".repeat(100)
-                            + "\n\tIt's a pleasure, " + this.getUsername() + "! What can I do you for?\n"
+                            + "\n\tIt's a pleasure, " + this.getUsername()
+                            + "! What can I do you for?\n"
                             + "_".repeat(100));
                     break;
                 }

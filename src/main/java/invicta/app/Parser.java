@@ -85,7 +85,8 @@ public class Parser {
             case EVENT: {
                 if (commandString.length < 2) {
                     throw new InvictaException("_".repeat(100)
-                            + "\n\tMissing task name, start time and end time! (usage: event <name> /from <start> /to <end>)\n"
+                            + "\n\tMissing task name, start time and end time! "
+                            + "(usage: event <name> /from <start> /to <end>)\n"
                             + "_".repeat(100));
                 } else {
                     StringBuilder taskName = new StringBuilder();
