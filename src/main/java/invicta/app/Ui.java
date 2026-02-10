@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Handles user interactions with InvictaBot.
+ */
 public class Ui {
     private String username;
 
@@ -25,7 +28,7 @@ public class Ui {
     }
 
     /**
-     * Displays chatbot logo.
+     * Displays InvictaBot logo.
      */
     public void logo() {
         // Logo below generated with the help of an external tool from https://patorjk.com/software/taag/

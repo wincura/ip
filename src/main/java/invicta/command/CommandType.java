@@ -2,6 +2,9 @@ package invicta.command;
 
 import invicta.app.InvictaException;
 
+/**
+ * Represents possible types of commands.
+ */
 public enum CommandType {
     BYE("bye"),
     LIST("list"),

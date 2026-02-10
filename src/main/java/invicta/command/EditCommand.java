@@ -5,6 +5,9 @@ import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.task.TaskList;
 
+/**
+ * Represents a command that makes changes to tasks in task list.
+ */
 public class EditCommand extends Command {
     private CommandType commandType;
     private int index;

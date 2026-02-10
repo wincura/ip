@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Handles loading and updating of task list files.
+ */
 public class Storage {
     private String filePath;
     private String dirPath;

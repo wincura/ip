@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+/**
+ * Represents a command that displays information to user.
+ */
 public class DisplayCommand extends Command {
     private CommandType commandType;
     private LocalDate dateToSearch;

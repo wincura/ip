@@ -11,6 +11,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
+/**
+ * Handles parsing of user input to return commands or date time data
+ */
 public class Parser {
     // date time formats and formatters to be used by the chatbot
     public static final String FORMAT_DATE_ONLY = "yyyy-MM-dd";

@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * Represents a collection of tasks.
+ * Handles adding, modifying, removing and querying of tasks.
+ */
 public class TaskList {
     private ArrayList<Task> taskList;
 

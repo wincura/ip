@@ -3,6 +3,9 @@ package invicta.task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task with a set start and end time.
+ */
 public class Event extends Task {
     private LocalDateTime start;
     private LocalDateTime end;

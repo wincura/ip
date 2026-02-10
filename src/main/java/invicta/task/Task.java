@@ -1,5 +1,9 @@
 package invicta.task;
 
+/**
+ * Represents a generic task in task list of chatbot.
+ * Serves as base for specific command types.
+ */
 public class Task {
     protected String description;
     protected boolean isDone;

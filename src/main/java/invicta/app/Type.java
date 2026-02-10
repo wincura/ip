@@ -1,5 +1,8 @@
 package invicta.app;
 
+/**
+ * Represents possible types of tasks.
+ */
 public enum Type {
     TODO("T"),
     DEADLINE("D"),
