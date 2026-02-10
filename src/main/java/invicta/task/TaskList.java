@@ -1,8 +1,11 @@
 package invicta.task;
 
+// Imports to use data structures
+import java.util.ArrayList;
+
+// Imports to handle time data
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 /**
  * Represents a collection of tasks.

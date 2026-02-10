@@ -1,6 +1,6 @@
 package invicta.command;
 
-import invicta.app.InvictaException;
+// Imports to use invicta app components and task list to execute operations
 import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.task.TaskList;

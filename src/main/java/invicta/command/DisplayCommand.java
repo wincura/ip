@@ -1,14 +1,18 @@
 package invicta.command;
 
-import invicta.app.InvictaException;
+// Imports to use data structures
+import java.util.ArrayList;
+
+// Imports to handle time data
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+// Imports to use invicta app components and task list to execute operations
 import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
-import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.util.ArrayList;
 
 /**
  * Represents a command that displays information to user.

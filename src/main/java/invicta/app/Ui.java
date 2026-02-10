@@ -1,13 +1,20 @@
 package invicta.app;
 
+// Imports to handle user input
+import java.util.Scanner;
+import java.io.IOException;
+
+// Imports to use data structures
+import java.util.ArrayList;
+
+// Imports to handle time data
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+// Imports to use task and task list data for display
 import invicta.task.Task;
 import invicta.task.TaskList;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * Handles user interactions with InvictaBot.
@@ -72,30 +79,30 @@ public class Ui {
      */
     public void marked(int i, String task) {
         switch (i) {
-            case 1: {
-                System.out.println("_".repeat(100)
-                        + "\n\tGreat! I've marked this as done:  \n\t\t" + task + "\n"
-                        + "_".repeat(100));
-                break;
-            }
-            case 2: {
-                System.out.println("_".repeat(100)
-                        + "\n\tThis task is already marked as done: " + "\n\t\t" + task + "\n"
-                        + "_".repeat(100));
-                break;
-            }
-            case 3: {
-                System.out.println("_".repeat(100)
-                        + "\n\tOh I see! I've marked this as not done: \n\t\t" + task + "\n"
-                        + "_".repeat(100));
-                break;
-            }
-            case 4: {
-                System.out.println("_".repeat(100)
-                        + "\n\tThis task is already marked as not done: \n\t\t" + task + "\n"
-                        + "_".repeat(100));
-                break;
-            }
+        case 1: {
+            System.out.println("_".repeat(100)
+                    + "\n\tGreat! I've marked this as done:  \n\t\t" + task + "\n"
+                    + "_".repeat(100));
+            break;
+        }
+        case 2: {
+            System.out.println("_".repeat(100)
+                    + "\n\tThis task is already marked as done: " + "\n\t\t" + task + "\n"
+                    + "_".repeat(100));
+            break;
+        }
+        case 3: {
+            System.out.println("_".repeat(100)
+                    + "\n\tOh I see! I've marked this as not done: \n\t\t" + task + "\n"
+                    + "_".repeat(100));
+            break;
+        }
+        case 4: {
+            System.out.println("_".repeat(100)
+                    + "\n\tThis task is already marked as not done: \n\t\t" + task + "\n"
+                    + "_".repeat(100));
+            break;
+        }
         }
     }
 
@@ -154,7 +161,8 @@ public class Ui {
         } else {
             System.out.println("_".repeat(100)
                     + "\n\tHere is a list of your tasks that fall within "
-                    + periodStartTime.format(Parser.dateDisplay) + " to " + periodEndTime.format(Parser.dateDisplay) + ": ");
+                    + periodStartTime.format(Parser.dateDisplay) + " to "
+                    + periodEndTime.format(Parser.dateDisplay) + ": ");
             for (Task t : taskList) {
                 number += 1;
                 System.out.println("\t" + number + ". " + t.toString());
@@ -184,7 +192,8 @@ public class Ui {
                 } else {
                     // Exit loop and continue to chatbot program
                     System.out.println("_".repeat(100)
-                            + "\n\tIt's a pleasure, " + this.getUsername() + "! What can I do you for?\n"
+                            + "\n\tIt's a pleasure, " + this.getUsername()
+                            + "! What can I do you for?\n"
                             + "_".repeat(100));
                     break;
                 }

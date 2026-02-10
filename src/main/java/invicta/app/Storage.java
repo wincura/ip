@@ -1,14 +1,21 @@
 package invicta.app;
 
-import invicta.task.*;
-
+// Imports to handle file read and write, including date time data
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Paths;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.IOException;
+
+// Imports to use task and task list data for storage
+import invicta.task.Deadline;
+import invicta.task.Event;
+import invicta.task.Task;
+import invicta.task.TaskList;
+import invicta.task.Todo;
+
 
 /**
  * Handles loading and updating of task list files.
@@ -53,39 +60,39 @@ public class Storage {
                 String[] input = s.nextLine().split(";");
                 Type type = Type.fromString(input[0]);
                 switch (type) {
-                    case TODO: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        Todo toAdd = new Todo(name);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
+                case TODO: {
+                    boolean isDone = input[1].equals("1");
+                    String name = input[2];
+                    Todo toAdd = new Todo(name);
+                    if (isDone) {
+                        toAdd.setDone(true);
                     }
-                    case DEADLINE: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        LocalDateTime deadline = Parser.parseDateTimeData(input[3]);
-                        Deadline toAdd = new Deadline(name, deadline);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
+                    loaded.add(toAdd);
+                    break;
+                }
+                case DEADLINE: {
+                    boolean isDone = input[1].equals("1");
+                    String name = input[2];
+                    LocalDateTime deadline = Parser.parseDateTimeData(input[3]);
+                    Deadline toAdd = new Deadline(name, deadline);
+                    if (isDone) {
+                        toAdd.setDone(true);
                     }
-                    case EVENT: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        LocalDateTime start = Parser.parseDateTimeData(input[3]);
-                        LocalDateTime end = Parser.parseDateTimeData(input[4]);
-                        Event toAdd = new Event(name, start, end);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
+                    loaded.add(toAdd);
+                    break;
+                }
+                case EVENT: {
+                    boolean isDone = input[1].equals("1");
+                    String name = input[2];
+                    LocalDateTime start = Parser.parseDateTimeData(input[3]);
+                    LocalDateTime end = Parser.parseDateTimeData(input[4]);
+                    Event toAdd = new Event(name, start, end);
+                    if (isDone) {
+                        toAdd.setDone(true);
                     }
+                    loaded.add(toAdd);
+                    break;
+                }
                 }
             }
             System.out.println("Task list file data successfully loaded into Invicta.\n\n\n");
@@ -113,7 +120,8 @@ public class Storage {
                     fw.write(toAdd + System.lineSeparator());
                 } else if (t instanceof Event) {
                     String[] values = {Type.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                            ((Event) t).getStart().format(Parser.dateAndTime), ((Event) t).getEnd().format(Parser.dateAndTime)};
+                            ((Event) t).getStart().format(Parser.dateAndTime),
+                            ((Event) t).getEnd().format(Parser.dateAndTime)};
                     toAdd = String.join(";", values);
                     fw.write(toAdd + System.lineSeparator());
                 }
