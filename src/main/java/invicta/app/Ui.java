@@ -173,6 +173,24 @@ public class Ui {
     }
 
     /**
+     * Displays the tasks that contains search string in their description.
+     *
+     * @param taskList Provided list of found tasks to be printed.
+     * @param stringToSearch String used to find the tasks to be printed.
+     */
+    public void printFound(ArrayList<Task> taskList, String stringToSearch) {
+        int number = 0;
+        System.out.println("_".repeat(100)
+                + "\n\tHere is a list of your tasks that contains '"
+                + stringToSearch + "' : ");
+        for (Task t : taskList) {
+            number += 1;
+            System.out.println("\t" + number + ". " + t.toString());
+        }
+        System.out.println("_".repeat(100));
+    }
+
+    /**
      * Reads user input for username and loop until valid input.
      *
      * @param s Scanner used to read user input for username.

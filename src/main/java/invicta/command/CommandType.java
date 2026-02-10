@@ -17,6 +17,7 @@ public enum CommandType {
     EVENT("event"),
     DAY("day"),
     PERIOD("period"),
+    FIND("find"),
     HELP("help");
 
     private final String word;

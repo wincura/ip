@@ -55,6 +55,22 @@ public class TaskList {
     }
 
     /**
+     * Returns a collection of tasks with the queried string in the description.
+     *
+     * @param searchString keyword to query matching strings
+     * @return collection of tasks containing search string
+     */
+    public ArrayList<Task> getMatchingTasks(String searchString) {
+        ArrayList<Task> foundTasks = new ArrayList<>();
+        for (Task t : this.taskList) {
+            if (t.getDescription().toLowerCase().contains(searchString.toLowerCase())) {
+                foundTasks.add(t);
+            }
+        }
+        return foundTasks;
+    }
+
+    /**
      * Returns a collection of tasks that fall on the date.
      * Includes Deadline tasks with equal deadline date to the given date,
      * and any Event tasks whose duration touches the given date.
