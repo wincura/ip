@@ -17,16 +17,6 @@ import invicta.command.Command;
 import invicta.command.CommandType;
 import invicta.task.TaskList;
 
-
-import java.util.ArrayList;
-
-// Imports to handle files and user input
-import java.io.IOException;
-import java.util.Scanner;
-
-// Imports to handle time data
-import java.time.format.DateTimeParseException;
-
 /**
  * Represents the main entry point of InvictaBot.
  * Coordinates user interactions, command parsing and command execution.
@@ -36,11 +26,11 @@ public class InvictaBot {
     private static final String TASK_LIST_FILE_PATH = "./data/tasklist.txt";
 
     // More OOP Objects
-    private Ui invictaUi;;
+    private Ui invictaUi;
     private Storage invictaStorage;
     private TaskList invictaTasks;
 
-    public InvictaBot(String filePath) {
+    public InvictaBot() {
         try {
             this.invictaUi = new Ui();
             this.invictaStorage = new Storage(TASK_LIST_FILE_PATH);
@@ -74,16 +64,8 @@ public class InvictaBot {
                 c.execute(invictaTasks, invictaStorage, invictaUi);
                 isExit = Command.isExit(c);
             }
-            catch (NumberFormatException e) {
-                System.out.println("_".repeat(100)
-                        + "\n\tAn index is a number, so go put one! (usage: mark/unmark <int as index>)\n"
-                        + "_".repeat(100));
-            } catch (DateTimeParseException e) {
-                System.out.println("_".repeat(100)
-                        + "\n\tInvalid date time format! Type 'help' to view acceptable formats.\n"
-                        + "_".repeat(100));
-            } catch (InvictaException e) {
-                System.out.println(e.getMessage());
+            catch (Exception e) {
+                invictaUi.showException(e);
             }
         }
     }
@@ -92,7 +74,7 @@ public class InvictaBot {
      * Main method of InvictaBot and executes the run method.
      */
     public static void main(String[] args) {
-        InvictaBot invicta = new InvictaBot(TASK_LIST_FILE_PATH);
+        InvictaBot invicta = new InvictaBot();
         invicta.run();
     }
 }

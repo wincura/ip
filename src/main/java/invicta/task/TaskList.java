@@ -15,7 +15,7 @@ public class TaskList {
     private ArrayList<Task> taskList;
 
     public TaskList() {
-        this.taskList = new ArrayList<Task>();
+        this.taskList = new ArrayList<>();
     }
 
     public TaskList(ArrayList<Task> loaded) {
@@ -87,12 +87,15 @@ public class TaskList {
                     foundTasks.add(t);
                 }
             }
-            if (t instanceof Event) {
+            if (t instanceof Event e) {
+                LocalDate startDate = e.getStart().toLocalDate();
+                LocalDate endDate = e.getEnd().toLocalDate();
                 // using inclusive checks ensures not missing events that fall on the start and end dates
-                if ((((Event) t).getStart().toLocalDate().isEqual(dateToSearch)
-                        || ((Event) t).getStart().toLocalDate().isBefore(dateToSearch))
-                        && (((Event) t).getEnd().toLocalDate().isEqual(dateToSearch)
-                        || ((Event) t).getEnd().toLocalDate().isAfter(dateToSearch))) {
+                boolean startsOnOrBeforeDate = startDate.isEqual(dateToSearch)
+                        || startDate.isBefore(dateToSearch);
+                boolean endsOnOrAfterDate = endDate.isEqual(dateToSearch)
+                        || endDate.isAfter(dateToSearch);
+                if (startsOnOrBeforeDate && endsOnOrAfterDate) {
                     foundTasks.add(t);
                 }
             }
@@ -111,24 +114,28 @@ public class TaskList {
      */
     public ArrayList<Task> getInPeriodTasks(LocalDateTime periodStartTime, LocalDateTime periodEndTime) {
         ArrayList<Task> foundTasks = new ArrayList<>();
+
         // add the tasks to temp ArrayList of Tasks to be displayed
         for (Task t : this.taskList) {
-            if (t instanceof Deadline) {
-                if ((((Deadline) t).getDeadline().isEqual(periodStartTime)
-                        || ((Deadline) t).getDeadline().isAfter(periodStartTime))
-                        && ((((Deadline) t).getDeadline().isEqual(periodEndTime)
-                        || ((Deadline) t).getDeadline().isBefore(periodEndTime)))) {
+            if (t instanceof Deadline d) {
+                LocalDateTime deadline = d.getDeadline();
+                boolean afterOrOnStart = deadline.isEqual(periodStartTime)
+                        || deadline.isAfter(periodStartTime);
+                boolean beforeOrOnEnd = deadline.isEqual(periodEndTime)
+                        || deadline.isBefore(periodEndTime);
+                if (afterOrOnStart && beforeOrOnEnd) {
                     foundTasks.add(t);
                 }
             }
-            if (t instanceof Event) {
+            if (t instanceof Event e) {
+                LocalDateTime start = e.getStart();
+                LocalDateTime end = e.getEnd();
                 // using inclusive checks and start time to check ensures not missing events that extend beyond period
-                if ((((Event) t).getStart().isEqual(periodStartTime) || ((Event) t).getEnd().isEqual(periodStartTime))
-                        || (((Event) t).getStart().isEqual(periodEndTime) || ((Event) t).getEnd().isEqual(periodEndTime))
-                        || (((Event) t).getEnd().isAfter(periodStartTime)) && ((Event) t).getStart().isBefore(periodStartTime)
-                        || (((Event) t).getStart().isAfter(periodStartTime)) && ((Event) t).getEnd().isBefore(periodEndTime)
-                        || (((Event) t).getStart().isBefore(periodEndTime)) && ((Event) t).getEnd().isAfter(periodEndTime)
-                        || (((Event) t).getStart().isBefore(periodStartTime)) && ((Event) t).getEnd().isAfter(periodEndTime)) {
+                boolean startsBeforeOrOnPeriodEnd =
+                        start.isBefore(periodEndTime) || start.isEqual(periodEndTime);
+                boolean endsAfterOrOnPeriodStart =
+                        end.isAfter(periodStartTime) || end.isEqual(periodStartTime);
+                if (startsBeforeOrOnPeriodEnd && endsAfterOrOnPeriodStart) {
                     foundTasks.add(t);
                 }
             }
@@ -140,10 +147,6 @@ public class TaskList {
      * Prints the details of each task in provided Task List.
      */
     public void printTasks() {
-        int number = 0;
-        for (Task t : this.taskList) {
-            number += 1;
-            System.out.println("\t" + number + ". " + t.toString());
-        }
+
     }
 }

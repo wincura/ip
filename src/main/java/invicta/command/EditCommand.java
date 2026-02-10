@@ -29,9 +29,9 @@ public class EditCommand extends Command {
         switch (this.commandType) {
             case UNMARK: {
                 if (index < 0 | index > taskList.getSize() - 1) {
-                    throw new InvictaException("_".repeat(100)
+                    throw new InvictaException(Ui.SEPARATOR
                             + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
-                            + "_".repeat(100));
+                            + Ui.SEPARATOR);
                 } else {
                     if (!taskList.getDone(index)) {
                         ui.marked(4, taskList.getTaskString(index));
@@ -45,9 +45,9 @@ public class EditCommand extends Command {
             }
             case MARK: {
                 if (index < 0 | index > taskList.getSize() - 1) {
-                    throw new InvictaException("_".repeat(100)
+                    throw new InvictaException(Ui.SEPARATOR
                             + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
-                            + "_".repeat(100));
+                            + Ui.SEPARATOR);
                 } else {
                     if (taskList.getDone(index)) {
                         ui.marked(2, taskList.getTaskString(index));
@@ -61,19 +61,19 @@ public class EditCommand extends Command {
             }
             case DELETE: {
                 if (index < 0 | index > taskList.getSize() - 1) {
-                    throw new InvictaException("_".repeat(100)
+                    throw new InvictaException(Ui.SEPARATOR
                             + "\n\tYou want me to do what? "
                             + "Put a valid index! (check task list using 'list' command)\n"
-                            + "_".repeat(100));
+                            + Ui.SEPARATOR);
                 } else {
                     String deleteTask = taskList.getTaskString(index);
                     taskList.removeTask(index);
                     storage.update(taskList);
-                    System.out.println("_".repeat(100)
+                    System.out.println(Ui.SEPARATOR
                             + "\n\tInto the trash! This task has been deleted: \n"
                             + "\t\t" + deleteTask + "\n\tYou've got " + taskList.getSize()
                             + " tasks in your list now.\n"
-                            + "_".repeat(100));
+                            + Ui.SEPARATOR);
                 }
                 break;
             }

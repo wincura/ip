@@ -53,80 +53,80 @@ public class DisplayCommand extends Command {
      */
     public void execute(TaskList taskList, Storage storage, Ui ui) {
         switch (this.commandType) {
-            case HELP: {
-                System.out.println("_".repeat(100)
-                        + "\n\tList of commands in InvictaBot:\n"
-                        + "\tbye - exit app\n"
-                        + "\tlist - display task list\n"
-                        + "\tdelete - delete the task\n"
-                        + "\tmark <index> - mark task as done\n"
-                        + "\tunmark <index> - mask task as not done\n"
-                        + "\ttodo <name> - add a to-do task\n"
-                        + "\tdeadline <name> /by <deadline> - add a deadline task\n"
-                        + "\tevent <name> /from <start> /to <end> - add an event\n"
-                        + "\tfind <search string> - display tasks containing search string in task descriptions\n"
-                        + "\tday <end> - display tasks on date\n"
-                        + "\tperiod /from <start> /to <end> - display tasks within period\n\n"
-                        + "\tList of available date time formats:\n"
-                        + "\tyyyy-MM-dd\n"
-                        + "\tyyyy-MM-dd HH:mm\n"
-                        + "_".repeat(100));
-                break;
+        case HELP: {
+            System.out.println(Ui.SEPARATOR
+                    + "\n\tList of commands in InvictaBot:\n"
+                    + "\tbye - exit app\n"
+                    + "\tlist - display task list\n"
+                    + "\tdelete - delete the task\n"
+                    + "\tmark <index> - mark task as done\n"
+                    + "\tunmark <index> - mask task as not done\n"
+                    + "\ttodo <name> - add a to-do task\n"
+                    + "\tdeadline <name> /by <deadline> - add a deadline task\n"
+                    + "\tevent <name> /from <start> /to <end> - add an event\n"
+                    + "\tfind <search string> - display tasks containing search string in task descriptions\n"
+                    + "\tday <end> - display tasks on date\n"
+                    + "\tperiod /from <start> /to <end> - display tasks within period\n\n"
+                    + "\tList of available date time formats:\n"
+                    + "\tyyyy-MM-dd\n"
+                    + "\tyyyy-MM-dd HH:mm\n"
+                    + Ui.SEPARATOR);
+            break;
+        }
+        case LIST: {
+            int number = 0;
+            if (taskList.isEmpty()) {
+                ui.empty();
+            } else {
+                ui.printAll(taskList);
             }
-            case LIST: {
+            break;
+        }
+        case DAY: {
+            if (taskList.isEmpty()) {
+                ui.empty();
+            } else {
+
+                ArrayList<Task> onDateTasks = taskList.getOnDateTasks(dateToSearch);
+
                 int number = 0;
-                if (taskList.isEmpty()) {
-                    ui.empty();
+                if (onDateTasks.isEmpty()) {
+                    System.out.println(Ui.SEPARATOR
+                            + "\n\tThere are no events on that day. Wanna add a task?\n"
+                            + Ui.SEPARATOR);
                 } else {
-                    ui.printAll(taskList);
+                    ui.printFound(onDateTasks, dateToSearch);
                 }
-                break;
             }
-            case DAY: {
-                if (taskList.isEmpty()) {
-                    ui.empty();
+            break;
+        }
+        case PERIOD: {
+            if (taskList.isEmpty()) {
+                ui.empty();
+            } else {
+
+                ArrayList<Task> inPeriodTasks = taskList.getInPeriodTasks(periodStartTime, periodEndTime);
+
+                int number = 0;
+                if (inPeriodTasks.isEmpty()) {
+                    System.out.println(Ui.SEPARATOR
+                            + "\n\tThere are no events on that day. Wanna add a task?\n"
+                            + Ui.SEPARATOR);
                 } else {
-
-                    ArrayList<Task> onDateTasks = taskList.getOnDateTasks(dateToSearch);
-
-                    int number = 0;
-                    if (onDateTasks.isEmpty()) {
-                        System.out.println("_".repeat(100)
-                                + "\n\tThere are no events on that day. Wanna add a task?\n"
-                                + "_".repeat(100));
-                    } else {
-                        ui.printFound(onDateTasks, dateToSearch);
-                    }
+                    ui.printFound(inPeriodTasks, periodStartTime, periodEndTime);
                 }
-                break;
             }
-            case PERIOD: {
-                if (taskList.isEmpty()) {
-                    ui.empty();
-                } else {
-
-                    ArrayList<Task> inPeriodTasks = taskList.getInPeriodTasks(periodStartTime, periodEndTime);
-
-                    int number = 0;
-                    if (inPeriodTasks.isEmpty()) {
-                        System.out.println("_".repeat(100)
-                                + "\n\tThere are no events on that day. Wanna add a task?\n"
-                                + "_".repeat(100));
-                    } else {
-                        ui.printFound(inPeriodTasks, periodStartTime, periodEndTime);
-                    }
-                }
-                break;
-            }
+            break;
+        }
         case FIND: {
             if (taskList.isEmpty()) {
                 ui.empty();
             } else {
                 ArrayList<Task> matchingTasks = taskList.getMatchingTasks(stringToSearch);
                 if (matchingTasks.isEmpty()) {
-                    System.out.println("_".repeat(100)
+                    System.out.println(Ui.SEPARATOR
                             + "\n\tThere are no matching tasks. Wanna add a task?\n"
-                            + "_".repeat(100));
+                            + Ui.SEPARATOR);
                 } else {
                     ui.printFound(matchingTasks, stringToSearch);
                 }
@@ -135,6 +135,5 @@ public class DisplayCommand extends Command {
         }
 
         }
-
     }
 }
