@@ -1,13 +1,20 @@
 package invicta.app;
 
+// Imports to handle user input
+import java.util.Scanner;
+import java.io.IOException;
+
+// Imports to use data structures
+import java.util.ArrayList;
+
+// Imports to handle time data
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+// Imports to use task and task list data for display
 import invicta.task.Task;
 import invicta.task.TaskList;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Ui {
     private String username;

@@ -1,5 +1,6 @@
 package invicta.command;
 
+// Import to handle chatbot-specific exceptions
 import invicta.app.InvictaException;
 
 public enum CommandType {

@@ -1,15 +1,25 @@
 package invicta.app;
 
-import invicta.command.*;
-import invicta.task.Deadline;
-import invicta.task.Event;
-import invicta.task.Todo;
+// Imports to handle data structure operations
+import java.util.Arrays;
 
+// Imports to handle time data
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
+
+// Imports to return and use command and task classes after parsing
+import invicta.command.AddCommand;
+import invicta.command.Command;
+import invicta.command.CommandType;
+import invicta.command.DisplayCommand;
+import invicta.command.EditCommand;
+import invicta.command.ExitCommand;
+import invicta.task.Deadline;
+import invicta.task.Event;
+import invicta.task.Todo;
+
 
 public class Parser {
     // date time formats and formatters to be used by the chatbot

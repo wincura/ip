@@ -1,14 +1,21 @@
 package invicta.app;
 
-import invicta.task.*;
-
+// Imports to handle file read and write, including date time data
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Paths;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.IOException;
+
+// Imports to use task and task list data for storage
+import invicta.task.Deadline;
+import invicta.task.Event;
+import invicta.task.Task;
+import invicta.task.TaskList;
+import invicta.task.Todo;
+
 
 public class Storage {
     private String filePath;
