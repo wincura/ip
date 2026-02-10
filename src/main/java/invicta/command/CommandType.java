@@ -24,7 +24,13 @@ public enum CommandType {
         this.word = word;
     }
 
-    // Declared a static method to create a Command from a String, throwing an exception if it does not match
+    /**
+     * Returns the respective command type based on string.
+     *
+     * @param word user input string for command
+     * @return command type
+     * @throws InvictaException if string is not a command type defined in enum.
+     */
     public static CommandType fromString(String word) throws InvictaException {
         for (CommandType c : CommandType.values()) {
             if (c.word.equals(word)) {

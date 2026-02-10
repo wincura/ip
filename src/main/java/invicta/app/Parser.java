@@ -233,7 +233,8 @@ public class Parser {
     }
 
     /**
-     * Iterates through user input to extract strings representing start and end times of a period.
+     * Returns the start and end times of a period in a string array by
+     * iterating through user input to extract strings representing start and end times of a period.
      * If more user arguments in input than expected, they are disregarded.
      *
      * @param userInput String array to be parsed into period start and end times.
