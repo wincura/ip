@@ -164,6 +164,22 @@ public class Parser {
                         return new AddCommand(td);
                     }
                 }
+            case FIND: {
+                String stringToSearch;
+                StringBuilder stringToSearchString = new StringBuilder();
+                if (commandString.length < 2) {
+                    throw new InvictaException("_".repeat(100)
+                            + "\n\tMissing search string! (usage: find <search string>)\n"
+                            + "_".repeat(100));
+                } else {
+                    for (int i = 1; i < commandString.length; i++) {
+                        String word = commandString[i];
+                        stringToSearchString.append(word).append(" ");
+                    }
+                    stringToSearch = stringToSearchString.toString().trim();
+                    return new DisplayCommand(commandType, stringToSearch);
+                }
+            }
                 case DAY: {
                     LocalDate dateToSearch;
                     StringBuilder dateToSearchString = new StringBuilder();

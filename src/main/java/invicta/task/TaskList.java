@@ -47,6 +47,22 @@ public class TaskList {
         this.taskList.get(i).setDone(newStatus);
     }
 
+    /**
+     * Returns a collection of tasks with the queried string in the description.
+     *
+     * @param searchString keyword to query matching strings
+     * @return collection of tasks containing search string
+     */
+    public ArrayList<Task> getMatchingTasks(String searchString) {
+        ArrayList<Task> foundTasks = new ArrayList<>();
+        for (Task t : this.taskList) {
+            if (t.getDescription().toLowerCase().contains(searchString.toLowerCase())) {
+                foundTasks.add(t);
+            }
+        }
+        return foundTasks;
+    }
+
     public ArrayList<Task> getOnDateTasks(LocalDate dateToSearch) {
         ArrayList<Task> foundTasks = new ArrayList<>();
         // add the tasks to temp ArrayList of Tasks to be displayed

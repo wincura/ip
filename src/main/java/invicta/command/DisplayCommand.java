@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class DisplayCommand extends Command {
     private CommandType commandType;
     private LocalDate dateToSearch;
+    private String stringToSearch;
     private LocalDateTime periodStartTime;
     private LocalDateTime periodEndTime;
 
@@ -29,6 +30,11 @@ public class DisplayCommand extends Command {
         this.commandType = commandType;
         this.periodStartTime = periodStartTime;
         this.periodEndTime = periodEndTime;
+    }
+
+    public DisplayCommand(CommandType commandType, String stringToSearch) {
+        this.commandType = commandType;
+        this.stringToSearch = stringToSearch;
     }
 
     /**
@@ -51,6 +57,7 @@ public class DisplayCommand extends Command {
                         + "\ttodo <name> - add a to-do task\n"
                         + "\tdeadline <name> /by <deadline> - add a deadline task\n"
                         + "\tevent <name> /from <start> /to <end> - add an event\n"
+                        + "\tfind <search string> - display tasks containing search string in task descriptions\n"
                         + "\tday <end> - display tasks on date\n"
                         + "\tperiod /from <start> /to <end> - display tasks within period\n\n"
                         + "\tList of available date time formats:\n"
@@ -104,6 +111,21 @@ public class DisplayCommand extends Command {
                 }
                 break;
             }
+        case FIND: {
+            if (taskList.isEmpty()) {
+                ui.empty();
+            } else {
+                ArrayList<Task> matchingTasks = taskList.getMatchingTasks(stringToSearch);
+                if (matchingTasks.isEmpty()) {
+                    System.out.println("_".repeat(100)
+                            + "\n\tThere are no matching tasks. Wanna add a task?\n"
+                            + "_".repeat(100));
+                } else {
+                    ui.printFound(matchingTasks, stringToSearch);
+                }
+            }
+            break;
+        }
 
         }
 

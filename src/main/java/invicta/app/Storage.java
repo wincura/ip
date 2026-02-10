@@ -48,8 +48,8 @@ public class Storage {
             Scanner s = new Scanner(file);
             while (s.hasNext()) {
                 String[] input = s.nextLine().split(";");
-                Type type = Type.fromString(input[0]);
-                switch (type) {
+                TaskType taskType = TaskType.fromString(input[0]);
+                switch (taskType) {
                     case TODO: {
                         boolean isDone = input[1].equals("1");
                         String name = input[2];
@@ -100,16 +100,16 @@ public class Storage {
             String toAdd;
             for (Task t : updatedTaskList) {
                 if (t instanceof Todo) {
-                    String[] values = {Type.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
+                    String[] values = {TaskType.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
                     toAdd = String.join(";", values);
                     fw.write(toAdd + System.lineSeparator());
                 } else if (t instanceof Deadline) {
-                    String[] values = {Type.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+                    String[] values = {TaskType.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                             ((Deadline) t).getDeadline().format(Parser.dateAndTime)};
                     toAdd = String.join(";", values);
                     fw.write(toAdd + System.lineSeparator());
                 } else if (t instanceof Event) {
-                    String[] values = {Type.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+                    String[] values = {TaskType.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                             ((Event) t).getStart().format(Parser.dateAndTime), ((Event) t).getEnd().format(Parser.dateAndTime)};
                     toAdd = String.join(";", values);
                     fw.write(toAdd + System.lineSeparator());

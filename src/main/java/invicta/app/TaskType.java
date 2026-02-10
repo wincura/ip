@@ -1,13 +1,13 @@
 package invicta.app;
 
-public enum Type {
+public enum TaskType {
     TODO("T"),
     DEADLINE("D"),
     EVENT("E");
 
     private final String code;
 
-    Type(String code) {
+    TaskType(String code) {
         this.code = code;
     }
 
@@ -16,8 +16,8 @@ public enum Type {
     }
 
     // Declared a static method to create a Command from a String, throwing an exception if it does not match
-    public static Type fromString(String code) throws InvictaException {
-        for (Type c : Type.values()) {
+    public static TaskType fromString(String code) throws InvictaException {
+        for (TaskType c : TaskType.values()) {
             if (c.code.equals(code)) {
                 return c;
             }
