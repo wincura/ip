@@ -45,6 +45,52 @@ public class DisplayCommand extends Command {
     }
 
     /**
+     * Processes the day operation accordingly.
+     */
+    private void processDay(TaskList taskList, Ui ui) {
+        ArrayList<Task> onDateTasks = taskList.getOnDateTasks(dateToSearch);
+
+        int number = 0;
+        if (onDateTasks.isEmpty()) {
+            System.out.println(Ui.SEPARATOR
+                    + "\n\tThere are no events on that day. Wanna add a task?\n"
+                    + Ui.SEPARATOR);
+        } else {
+            ui.printFound(onDateTasks, dateToSearch);
+        }
+    }
+
+    /**
+     * Processes the period operation accordingly.
+     */
+    private void processPeriod(TaskList taskList, Ui ui) {
+        ArrayList<Task> inPeriodTasks = taskList.getInPeriodTasks(periodStartTime, periodEndTime);
+
+        int number = 0;
+        if (inPeriodTasks.isEmpty()) {
+            System.out.println(Ui.SEPARATOR
+                    + "\n\tThere are no events on that day. Wanna add a task?\n"
+                    + Ui.SEPARATOR);
+        } else {
+            ui.printFound(inPeriodTasks, periodStartTime, periodEndTime);
+        }
+    }
+
+    /**
+     * Processes the find operation accordingly.
+     */
+    private void processFind(TaskList taskList, Ui ui) {
+        ArrayList<Task> matchingTasks = taskList.getMatchingTasks(stringToSearch);
+        if (matchingTasks.isEmpty()) {
+            System.out.println(Ui.SEPARATOR
+                    + "\n\tThere are no matching tasks. Wanna add a task?\n"
+                    + Ui.SEPARATOR);
+        } else {
+            ui.printFound(matchingTasks, stringToSearch);
+        }
+    }
+
+    /**
      * Executes display-related command based on command type.
      *
      * @param taskList TaskList object that handles task list operations.
@@ -53,88 +99,43 @@ public class DisplayCommand extends Command {
      */
     public void execute(TaskList taskList, Storage storage, Ui ui) {
         switch (this.commandType) {
-            case HELP: {
-                System.out.println("_".repeat(100)
-                        + "\n\tList of commands in InvictaBot:\n"
-                        + "\tbye - exit app\n"
-                        + "\tlist - display task list\n"
-                        + "\tdelete - delete the task\n"
-                        + "\tmark <index> - mark task as done\n"
-                        + "\tunmark <index> - mask task as not done\n"
-                        + "\ttodo <name> - add a to-do task\n"
-                        + "\tdeadline <name> /by <deadline> - add a deadline task\n"
-                        + "\tevent <name> /from <start> /to <end> - add an event\n"
-                        + "\tfind <search string> - display tasks containing search string in task descriptions\n"
-                        + "\tday <end> - display tasks on date\n"
-                        + "\tperiod /from <start> /to <end> - display tasks within period\n\n"
-                        + "\tList of available date time formats:\n"
-                        + "\tyyyy-MM-dd\n"
-                        + "\tyyyy-MM-dd HH:mm\n"
-                        + "_".repeat(100));
-                break;
+        case HELP: {
+            ui.help();
+            break;
+        }
+        case LIST: {
+            if (taskList.isEmpty()) {
+                ui.empty();
+            } else {
+                ui.printAll(taskList);
             }
-            case LIST: {
-                int number = 0;
-                if (taskList.isEmpty()) {
-                    ui.empty();
-                } else {
-                    ui.printAll(taskList);
-                }
-                break;
+            break;
+        }
+        case DAY: {
+            if (taskList.isEmpty()) {
+                ui.empty();
+            } else {
+                processDay(taskList, ui);
             }
-            case DAY: {
-                if (taskList.isEmpty()) {
-                    ui.empty();
-                } else {
-
-                    ArrayList<Task> onDateTasks = taskList.getOnDateTasks(dateToSearch);
-
-                    int number = 0;
-                    if (onDateTasks.isEmpty()) {
-                        System.out.println("_".repeat(100)
-                                + "\n\tThere are no events on that day. Wanna add a task?\n"
-                                + "_".repeat(100));
-                    } else {
-                        ui.printFound(onDateTasks, dateToSearch);
-                    }
-                }
-                break;
+            break;
+        }
+        case PERIOD: {
+            if (taskList.isEmpty()) {
+                ui.empty();
+            } else {
+                processPeriod(taskList, ui);
             }
-            case PERIOD: {
-                if (taskList.isEmpty()) {
-                    ui.empty();
-                } else {
-
-                    ArrayList<Task> inPeriodTasks = taskList.getInPeriodTasks(periodStartTime, periodEndTime);
-
-                    int number = 0;
-                    if (inPeriodTasks.isEmpty()) {
-                        System.out.println("_".repeat(100)
-                                + "\n\tThere are no events on that day. Wanna add a task?\n"
-                                + "_".repeat(100));
-                    } else {
-                        ui.printFound(inPeriodTasks, periodStartTime, periodEndTime);
-                    }
-                }
-                break;
-            }
+            break;
+        }
         case FIND: {
             if (taskList.isEmpty()) {
                 ui.empty();
             } else {
-                ArrayList<Task> matchingTasks = taskList.getMatchingTasks(stringToSearch);
-                if (matchingTasks.isEmpty()) {
-                    System.out.println("_".repeat(100)
-                            + "\n\tThere are no matching tasks. Wanna add a task?\n"
-                            + "_".repeat(100));
-                } else {
-                    ui.printFound(matchingTasks, stringToSearch);
-                }
+                processFind(taskList, ui);
             }
             break;
         }
 
         }
-
     }
 }

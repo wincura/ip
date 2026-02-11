@@ -16,7 +16,6 @@ import invicta.task.Task;
 import invicta.task.TaskList;
 import invicta.task.Todo;
 
-
 /**
  * Handles loading and updating of task list files.
  */
@@ -30,15 +29,9 @@ public class Storage {
     }
 
     /**
-     * Loads task list from provided file.
-     * If the file does not exist, it is created.
-     * Exceptions are caught and handled in calling method.
-     *
-     * @return loaded Task List loaded with stored task data in file.
+     * Prepares directory, creating it if it does not exist yet.
      */
-    public ArrayList<Task> load() throws IOException, InvictaException {
-        ArrayList<Task> loaded = new ArrayList<>();
-        File dir = new File(this.dirPath);
+    private void prepareDirectory(File dir) {
         if (!dir.exists()) {
             if (dir.mkdir()) {
                 System.out.println("Data directory created at: " + dir.getAbsolutePath());
@@ -48,6 +41,62 @@ public class Storage {
         } else {
             System.out.println("Data directory found at: " + dir.getAbsolutePath());
         }
+    }
+
+    /**
+     * Reads the file to load the file into task list.
+     */
+    private void readFile(Scanner s, ArrayList<Task> loadedTasks) throws InvictaException {
+        String[] input = s.nextLine().split(";");
+        TaskType taskType = TaskType.fromString(input[0]);
+        switch (taskType) {
+        case TODO: {
+            boolean isDone = input[1].equals("1");
+            String name = input[2];
+            Todo toAdd = new Todo(name);
+            if (isDone) {
+                toAdd.setDone(true);
+            }
+            loadedTasks.add(toAdd);
+            break;
+        }
+        case DEADLINE: {
+            boolean isDone = input[1].equals("1");
+            String name = input[2];
+            LocalDateTime deadline = Parser.parseDateTimeData(input[3]);
+            Deadline toAdd = new Deadline(name, deadline);
+            if (isDone) {
+                toAdd.setDone(true);
+            }
+            loadedTasks.add(toAdd);
+            break;
+        }
+        case EVENT: {
+            boolean isDone = input[1].equals("1");
+            String name = input[2];
+            LocalDateTime start = Parser.parseDateTimeData(input[3]);
+            LocalDateTime end = Parser.parseDateTimeData(input[4]);
+            Event toAdd = new Event(name, start, end);
+            if (isDone) {
+                toAdd.setDone(true);
+            }
+            loadedTasks.add(toAdd);
+            break;
+        }
+        }
+    }
+
+    /**
+     * Loads task list from provided file.
+     * If the file does not exist, it is created.
+     * Exceptions are caught and handled in calling method.
+     *
+     * @return loaded Task List loaded with stored task data in file.
+     */
+    public ArrayList<Task> load() throws IOException, InvictaException {
+        ArrayList<Task> loadedTasks = new ArrayList<>();
+        File dir = new File(this.dirPath);
+        prepareDirectory(dir);
 
         File file = new File(this.filePath);
         if (file.createNewFile()) {
@@ -57,47 +106,35 @@ public class Storage {
                     + "\nLoading data from file into Invicta...");
             Scanner s = new Scanner(file);
             while (s.hasNext()) {
-                String[] input = s.nextLine().split(";");
-                TaskType taskType = TaskType.fromString(input[0]);
-                switch (taskType) {
-                    case TODO: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        Todo toAdd = new Todo(name);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
-                    }
-                    case DEADLINE: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        LocalDateTime deadline = Parser.parseDateTimeData(input[3]);
-                        Deadline toAdd = new Deadline(name, deadline);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
-                    }
-                    case EVENT: {
-                        boolean isDone = input[1].equals("1");
-                        String name = input[2];
-                        LocalDateTime start = Parser.parseDateTimeData(input[3]);
-                        LocalDateTime end = Parser.parseDateTimeData(input[4]);
-                        Event toAdd = new Event(name, start, end);
-                        if (isDone) {
-                            toAdd.setDone(true);
-                        }
-                        loaded.add(toAdd);
-                        break;
-                    }
-                }
+                readFile(s, loadedTasks);
             }
+            s.close();
             System.out.println("Task list file data successfully loaded into Invicta.\n\n\n");
         }
-        return loaded;
+        return loadedTasks;
+    }
+
+    /**
+     * Writes current task into task list file.
+     */
+    private void writeFile(FileWriter fw, Task t) throws IOException {
+        String toAdd;
+        if (t instanceof Todo) {
+            String[] values = {TaskType.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
+            toAdd = String.join(";", values);
+            fw.write(toAdd + System.lineSeparator());
+        } else if (t instanceof Deadline) {
+            String[] values = {TaskType.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+                    ((Deadline) t).getDeadline().format(Parser.dateAndTime)};
+            toAdd = String.join(";", values);
+            fw.write(toAdd + System.lineSeparator());
+        } else if (t instanceof Event) {
+            String[] values = {TaskType.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+                    ((Event) t).getStart().format(Parser.dateAndTime),
+                    ((Event) t).getEnd().format(Parser.dateAndTime)};
+            toAdd = String.join(";", values);
+            fw.write(toAdd + System.lineSeparator());
+        }
     }
 
     /**
@@ -107,29 +144,12 @@ public class Storage {
         ArrayList<Task> updatedTaskList = taskList.getTaskList();
         try {
             FileWriter fw = new FileWriter(this.filePath);
-            String toAdd;
             for (Task t : updatedTaskList) {
-                if (t instanceof Todo) {
-                    String[] values = {TaskType.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
-                    toAdd = String.join(";", values);
-                    fw.write(toAdd + System.lineSeparator());
-                } else if (t instanceof Deadline) {
-                    String[] values = {TaskType.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                            ((Deadline) t).getDeadline().format(Parser.dateAndTime)};
-                    toAdd = String.join(";", values);
-                    fw.write(toAdd + System.lineSeparator());
-                } else if (t instanceof Event) {
-                    String[] values = {Type.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                            ((Event) t).getStart().format(Parser.dateAndTime),
-                            ((Event) t).getEnd().format(Parser.dateAndTime)};
-                    toAdd = String.join(";", values);
-                    fw.write(toAdd + System.lineSeparator());
-                }
+                writeFile(fw, t);
             }
             fw.close();
         } catch (IOException e) {
             System.out.print("Error occurred while writing to file: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

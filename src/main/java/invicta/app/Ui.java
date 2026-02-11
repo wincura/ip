@@ -1,6 +1,7 @@
 package invicta.app;
 
 // Imports to handle user input
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import java.io.IOException;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 // Imports to use task and task list data for display
+import invicta.InvictaBot;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
@@ -20,10 +22,16 @@ import invicta.task.TaskList;
  * Handles user interactions with InvictaBot.
  */
 public class Ui {
+    private static final int SEPARATOR_WIDTH = 100;
+    public static final String SEPARATOR = "_".repeat(SEPARATOR_WIDTH);
     private String username;
 
     public Ui() {
-        username = "";
+        this.username = "";
+    }
+
+    public Ui(String username) {
+        this.username = username;
     }
 
     public String getUsername() {
@@ -49,12 +57,35 @@ public class Ui {
     }
 
     /**
+     * Displays help message.
+     */
+    public void help() {
+        System.out.println(Ui.SEPARATOR
+                + "\n\tList of commands in InvictaBot:\n"
+                + "\tbye - exit app\n"
+                + "\tlist - display task list\n"
+                + "\tdelete - delete the task\n"
+                + "\tmark <index> - mark task as done\n"
+                + "\tunmark <index> - mask task as not done\n"
+                + "\ttodo <name> - add a to-do task\n"
+                + "\tdeadline <name> /by <deadline> - add a deadline task\n"
+                + "\tevent <name> /from <start> /to <end> - add an event\n"
+                + "\tfind <search string> - display tasks containing search string in task descriptions\n"
+                + "\tday <end> - display tasks on date\n"
+                + "\tperiod /from <start> /to <end> - display tasks within period\n\n"
+                + "\tList of available date time formats:\n"
+                + "\tyyyy-MM-dd\n"
+                + "\tyyyy-MM-dd HH:mm\n"
+                + Ui.SEPARATOR);
+    }
+
+    /**
      * Displays goodbye message with username.
      */
     public void bye() {
-        System.out.println("_".repeat(100)
+        System.out.println(Ui.SEPARATOR
                 + "\n\tBye bye now! You take care, " + this.username + "!\n"
-                + "_".repeat(100));
+                + Ui.SEPARATOR);
     }
 
     /**
@@ -64,10 +95,10 @@ public class Ui {
      * @param taskList Task list whose count are to be printed.
      */
     public void added(Task t, TaskList taskList) {
-        System.out.println("_".repeat(100)
+        System.out.println(Ui.SEPARATOR
                 + "\n\tOkay! I've added this task: \n\t\t" + t.toString()
                 + "\n\tYou've got " + taskList.getSize() + " tasks in your list now.\n"
-                + "_".repeat(100));
+                + Ui.SEPARATOR);
     }
 
     /**
@@ -80,27 +111,27 @@ public class Ui {
     public void marked(int i, String task) {
         switch (i) {
         case 1: {
-            System.out.println("_".repeat(100)
+            System.out.println(Ui.SEPARATOR
                     + "\n\tGreat! I've marked this as done:  \n\t\t" + task + "\n"
-                    + "_".repeat(100));
+                    + Ui.SEPARATOR);
             break;
         }
         case 2: {
-            System.out.println("_".repeat(100)
+            System.out.println(Ui.SEPARATOR
                     + "\n\tThis task is already marked as done: " + "\n\t\t" + task + "\n"
-                    + "_".repeat(100));
+                    + Ui.SEPARATOR);
             break;
         }
         case 3: {
-            System.out.println("_".repeat(100)
+            System.out.println(Ui.SEPARATOR
                     + "\n\tOh I see! I've marked this as not done: \n\t\t" + task + "\n"
-                    + "_".repeat(100));
+                    + Ui.SEPARATOR);
             break;
         }
         case 4: {
-            System.out.println("_".repeat(100)
+            System.out.println(Ui.SEPARATOR
                     + "\n\tThis task is already marked as not done: \n\t\t" + task + "\n"
-                    + "_".repeat(100));
+                    + Ui.SEPARATOR);
             break;
         }
         }
@@ -110,9 +141,9 @@ public class Ui {
      * Displays message indicating an empty task list.
      */
     public void empty() {
-        System.out.println("_".repeat(100)
+        System.out.println(Ui.SEPARATOR
                 + "\n\tYour task list is empty! Add a few tasks!\n"
-                + "_".repeat(100));
+                + Ui.SEPARATOR);
     }
 
     /**
@@ -121,10 +152,14 @@ public class Ui {
      * @param taskList Provided task list to print out.
      */
     public void printAll(TaskList taskList) {
-        System.out.println("_".repeat(100)
+        int number = 0;
+        System.out.println(Ui.SEPARATOR
                 + "\n\tHere is a list of your tasks: ");
-        taskList.printTasks();
-        System.out.println("_".repeat(100));
+        for (Task t : taskList.getTaskList()) {
+            number += 1;
+            System.out.println("\t" + number + ". " + t.toString());
+        }
+        System.out.println(Ui.SEPARATOR);
     }
 
     /**
@@ -135,14 +170,14 @@ public class Ui {
      */
     public void printFound(ArrayList<Task> taskList, LocalDate dateToSearch) {
         int number = 0;
-        System.out.println("_".repeat(100)
+        System.out.println(Ui.SEPARATOR
                 + "\n\tHere is a list of your tasks that you have on "
                 + dateToSearch.format(Parser.dateDisplay) + ": ");
         for (Task t : taskList) {
             number += 1;
             System.out.println("\t" + number + ". " + t.toString());
         }
-        System.out.println("_".repeat(100));
+        System.out.println(Ui.SEPARATOR);
     }
 
     /**
@@ -155,11 +190,11 @@ public class Ui {
     public void printFound(ArrayList<Task> taskList, LocalDateTime periodStartTime, LocalDateTime periodEndTime) {
         int number = 0;
         if (taskList.isEmpty()) {
-            System.out.println("_".repeat(100)
+            System.out.println(Ui.SEPARATOR
                     + "\n\tThere are no events in that period. Wanna add a task?\n"
-                    + "_".repeat(100));
+                    + Ui.SEPARATOR);
         } else {
-            System.out.println("_".repeat(100)
+            System.out.println(Ui.SEPARATOR
                     + "\n\tHere is a list of your tasks that fall within "
                     + periodStartTime.format(Parser.dateDisplay) + " to "
                     + periodEndTime.format(Parser.dateDisplay) + ": ");
@@ -167,7 +202,7 @@ public class Ui {
                 number += 1;
                 System.out.println("\t" + number + ". " + t.toString());
             }
-            System.out.println("_".repeat(100));
+            System.out.println(Ui.SEPARATOR);
 
         }
     }
@@ -180,14 +215,14 @@ public class Ui {
      */
     public void printFound(ArrayList<Task> taskList, String stringToSearch) {
         int number = 0;
-        System.out.println("_".repeat(100)
+        System.out.println(Ui.SEPARATOR
                 + "\n\tHere is a list of your tasks that contains '"
                 + stringToSearch + "' : ");
         for (Task t : taskList) {
             number += 1;
             System.out.println("\t" + number + ". " + t.toString());
         }
-        System.out.println("_".repeat(100));
+        System.out.println(Ui.SEPARATOR);
     }
 
     /**
@@ -196,29 +231,15 @@ public class Ui {
      * @param s Scanner used to read user input for username.
      */
     public void readUsername(Scanner s) {
-        System.out.println("_".repeat(100)
+        System.out.println(Ui.SEPARATOR
                 + "\n\tHowdy! I'm InvictaBot!\n\tHow might I address you, pal?\n"
-                + "_".repeat(100));
-        String username;
-        while (true) {
-            try {
-                // Obtaining user's name, with validation to handle empty names
-                username = s.nextLine().trim();
-                this.setUsername(username);
-                if (username.isEmpty()) {
-                    throw new InvictaException("\tSurely you're not a nameless person! Come again?");
-                } else {
-                    // Exit loop and continue to chatbot program
-                    System.out.println("_".repeat(100)
-                            + "\n\tIt's a pleasure, " + this.getUsername()
-                            + "! What can I do you for?\n"
-                            + "_".repeat(100));
-                    break;
-                }
-            } catch (InvictaException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+                + Ui.SEPARATOR);
+        String username = "";
+        Parser.processUsername(s, username, this);
+        System.out.println(Ui.SEPARATOR
+                + "\n\tIt's a pleasure, " + this.getUsername()
+                + "! What can I do you for?\n"
+                + Ui.SEPARATOR);
     }
 
     /**
@@ -231,9 +252,9 @@ public class Ui {
         String raw = s.nextLine().trim();
         String[] userInput = raw.split(" ");
         if (raw.isEmpty()) {
-            throw new InvictaException("_".repeat(100)
+            throw new InvictaException(Ui.SEPARATOR
                     + "\n\tWhat? Did you say something? Type a message!\n"
-                    + "_".repeat(100));
+                    + Ui.SEPARATOR);
         } else {
             return userInput;
         }
@@ -241,9 +262,22 @@ public class Ui {
 
     /**
      * Displays error message for taskbot specific errors occurring during operations.
+     * Prints using defined error message.
      */
     public void showException (Exception e) {
-        System.out.println(e.getMessage());
+        if (e instanceof NumberFormatException) {
+            System.out.println(Ui.SEPARATOR
+                    + "\n\tAn index is a number, so go put one! (usage: mark/unmark <int as index>)\n"
+                    + Ui.SEPARATOR);
+        }
+        else if (e instanceof DateTimeParseException) {
+            System.out.println(Ui.SEPARATOR
+                    + "\n\tInvalid date time format! Type 'help' to view acceptable formats.\n"
+                    + Ui.SEPARATOR);
+        }
+        else {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -251,6 +285,5 @@ public class Ui {
      */
     public void showLoadingError(IOException e) {
         System.out.print("Error occurred while reading file: " + e.getMessage());
-        e.printStackTrace();
     }
 }

@@ -19,6 +19,62 @@ public class EditCommand extends Command {
     }
 
     /**
+     * Processes the unmark operation accordingly.
+     */
+    private void processUnmark(TaskList taskList, Ui ui, Storage storage) throws InvictaException {
+        if (this.index < 0 | this.index > taskList.getSize() - 1) {
+            throw new InvictaException(Ui.SEPARATOR
+                    + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
+                    + Ui.SEPARATOR);
+        }
+        if (!taskList.getDone(this.index)) {
+            ui.marked(4, taskList.getTaskString(this.index));
+        } else {
+            taskList.setDone(this.index, false);
+            storage.update(taskList);
+            ui.marked(3, taskList.getTaskString(this.index));
+        }
+    }
+
+    /**
+     * Processes the mark operation accordingly.
+     */
+    private void processMark(TaskList taskList, Ui ui, Storage storage) throws InvictaException {
+        if (this.index < 0 | this.index > taskList.getSize() - 1) {
+            throw new InvictaException(Ui.SEPARATOR
+                    + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
+                    + Ui.SEPARATOR);
+        }
+        if (taskList.getDone(this.index)) {
+            ui.marked(2, taskList.getTaskString(this.index));
+        } else {
+            taskList.setDone(this.index,true);
+            storage.update(taskList);
+            ui.marked(1, taskList.getTaskString(this.index));
+        }
+    }
+
+    /**
+     * Processes the delete operation accordingly.
+     */
+    private void processDelete(TaskList taskList, Ui ui, Storage storage) throws InvictaException {
+        if (this.index < 0 | this.index > taskList.getSize() - 1) {
+            throw new InvictaException(Ui.SEPARATOR
+                    + "\n\tYou want me to do what? "
+                    + "Put a valid index! (check task list using 'list' command)\n"
+                    + Ui.SEPARATOR);
+        }
+        String deleteTask = taskList.getTaskString(this.index);
+        taskList.removeTask(this.index);
+        storage.update(taskList);
+        System.out.println(Ui.SEPARATOR
+                + "\n\tInto the trash! This task has been deleted: \n"
+                + "\t\t" + deleteTask + "\n\tYou've got " + taskList.getSize()
+                + " tasks in your list now.\n"
+                + Ui.SEPARATOR);
+    }
+
+    /**
      * Executes command to edit tasks in respective ways.
      *
      * @param taskList TaskList object that handles task list operations.
@@ -27,56 +83,18 @@ public class EditCommand extends Command {
      */
     public void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException {
         switch (this.commandType) {
-            case UNMARK: {
-                if (index < 0 | index > taskList.getSize() - 1) {
-                    throw new InvictaException("_".repeat(100)
-                            + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
-                            + "_".repeat(100));
-                } else {
-                    if (!taskList.getDone(index)) {
-                        ui.marked(4, taskList.getTaskString(index));
-                    } else {
-                        taskList.setDone(index, false);
-                        storage.update(taskList);
-                        ui.marked(3, taskList.getTaskString(index));
-                    }
-                }
-                break;
-            }
-            case MARK: {
-                if (index < 0 | index > taskList.getSize() - 1) {
-                    throw new InvictaException("_".repeat(100)
-                            + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
-                            + "_".repeat(100));
-                } else {
-                    if (taskList.getDone(index)) {
-                        ui.marked(2, taskList.getTaskString(index));
-                    } else {
-                        taskList.setDone(index,true);
-                        storage.update(taskList);
-                        ui.marked(1, taskList.getTaskString(index));
-                    }
-                }
-                break;
-            }
-            case DELETE: {
-                if (index < 0 | index > taskList.getSize() - 1) {
-                    throw new InvictaException("_".repeat(100)
-                            + "\n\tYou want me to do what? "
-                            + "Put a valid index! (check task list using 'list' command)\n"
-                            + "_".repeat(100));
-                } else {
-                    String deleteTask = taskList.getTaskString(index);
-                    taskList.removeTask(index);
-                    storage.update(taskList);
-                    System.out.println("_".repeat(100)
-                            + "\n\tInto the trash! This task has been deleted: \n"
-                            + "\t\t" + deleteTask + "\n\tYou've got " + taskList.getSize()
-                            + " tasks in your list now.\n"
-                            + "_".repeat(100));
-                }
-                break;
-            }
+        case UNMARK: {
+            processUnmark(taskList, ui, storage);
+            break;
+        }
+        case MARK: {
+            processMark(taskList, ui, storage);
+            break;
+        }
+        case DELETE: {
+            processDelete(taskList, ui, storage);
+            break;
+        }
         }
     }
 }

@@ -8,8 +8,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Scanner;
 
 // Imports to return and use command and task classes after parsing
+import invicta.app.Ui;
 import invicta.command.AddCommand;
 import invicta.command.Command;
 import invicta.command.CommandType;
@@ -33,6 +35,24 @@ public class Parser {
     public static DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern(FORMAT_DATE_AND_TIME);
     public static DateTimeFormatter dateDisplay = DateTimeFormatter.ofPattern(FORMAT_DATE_DISPLAY);
 
+
+    public static void processUsername(Scanner s, String username, Ui ui) {
+        while (true) {
+            try {
+                // Obtaining user's name, with validation to handle empty names
+                username = s.nextLine().trim();
+                ui.setUsername(username);
+                if (username.isEmpty()) {
+                    throw new InvictaException("\tSurely you're not a nameless person! Come again?");
+                } else {
+                    break;
+                }
+            } catch (InvictaException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     /**
      * Returns a Command object based on command input String array provided.
      * The subtype of Command object depends on the command input.
@@ -44,147 +64,147 @@ public class Parser {
      */
     public static Command parseCommandData(String[] commandString, CommandType commandType) throws InvictaException {
         if (commandString.length == 0) {
-            throw new InvictaException("_".repeat(100)
+            throw new InvictaException(Ui.SEPARATOR
                     + "\n\tWhat? Did you say something? Type a message!\n"
-                    + "_".repeat(100));
+                    + Ui.SEPARATOR);
         } else {
             switch (commandType) {
-                case BYE: {
-                    return new ExitCommand();
+            case BYE: {
+                return new ExitCommand();
+            }
+            case LIST, HELP: {
+                return new DisplayCommand(commandType);
+            }
+            case DELETE: {
+                if (commandString.length < 2) {
+                    throw new InvictaException(Ui.SEPARATOR
+                            + "\n\tPlease provide an index for this command. (usage: delete <number>)\n"
+                            + Ui.SEPARATOR);
+                } else {
+                    int index = Integer.parseInt(commandString[1]) - 1;
+                    return new EditCommand(commandType, index);
                 }
-                case LIST, HELP: {
-                    return new DisplayCommand(commandType);
+            }
+            case MARK: {
+                if (commandString.length < 2) {
+                    throw new InvictaException(Ui.SEPARATOR
+                            + "\n\tPlease provide an index for this command. (usage: mark <number>)\n"
+                            + Ui.SEPARATOR);
+                } else {
+                    int index = Integer.parseInt(commandString[1]) - 1;
+                    return new EditCommand(commandType, index);
                 }
-                case DELETE: {
-                    if (commandString.length < 2) {
-                        throw new InvictaException("_".repeat(100)
-                                + "\n\tPlease provide an index for this command. (usage: delete <number>)\n"
-                                + "_".repeat(100));
+            }
+            case UNMARK: {
+                if (commandString.length < 2) {
+                    throw new InvictaException(Ui.SEPARATOR
+                            + "\n\tPlease provide an index for this command. (usage: unmark <number>)\n"
+                            + Ui.SEPARATOR);
+                } else {
+                    int index = Integer.parseInt(commandString[1]) - 1;
+                    return new EditCommand(commandType, index);
+                }
+            }
+            case EVENT: {
+                if (commandString.length < 2) {
+                    throw new InvictaException(Ui.SEPARATOR
+                            + "\n\tMissing task name, start time and end time! "
+                            + "(usage: event <name> /from <start> /to <end>)\n"
+                            + Ui.SEPARATOR);
+                } else {
+                    StringBuilder taskName = new StringBuilder();
+                    int taskNameLength = 0; // to be used later to pass user input words after task name
+                    for (int i = 1; i < commandString.length; i++) {
+                        String word = commandString[i];
+                        if (word.equals("/from")) {
+                            break;
+                        } else {
+                            taskName.append(word).append(" ");
+                            taskNameLength++;
+                        }
+                    }
+                    // pass remaining user input to extract period
+                    String[] periodInput = Arrays.copyOfRange(commandString, taskNameLength + 1, commandString.length);
+                    String[] period = Parser.parsePeriodData(periodInput);
+                    if (period[0].isEmpty()) {
+                        throw new InvictaException(Ui.SEPARATOR
+                                + "\n\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)\n"
+                                + Ui.SEPARATOR);
+                    } else if (period[1].isEmpty()) {
+                        throw new InvictaException(Ui.SEPARATOR
+                                + "\n\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n"
+                                + Ui.SEPARATOR);
                     } else {
-                        int index = Integer.parseInt(commandString[1]) - 1;
-                        return new EditCommand(commandType, index);
+                        LocalDateTime eventStartTime = Parser.parseDateTimeData(period[0].toString().trim());
+                        LocalDateTime eventEndTime = Parser.parseDateTimeData(period[1].toString().trim());
+                        Event ev = new Event(taskName.toString().trim(),
+                                eventStartTime,
+                                eventEndTime);
+                        return new AddCommand(ev);
                     }
                 }
-                case MARK: {
-                    if (commandString.length < 2) {
-                        throw new InvictaException("_".repeat(100)
-                                + "\n\tPlease provide an index for this command. (usage: mark <number>)\n"
-                                + "_".repeat(100));
-                    } else {
-                        int index = Integer.parseInt(commandString[1]) - 1;
-                        return new EditCommand(commandType, index);
-                    }
-                }
-                case UNMARK: {
-                    if (commandString.length < 2) {
-                        throw new InvictaException("_".repeat(100)
-                                + "\n\tPlease provide an index for this command. (usage: unmark <number>)\n"
-                                + "_".repeat(100));
-                    } else {
-                        int index = Integer.parseInt(commandString[1]) - 1;
-                        return new EditCommand(commandType, index);
-                    }
-                }
-                case EVENT: {
-                    if (commandString.length < 2) {
-                        throw new InvictaException("_".repeat(100)
-                                + "\n\tMissing task name, start time and end time! "
-                                + "(usage: event <name> /from <start> /to <end>)\n"
-                                + "_".repeat(100));
-                    } else {
-                        StringBuilder taskName = new StringBuilder();
-                        int taskNameLength = 0; // to be used later to pass user input words after task name
-                        for (int i = 1; i < commandString.length; i++) {
-                            String word = commandString[i];
-                            if (word.equals("/from")) {
+            }
+            case DEADLINE: {
+                if (commandString.length < 2) {
+                    throw new InvictaException(Ui.SEPARATOR
+                            + "\n\tMissing task name and deadline! (usage: deadline <name> /by <deadline>)\n"
+                            + Ui.SEPARATOR);
+                } else {
+                    StringBuilder taskName = new StringBuilder();
+                    StringBuilder deadlineTimeString = new StringBuilder();
+                    // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
+                    boolean taskNameDone = false;
+                    int argsDoneFlag = 1;
+                    // Start counting from index 1 to ignore deadline command
+                    for (int i = 1; i < commandString.length; i++) {
+                        String word = commandString[i];
+                        if (word.equals("/by")) {
+                            taskNameDone = true;
+                            argsDoneFlag -= 1;
+                            if (argsDoneFlag < 0) {
                                 break;
-                            } else {
-                                taskName.append(word).append(" ");
-                                taskNameLength++;
                             }
-                        }
-                        // pass remaining user input to extract period
-                        String[] periodInput = Arrays.copyOfRange(commandString, taskNameLength + 1, commandString.length);
-                        String[] period = Parser.parsePeriodData(periodInput);
-                        if (period[0].isEmpty()) {
-                            throw new InvictaException("_".repeat(100)
-                                    + "\n\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)\n"
-                                    + "_".repeat(100));
-                        } else if (period[1].isEmpty()) {
-                            throw new InvictaException("_".repeat(100)
-                                    + "\n\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n"
-                                    + "_".repeat(100));
+                        } else if (taskNameDone) {
+                            deadlineTimeString.append(word).append(" ");
                         } else {
-                            LocalDateTime eventStartTime = Parser.parseDateTimeData(period[0].toString().trim());
-                            LocalDateTime eventEndTime = Parser.parseDateTimeData(period[1].toString().trim());
-                            Event ev = new Event(taskName.toString().trim(),
-                                    eventStartTime,
-                                    eventEndTime);
-                            return new AddCommand(ev);
-                        }
-                    }
-                }
-                case DEADLINE: {
-                    if (commandString.length < 2) {
-                        throw new InvictaException("_".repeat(100)
-                                + "\n\tMissing task name and deadline! (usage: deadline <name> /by <deadline>)\n"
-                                + "_".repeat(100));
-                    } else {
-                        StringBuilder taskName = new StringBuilder();
-                        StringBuilder deadlineTimeString = new StringBuilder();
-                        // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
-                        boolean taskNameDone = false;
-                        int argsDoneFlag = 1;
-                        // Start counting from index 1 to ignore deadline command
-                        for (int i = 1; i < commandString.length; i++) {
-                            String word = commandString[i];
-                            if (word.equals("/by")) {
-                                taskNameDone = true;
-                                argsDoneFlag -= 1;
-                                if (argsDoneFlag < 0) {
-                                    break;
-                                }
-                            } else if (taskNameDone) {
-                                deadlineTimeString.append(word).append(" ");
-                            } else {
-                                taskName.append(word).append(" ");
-                            }
-                        }
-                        if (deadlineTimeString.isEmpty()) {
-                            throw new InvictaException("_".repeat(100)
-                                    + "\n\tMissing deadline! (usage: deadline <name> /by <deadline>)\n"
-                                    + "_".repeat(100));
-                        } else {
-                            LocalDateTime deadlineTime = Parser.parseDateTimeData(deadlineTimeString.toString().trim());
-                            Deadline dl = new Deadline(taskName.toString().trim(),
-                                    deadlineTime);
-                            return new AddCommand(dl);
-                        }
-                    }
-                }
-                case TODO: {
-                    if (commandString.length < 2) {
-                        throw new InvictaException("_".repeat(100)
-                                + "\n\tMissing task name! (usage: todo <name>)\n"
-                                + "_".repeat(100));
-                    } else {
-                        StringBuilder taskName = new StringBuilder();
-                        // Start counting from index 1 to ignore todo command
-                        for (int i = 1; i < commandString.length; i++) {
-                            String word = commandString[i];
                             taskName.append(word).append(" ");
                         }
-                        Todo td = new Todo(taskName.toString().trim());
-                        return new AddCommand(td);
+                    }
+                    if (deadlineTimeString.isEmpty()) {
+                        throw new InvictaException(Ui.SEPARATOR
+                                + "\n\tMissing deadline! (usage: deadline <name> /by <deadline>)\n"
+                                + Ui.SEPARATOR);
+                    } else {
+                        LocalDateTime deadlineTime = Parser.parseDateTimeData(deadlineTimeString.toString().trim());
+                        Deadline dl = new Deadline(taskName.toString().trim(),
+                                deadlineTime);
+                        return new AddCommand(dl);
                     }
                 }
+            }
+            case TODO: {
+                if (commandString.length < 2) {
+                    throw new InvictaException(Ui.SEPARATOR
+                            + "\n\tMissing task name! (usage: todo <name>)\n"
+                            + Ui.SEPARATOR);
+                } else {
+                    StringBuilder taskName = new StringBuilder();
+                    // Start counting from index 1 to ignore todo command
+                    for (int i = 1; i < commandString.length; i++) {
+                        String word = commandString[i];
+                        taskName.append(word).append(" ");
+                    }
+                    Todo td = new Todo(taskName.toString().trim());
+                    return new AddCommand(td);
+                }
+            }
             case FIND: {
                 String stringToSearch;
                 StringBuilder stringToSearchString = new StringBuilder();
                 if (commandString.length < 2) {
-                    throw new InvictaException("_".repeat(100)
+                    throw new InvictaException(Ui.SEPARATOR
                             + "\n\tMissing search string! (usage: find <search string>)\n"
-                            + "_".repeat(100));
+                            + Ui.SEPARATOR);
                 } else {
                     for (int i = 1; i < commandString.length; i++) {
                         String word = commandString[i];
@@ -194,54 +214,53 @@ public class Parser {
                     return new DisplayCommand(commandType, stringToSearch);
                 }
             }
-                case DAY: {
-                    LocalDate dateToSearch;
-                    StringBuilder dateToSearchString = new StringBuilder();
-                    if (commandString.length < 2) {
-                        throw new InvictaException("_".repeat(100)
-                                + "\n\tMissing date! (usage: day <date>)\n"
-                                + "_".repeat(100));
-                    } else {
-                        for (int i = 1; i < commandString.length; i++) {
-                            String word = commandString[i];
-                            dateToSearchString.append(word).append(" ");
-                        }
-                        dateToSearch = Parser.parseDateTimeData(dateToSearchString
-                                .toString().trim()).toLocalDate(); // time values are disregarded
-                        return new DisplayCommand(commandType, dateToSearch);
+            case DAY: {
+                LocalDate dateToSearch;
+                StringBuilder dateToSearchString = new StringBuilder();
+                if (commandString.length < 2) {
+                    throw new InvictaException(Ui.SEPARATOR
+                            + "\n\tMissing date! (usage: day <date>)\n"
+                            + Ui.SEPARATOR);
+                } else {
+                    for (int i = 1; i < commandString.length; i++) {
+                        String word = commandString[i];
+                        dateToSearchString.append(word).append(" ");
                     }
+                    dateToSearch = Parser.parseDateTimeData(dateToSearchString
+                            .toString().trim()).toLocalDate(); // time values are disregarded
+                    return new DisplayCommand(commandType, dateToSearch);
                 }
-                case PERIOD: {
-                    if (commandString.length < 2) {
-                        throw new InvictaException("_".repeat(100)
+            }
+            case PERIOD: {
+                if (commandString.length < 2) {
+                    throw new InvictaException(Ui.SEPARATOR
+                            + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
+                            + Ui.SEPARATOR);
+                } else {
+                    String[] periodInput = Arrays.copyOfRange(commandString,1, commandString.length);
+                    String[] period = Parser.parsePeriodData(periodInput);
+                    if (period[0].isEmpty()) {
+                        throw new InvictaException(Ui.SEPARATOR
                                 + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
-                                + "_".repeat(100));
-                    } else {
-                        String[] periodInput = Arrays.copyOfRange(commandString,1, commandString.length);
-                        String[] period = Parser.parsePeriodData(periodInput);
-                        if (period[0].isEmpty()) {
-                            throw new InvictaException("_".repeat(100)
-                                    + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
-                                    + "_".repeat(100));
-                        } else if (period[1].isEmpty()) {
-                            throw new InvictaException("_".repeat(100)
-                                    + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
-                                    + "_".repeat(100));
-                        }
-                        LocalDateTime periodStartTime = Parser.parseDateTimeData(period[0].trim());
-                        LocalDateTime periodEndTime = Parser.parseDateTimeData(period[1].trim());
-                        return new DisplayCommand(commandType, periodStartTime, periodEndTime);
+                                + Ui.SEPARATOR);
+                    } else if (period[1].isEmpty()) {
+                        throw new InvictaException(Ui.SEPARATOR
+                                + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
+                                + Ui.SEPARATOR);
                     }
+                    LocalDateTime periodStartTime = Parser.parseDateTimeData(period[0].trim());
+                    LocalDateTime periodEndTime = Parser.parseDateTimeData(period[1].trim());
+                    return new DisplayCommand(commandType, periodStartTime, periodEndTime);
                 }
-                default: {
-                    throw new InvictaException("_".repeat(100)
-                            + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
-                            + "_".repeat(100));
-                }
+            }
+            default: {
+                throw new InvictaException(Ui.SEPARATOR
+                        + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
+                        + Ui.SEPARATOR);
+            }
             }
         }
     }
-
 
     /**
      * Returns a LocalDateTime object based on String provided.

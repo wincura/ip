@@ -8,8 +8,4 @@ public class InvictaException extends Exception {
     public InvictaException(String message) {
         super(message);
     }
-
-    public InvictaException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }
