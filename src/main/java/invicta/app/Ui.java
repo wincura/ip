@@ -71,7 +71,7 @@ public class Ui {
                 + "\tdeadline <name> /by <deadline> - add a deadline task\n"
                 + "\tevent <name> /from <start> /to <end> - add an event\n"
                 + "\tfind <search string> - display tasks containing search string in task descriptions\n"
-                + "\tday <end> - display tasks on date\n"
+                + "\tday <date> - display tasks on date\n"
                 + "\tperiod /from <start> /to <end> - display tasks within period\n\n"
                 + "\tList of available date time formats:\n"
                 + "\tyyyy-MM-dd\n"
