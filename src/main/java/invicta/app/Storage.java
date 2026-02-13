@@ -15,6 +15,7 @@ import invicta.task.Event;
 import invicta.task.Task;
 import invicta.task.TaskList;
 import invicta.task.Todo;
+import invicta.app.Message.MessageKey;
 
 /**
  * Handles loading and updating of task list files.
@@ -32,14 +33,10 @@ public class Storage {
      * Prepares directory, creating it if it does not exist yet.
      */
     private void prepareDirectory(File dir) {
-        if (!dir.exists()) {
-            if (dir.mkdir()) {
-                System.out.println("Data directory created at: " + dir.getAbsolutePath());
-            } else {
-                System.out.println("Failed to create new directory.");
-            }
+        if (dir.mkdir()) {
+            Ui.showIOMessages(MessageKey.DIRECTORY_CREATED, dir.getAbsolutePath());
         } else {
-            System.out.println("Data directory found at: " + dir.getAbsolutePath());
+            Ui.showIOMessages(MessageKey.DIRECTORY_CREATE_FAILED, "");
         }
     }
 
@@ -96,20 +93,24 @@ public class Storage {
     public ArrayList<Task> load() throws IOException, InvictaException {
         ArrayList<Task> loadedTasks = new ArrayList<>();
         File dir = new File(this.dirPath);
-        prepareDirectory(dir);
+        if (!dir.exists()) {
+            prepareDirectory(dir);
+        } else {
+            Ui.showIOMessages(MessageKey.DIRECTORY_FOUND, dir.getAbsolutePath());
+        }
 
         File file = new File(this.filePath);
         if (file.createNewFile()) {
-            System.out.println("Task list file created at: " + file.getAbsolutePath());
+            Ui.showIOMessages(MessageKey.FILE_CREATED, dir.getAbsolutePath());
         } else {
-            System.out.println("Task list file found at: " + file.getAbsolutePath()
-                    + "\nLoading data from file into Invicta...");
+            Ui.showIOMessages(MessageKey.FILE_FOUND, dir.getAbsolutePath());
+            Ui.showIOMessages(MessageKey.FILE_LOADING, "");
             Scanner s = new Scanner(file);
             while (s.hasNext()) {
                 readFile(s, loadedTasks);
             }
             s.close();
-            System.out.println("Task list file data successfully loaded into Invicta.\n\n\n");
+            Ui.showIOMessages(MessageKey.FILE_LOADED, "");
         }
         return loadedTasks;
     }
@@ -119,37 +120,31 @@ public class Storage {
      */
     private void writeFile(FileWriter fw, Task t) throws IOException {
         String toAdd;
+        String[] values = new String[0];
         if (t instanceof Todo) {
-            String[] values = {TaskType.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
-            toAdd = String.join(";", values);
-            fw.write(toAdd + System.lineSeparator());
+            values = new String[]{TaskType.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
+
         } else if (t instanceof Deadline) {
-            String[] values = {TaskType.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+            values = new String[]{TaskType.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                     ((Deadline) t).getDeadline().format(Parser.dateAndTime)};
-            toAdd = String.join(";", values);
-            fw.write(toAdd + System.lineSeparator());
         } else if (t instanceof Event) {
-            String[] values = {TaskType.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
+            values = new String[]{TaskType.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
                     ((Event) t).getStart().format(Parser.dateAndTime),
                     ((Event) t).getEnd().format(Parser.dateAndTime)};
-            toAdd = String.join(";", values);
-            fw.write(toAdd + System.lineSeparator());
         }
+        toAdd = String.join(";", values);
+        fw.write(toAdd + System.lineSeparator());
     }
 
     /**
      * Writes into task list file to reflect changes in task list.
      */
-    public void update(TaskList taskList) {
+    public void update(TaskList taskList) throws IOException{
         ArrayList<Task> updatedTaskList = taskList.getTaskList();
-        try {
-            FileWriter fw = new FileWriter(this.filePath);
-            for (Task t : updatedTaskList) {
-                writeFile(fw, t);
-            }
-            fw.close();
-        } catch (IOException e) {
-            System.out.print("Error occurred while writing to file: " + e.getMessage());
+        FileWriter fw = new FileWriter(this.filePath);
+        for (Task t : updatedTaskList) {
+            writeFile(fw, t);
         }
+        fw.close();
     }
 }

@@ -35,10 +35,8 @@ public class InvictaBot {
             this.invictaUi = new Ui();
             this.invictaStorage = new Storage(TASK_LIST_FILE_PATH);
             invictaTasks = new TaskList(invictaStorage.load());
-        } catch (IOException e) {
-            invictaUi.showLoadingError(e);
-            invictaTasks = new TaskList();
-        } catch (InvictaException e) {
+        } catch (Exception e) {
+            assert invictaUi != null;
             invictaUi.showException(e);
             invictaTasks = new TaskList();
         }

@@ -21,6 +21,7 @@ import invicta.command.ExitCommand;
 import invicta.task.Deadline;
 import invicta.task.Event;
 import invicta.task.Todo;
+import invicta.app.Message.MessageKey;
 
 
 /**
@@ -43,7 +44,7 @@ public class Parser {
                 username = s.nextLine().trim();
                 ui.setUsername(username);
                 if (username.isEmpty()) {
-                    throw new InvictaException("\tSurely you're not a nameless person! Come again?");
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_USERNAME));
                 } else {
                     break;
                 }
@@ -64,9 +65,7 @@ public class Parser {
      */
     public static Command parseCommandData(String[] commandString, CommandType commandType) throws InvictaException {
         if (commandString.length == 0) {
-            throw new InvictaException(Ui.SEPARATOR
-                    + "\n\tWhat? Did you say something? Type a message!\n"
-                    + Ui.SEPARATOR);
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_INPUT));
         } else {
             switch (commandType) {
             case BYE: {
@@ -77,9 +76,8 @@ public class Parser {
             }
             case DELETE: {
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tPlease provide an index for this command. (usage: delete <number>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_INDEX,
+                            Message.getUsageMessage(MessageKey.DELETE_USAGE)));
                 } else {
                     int index = Integer.parseInt(commandString[1]) - 1;
                     return new EditCommand(commandType, index);
@@ -87,9 +85,8 @@ public class Parser {
             }
             case MARK: {
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tPlease provide an index for this command. (usage: mark <number>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_INDEX,
+                            Message.getUsageMessage(MessageKey.MARK_USAGE)));
                 } else {
                     int index = Integer.parseInt(commandString[1]) - 1;
                     return new EditCommand(commandType, index);
@@ -97,9 +94,8 @@ public class Parser {
             }
             case UNMARK: {
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tPlease provide an index for this command. (usage: unmark <number>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_INDEX,
+                            Message.getUsageMessage(MessageKey.UNMARK_USAGE)));
                 } else {
                     int index = Integer.parseInt(commandString[1]) - 1;
                     return new EditCommand(commandType, index);
@@ -107,10 +103,10 @@ public class Parser {
             }
             case EVENT: {
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tMissing task name, start time and end time! "
-                            + "(usage: event <name> /from <start> /to <end>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(
+                            new MessageKey[] {MessageKey.MISSING_NAME,
+                                    MessageKey.MISSING_EVENT_START, MessageKey.MISSING_EVENT_END},
+                            Message.getUsageMessage(MessageKey.EVENT_USAGE)));
                 } else {
                     StringBuilder taskName = new StringBuilder();
                     int taskNameLength = 0; // to be used later to pass user input words after task name
@@ -127,13 +123,12 @@ public class Parser {
                     String[] periodInput = Arrays.copyOfRange(commandString, taskNameLength + 1, commandString.length);
                     String[] period = Parser.parsePeriodData(periodInput);
                     if (period[0].isEmpty()) {
-                        throw new InvictaException(Ui.SEPARATOR
-                                + "\n\tMissing start time and end time! (usage: event <name> /from <start> /to <end>)\n"
-                                + Ui.SEPARATOR);
+                        throw new InvictaException(Message.getChatbotMessage(
+                                new MessageKey[] {MessageKey.MISSING_EVENT_START, MessageKey.MISSING_EVENT_END},
+                                Message.getUsageMessage(MessageKey.EVENT_USAGE)));
                     } else if (period[1].isEmpty()) {
-                        throw new InvictaException(Ui.SEPARATOR
-                                + "\n\tMissing end time! (usage: event <name> /from <start> /to <end>)" + "\n"
-                                + Ui.SEPARATOR);
+                        throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_EVENT_END,
+                                Message.getUsageMessage(MessageKey.EVENT_USAGE)));
                     } else {
                         LocalDateTime eventStartTime = Parser.parseDateTimeData(period[0].toString().trim());
                         LocalDateTime eventEndTime = Parser.parseDateTimeData(period[1].toString().trim());
@@ -146,9 +141,9 @@ public class Parser {
             }
             case DEADLINE: {
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tMissing task name and deadline! (usage: deadline <name> /by <deadline>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(
+                            new MessageKey[] {MessageKey.MISSING_NAME, MessageKey.MISSING_DEADLINE},
+                            Message.getUsageMessage(MessageKey.DEADLINE_USAGE)));
                 } else {
                     StringBuilder taskName = new StringBuilder();
                     StringBuilder deadlineTimeString = new StringBuilder();
@@ -171,9 +166,8 @@ public class Parser {
                         }
                     }
                     if (deadlineTimeString.isEmpty()) {
-                        throw new InvictaException(Ui.SEPARATOR
-                                + "\n\tMissing deadline! (usage: deadline <name> /by <deadline>)\n"
-                                + Ui.SEPARATOR);
+                        throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_DEADLINE,
+                                Message.getUsageMessage(MessageKey.DEADLINE_USAGE)));
                     } else {
                         LocalDateTime deadlineTime = Parser.parseDateTimeData(deadlineTimeString.toString().trim());
                         Deadline dl = new Deadline(taskName.toString().trim(),
@@ -184,9 +178,8 @@ public class Parser {
             }
             case TODO: {
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tMissing task name! (usage: todo <name>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_NAME,
+                            Message.getUsageMessage(MessageKey.TODO_USAGE)));
                 } else {
                     StringBuilder taskName = new StringBuilder();
                     // Start counting from index 1 to ignore todo command
@@ -202,9 +195,8 @@ public class Parser {
                 String stringToSearch;
                 StringBuilder stringToSearchString = new StringBuilder();
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tMissing search string! (usage: find <search string>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_STRING,
+                            Message.getUsageMessage(MessageKey.FIND_USAGE)));
                 } else {
                     for (int i = 1; i < commandString.length; i++) {
                         String word = commandString[i];
@@ -218,9 +210,8 @@ public class Parser {
                 LocalDate dateToSearch;
                 StringBuilder dateToSearchString = new StringBuilder();
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tMissing date! (usage: day <date>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_DAY,
+                            Message.getUsageMessage(MessageKey.DAY_USAGE)));
                 } else {
                     for (int i = 1; i < commandString.length; i++) {
                         String word = commandString[i];
@@ -233,20 +224,19 @@ public class Parser {
             }
             case PERIOD: {
                 if (commandString.length < 2) {
-                    throw new InvictaException(Ui.SEPARATOR
-                            + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
-                            + Ui.SEPARATOR);
+                    throw new InvictaException(Message.getChatbotMessage(
+                            new MessageKey[] {MessageKey.MISSING_PERIOD_START, MessageKey.MISSING_PERIOD_END},
+                            Message.getUsageMessage(MessageKey.PERIOD_USAGE)));
                 } else {
                     String[] periodInput = Arrays.copyOfRange(commandString,1, commandString.length);
                     String[] period = Parser.parsePeriodData(periodInput);
                     if (period[0].isEmpty()) {
-                        throw new InvictaException(Ui.SEPARATOR
-                                + "\n\tMissing start time and end time! (usage: period /from <start> /to <end>)\n"
-                                + Ui.SEPARATOR);
+                        throw new InvictaException(Message.getChatbotMessage(
+                                new MessageKey[] {MessageKey.MISSING_PERIOD_START, MessageKey.MISSING_PERIOD_END},
+                                Message.getUsageMessage(MessageKey.PERIOD_USAGE)));
                     } else if (period[1].isEmpty()) {
-                        throw new InvictaException(Ui.SEPARATOR
-                                + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
-                                + Ui.SEPARATOR);
+                        throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_PERIOD_END,
+                                Message.getUsageMessage(MessageKey.PERIOD_USAGE)));
                     }
                     LocalDateTime periodStartTime = Parser.parseDateTimeData(period[0].trim());
                     LocalDateTime periodEndTime = Parser.parseDateTimeData(period[1].trim());
@@ -254,9 +244,8 @@ public class Parser {
                 }
             }
             default: {
-                throw new InvictaException(Ui.SEPARATOR
-                        + "\n\tMissing end time! (usage: period /from <start> /to <end>)" + "\n"
-                        + Ui.SEPARATOR);
+                throw new InvictaException(Message.getChatbotMessage(Message.MessageKey.INVALID_COMMAND,
+                        Message.getUsageMessage(Message.MessageKey.TYPE_HELP)));
             }
             }
         }

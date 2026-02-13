@@ -50,7 +50,6 @@ public class StorageTest {
             Files.createFile(Path.of((FILE_TO_WRITE_PATH)));
         } catch (IOException e) {
             System.err.println("Error occurred while writing to file: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -102,7 +101,7 @@ public class StorageTest {
      * is fixed upon launch, with file created at path if non-existent.
      */
     @Test
-    public void update_invalidPathToWrite_throwNullPointerException() throws NullPointerException {
+    public void update_invalidPathToWrite_throwNullPointerException() throws NullPointerException, IOException {
         testUpdateStorage = new Storage(FILE_TO_WRITE_PATH);
         TaskList taskListToWrite = new TaskList();
         testUpdateStorage.update(taskListToWrite);
