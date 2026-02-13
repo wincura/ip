@@ -2,7 +2,7 @@ package invicta.command;
 
 // Import to handle chatbot-specific exceptions
 import invicta.app.InvictaException;
-import invicta.app.Ui;
+import invicta.app.Message;
 
 /**
  * Represents possible types of commands.
@@ -40,10 +40,8 @@ public enum CommandType {
                 return c;
             }
         }
-        throw new InvictaException(Ui.SEPARATOR
-                + "\n\tWhat are you talking about? I do not understand: "
-                + word + "\n\tType 'help' for a list of commands and their usage.\n"
-                + Ui.SEPARATOR);
+        throw new InvictaException(Message.getChatbotMessage(Message.MessageKey.INVALID_COMMAND,
+                Message.getUsageMessage(Message.MessageKey.TYPE_HELP)));
     }
 }
 

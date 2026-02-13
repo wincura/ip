@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 // Imports to use task and task list data for display
-import invicta.InvictaBot;
+import invicta.app.Message.MessageKey;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
@@ -22,8 +22,7 @@ import invicta.task.TaskList;
  * Handles user interactions with InvictaBot.
  */
 public class Ui {
-    private static final int SEPARATOR_WIDTH = 100;
-    public static final String SEPARATOR = "_".repeat(SEPARATOR_WIDTH);
+
     private String username;
 
     public Ui() {
@@ -60,32 +59,14 @@ public class Ui {
      * Displays help message.
      */
     public void help() {
-        System.out.println(Ui.SEPARATOR
-                + "\n\tList of commands in InvictaBot:\n"
-                + "\tbye - exit app\n"
-                + "\tlist - display task list\n"
-                + "\tdelete - delete the task\n"
-                + "\tmark <index> - mark task as done\n"
-                + "\tunmark <index> - mask task as not done\n"
-                + "\ttodo <name> - add a to-do task\n"
-                + "\tdeadline <name> /by <deadline> - add a deadline task\n"
-                + "\tevent <name> /from <start> /to <end> - add an event\n"
-                + "\tfind <search string> - display tasks containing search string in task descriptions\n"
-                + "\tday <date> - display tasks on date\n"
-                + "\tperiod /from <start> /to <end> - display tasks within period\n\n"
-                + "\tList of available date time formats:\n"
-                + "\tyyyy-MM-dd\n"
-                + "\tyyyy-MM-dd HH:mm\n"
-                + Ui.SEPARATOR);
+        System.out.println(Message.getChatbotMessage(MessageKey.DISPLAY_HELP));
     }
 
     /**
      * Displays goodbye message with username.
      */
     public void bye() {
-        System.out.println(Ui.SEPARATOR
-                + "\n\tBye bye now! You take care, " + this.username + "!\n"
-                + Ui.SEPARATOR);
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.BYE, this.username));
     }
 
     /**
@@ -95,10 +76,19 @@ public class Ui {
      * @param taskList Task list whose count are to be printed.
      */
     public void added(Task t, TaskList taskList) {
-        System.out.println(Ui.SEPARATOR
-                + "\n\tOkay! I've added this task: \n\t\t" + t.toString()
-                + "\n\tYou've got " + taskList.getSize() + " tasks in your list now.\n"
-                + Ui.SEPARATOR);
+        String size = Integer.toString(taskList.getSize());
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.ADDED_TASK, t.toString(), size));
+    }
+
+    /**
+     * Displays message when deleting tasks, including count.
+     *
+     * @param t Task whose details are to be printed.
+     * @param taskList Task list whose count are to be printed.
+     */
+    public void deleted(Task t, TaskList taskList) {
+        String size = Integer.toString(taskList.getSize());
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.DELETED_TASK, t.toString(), size));
     }
 
     /**
@@ -111,27 +101,19 @@ public class Ui {
     public void marked(int i, String task) {
         switch (i) {
         case 1: {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tGreat! I've marked this as done:  \n\t\t" + task + "\n"
-                    + Ui.SEPARATOR);
+            System.out.println(Message.getChatbotMessageFormatted(MessageKey.MARKED_DONE, task));
             break;
         }
         case 2: {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tThis task is already marked as done: " + "\n\t\t" + task + "\n"
-                    + Ui.SEPARATOR);
+            System.out.println(Message.getChatbotMessageFormatted(MessageKey.MARKED_DONE_ALREADY, task));
             break;
         }
         case 3: {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tOh I see! I've marked this as not done: \n\t\t" + task + "\n"
-                    + Ui.SEPARATOR);
+            System.out.println(Message.getChatbotMessageFormatted(MessageKey.MARKED_NOT_DONE, task));
             break;
         }
         case 4: {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tThis task is already marked as not done: \n\t\t" + task + "\n"
-                    + Ui.SEPARATOR);
+            System.out.println(Message.getChatbotMessageFormatted(MessageKey.MARKED_NOT_DONE_ALREADY, task));
             break;
         }
         }
@@ -141,9 +123,7 @@ public class Ui {
      * Displays message indicating an empty task list.
      */
     public void empty() {
-        System.out.println(Ui.SEPARATOR
-                + "\n\tYour task list is empty! Add a few tasks!\n"
-                + Ui.SEPARATOR);
+        System.out.println(Message.getChatbotMessage(MessageKey.EMPTY_TASK_LIST));
     }
 
     /**
@@ -153,13 +133,8 @@ public class Ui {
      */
     public void printAll(TaskList taskList) {
         int number = 0;
-        System.out.println(Ui.SEPARATOR
-                + "\n\tHere is a list of your tasks: ");
-        for (Task t : taskList.getTaskList()) {
-            number += 1;
-            System.out.println("\t" + number + ". " + t.toString());
-        }
-        System.out.println(Ui.SEPARATOR);
+        String listMessage = Message.buildListMessage(taskList.getTaskList());
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.DISPLAY_TASK_LIST, listMessage));
     }
 
     /**
@@ -168,16 +143,14 @@ public class Ui {
      * @param taskList Provided list of found tasks to be printed.
      * @param dateToSearch Date used to find the tasks to be printed.
      */
-    public void printFound(ArrayList<Task> taskList, LocalDate dateToSearch) {
-        int number = 0;
-        System.out.println(Ui.SEPARATOR
-                + "\n\tHere is a list of your tasks that you have on "
-                + dateToSearch.format(Parser.dateDisplay) + ": ");
-        for (Task t : taskList) {
-            number += 1;
-            System.out.println("\t" + number + ". " + t.toString());
+    public void printFound(ArrayList<Task> taskList, LocalDate dateToSearch) throws InvictaException {
+        if (taskList.isEmpty()) {
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.EMPTY_DAY,
+                    Message.getChatbotMessage(MessageKey.PROMPT_ADD_TASK)));
         }
-        System.out.println(Ui.SEPARATOR);
+        String listMessage = Message.buildListMessage(taskList);
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.DISPLAY_TASK_LIST_DAY,
+                dateToSearch.format(Parser.dateDisplay), listMessage));
     }
 
     /**
@@ -187,24 +160,15 @@ public class Ui {
      * @param periodStartTime Period start time used to find the tasks to be printed.
      * @param periodEndTime Period end time used to find the tasks to be printed.
      */
-    public void printFound(ArrayList<Task> taskList, LocalDateTime periodStartTime, LocalDateTime periodEndTime) {
-        int number = 0;
+    public void printFound(ArrayList<Task> taskList, LocalDateTime periodStartTime, LocalDateTime periodEndTime)
+            throws InvictaException {
         if (taskList.isEmpty()) {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tThere are no events in that period. Wanna add a task?\n"
-                    + Ui.SEPARATOR);
-        } else {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tHere is a list of your tasks that fall within "
-                    + periodStartTime.format(Parser.dateDisplay) + " to "
-                    + periodEndTime.format(Parser.dateDisplay) + ": ");
-            for (Task t : taskList) {
-                number += 1;
-                System.out.println("\t" + number + ". " + t.toString());
-            }
-            System.out.println(Ui.SEPARATOR);
-
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.EMPTY_PERIOD,
+                    Message.getChatbotMessage(MessageKey.PROMPT_ADD_TASK)));
         }
+        String listMessage = Message.buildListMessage(taskList);
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.DISPLAY_TASK_LIST_PERIOD,
+                periodStartTime.format(Parser.dateDisplay), periodEndTime.format(Parser.dateDisplay), listMessage));
     }
 
     /**
@@ -213,16 +177,14 @@ public class Ui {
      * @param taskList Provided list of found tasks to be printed.
      * @param stringToSearch String used to find the tasks to be printed.
      */
-    public void printFound(ArrayList<Task> taskList, String stringToSearch) {
-        int number = 0;
-        System.out.println(Ui.SEPARATOR
-                + "\n\tHere is a list of your tasks that contains '"
-                + stringToSearch + "' : ");
-        for (Task t : taskList) {
-            number += 1;
-            System.out.println("\t" + number + ". " + t.toString());
+    public void printFound(ArrayList<Task> taskList, String stringToSearch) throws InvictaException {
+        if (taskList.isEmpty()) {
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.EMPTY_FIND,
+                    Message.getChatbotMessage(MessageKey.PROMPT_ADD_TASK)));
         }
-        System.out.println(Ui.SEPARATOR);
+        String listMessage = Message.buildListMessage(taskList);
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.DISPLAY_TASK_LIST_FIND,
+                stringToSearch, listMessage));
     }
 
     /**
@@ -231,15 +193,10 @@ public class Ui {
      * @param s Scanner used to read user input for username.
      */
     public void readUsername(Scanner s) {
-        System.out.println(Ui.SEPARATOR
-                + "\n\tHowdy! I'm InvictaBot!\n\tHow might I address you, pal?\n"
-                + Ui.SEPARATOR);
+        System.out.println(Message.getChatbotMessage(MessageKey.PROMPT_USERNAME));
         String username = "";
         Parser.processUsername(s, username, this);
-        System.out.println(Ui.SEPARATOR
-                + "\n\tIt's a pleasure, " + this.getUsername()
-                + "! What can I do you for?\n"
-                + Ui.SEPARATOR);
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.PROMPT_COMMAND, this.getUsername()));
     }
 
     /**
@@ -252,9 +209,7 @@ public class Ui {
         String raw = s.nextLine().trim();
         String[] userInput = raw.split(" ");
         if (raw.isEmpty()) {
-            throw new InvictaException(Ui.SEPARATOR
-                    + "\n\tWhat? Did you say something? Type a message!\n"
-                    + Ui.SEPARATOR);
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_INPUT));
         } else {
             return userInput;
         }
@@ -266,14 +221,16 @@ public class Ui {
      */
     public void showException (Exception e) {
         if (e instanceof NumberFormatException) {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tAn index is a number, so go put one! (usage: mark/unmark <int as index>)\n"
-                    + Ui.SEPARATOR);
+            System.out.println(Message.getChatbotMessage(
+                    new MessageKey[] {MessageKey.MARK_USAGE, MessageKey.UNMARK_USAGE},
+                    Message.getUsageMessage(Message.MessageKey.TYPE_HELP)));
         }
         else if (e instanceof DateTimeParseException) {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tInvalid date time format! Type 'help' to view acceptable formats.\n"
-                    + Ui.SEPARATOR);
+            System.out.println(Message.getChatbotMessage(MessageKey.INVALID_DATE_TIME,
+                    Message.getUsageMessage(Message.MessageKey.TYPE_HELP)));
+        }
+        else if (e instanceof IOException) {
+            System.out.println(Message.getIoMessage(MessageKey.FILE_IO_ERROR, e.getMessage()));
         }
         else {
             System.out.println(e.getMessage());
@@ -281,9 +238,11 @@ public class Ui {
     }
 
     /**
-     * Displays error message for error occurring while reading from file.
+     * Displays messages related to reading and writing from file.
      */
-    public void showLoadingError(IOException e) {
-        System.out.print("Error occurred while reading file: " + e.getMessage());
+    public static void showIOMessages(MessageKey key, String details) {
+        String IoMessage = Message.getIoMessage(key);
+        System.out.println(IoMessage + " " + details);
     }
 }
+
