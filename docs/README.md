@@ -241,7 +241,10 @@ Expected Outcome:
 
 Logo for chatbot generated with the help of an external Text to ASCII Art Generator tool from https://patorjk.com/software/taag/.
 
+
 Translations for French and Spanish language support generated with ChatGPT Gen AI, and verified by me.
+loadInto() method in Message class was written with the help of ChatGPT Gen AI, and tweaked by me.
+ChatGPT Gen AI helped me to pinpoint some bugs or small details I might have missed out like spelling or punctuation.
 
 Reference(s) used for working with Java Date Time:
 https://www.w3schools.com/java/java_date.asp

@@ -67,6 +67,7 @@ public class Message {
     /**
      * Loads message key-string pairings stored in .properties files into the Map data structures
      * of respective languages. Used as a helper function during initialization.
+     * Written with the help of AI tool, tweaked by me.
      *
      * @param target Map data structure to load message key-string pairings into.
      * @param resourcePath Path where .properties files are located.
@@ -76,14 +77,14 @@ public class Message {
 
         try (InputStream in = Message.class.getClassLoader().getResourceAsStream(resourcePath)) {
             if (in == null) {
-                throw new IllegalArgumentException("Missing resource file: " + resourcePath);
+                throw new IllegalArgumentException("Missing .properties file: " + resourcePath);
             }
 
             try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
                 props.load(br);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to load resource file: " + resourcePath, e);
+            throw new IllegalStateException("Failed to load .properties file: " + resourcePath, e);
         }
 
         for (String k : props.stringPropertyNames()) {
@@ -110,7 +111,6 @@ public class Message {
 
         throw new IllegalArgumentException("Missing message data for key: " + key + " (" + currentLang + ")");
     }
-
 
     /**
      * Returns a string with the corresponding IO message.
@@ -146,17 +146,6 @@ public class Message {
      */
     public static String getChatbotMessage(MessageKey key, String details) {
         return formatWrap(lookup(chatbotMessages, key) + " " + details);
-    }
-
-    /**
-     * Returns a string with multiple corresponding chatbot messages, and details.
-     */
-    public static String getChatbotMessage(MessageKey[] keys, String details) {
-        StringBuilder toDisplay = new StringBuilder();
-        for (MessageKey key : keys) {
-            toDisplay.append(lookup(chatbotMessages, key)).append(" ");
-        }
-        return formatWrap(toDisplay.toString().trim() + " " + details);
     }
 
     /**

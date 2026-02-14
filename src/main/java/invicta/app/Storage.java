@@ -125,9 +125,9 @@ public class Storage {
     private void writeFile(FileWriter fw, Task t) throws IOException {
         String toAdd;
         String[] values = new String[0];
+
         if (t instanceof Todo) {
             values = new String[]{TaskType.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
-
         } else if (t instanceof Deadline) {
             values = new String[]{TaskType.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(), (
                     (Deadline) t).getDeadline().format(Parser.dateAndTime)};
@@ -136,6 +136,7 @@ public class Storage {
                     (Event) t).getStart().format(Parser.dateAndTime), (
                             (Event) t).getEnd().format(Parser.dateAndTime)};
         }
+
         toAdd = String.join(";", values);
         fw.write(toAdd + System.lineSeparator());
     }

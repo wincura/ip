@@ -120,22 +120,11 @@ public class TaskList {
      * @param tasks Task list to add current task to if it meets search criteria.
      */
     public void processQuery(Task t, LocalDate dateToSearch, ArrayList<Task> tasks) {
-        if (t instanceof Deadline) {
-            if (((Deadline) t).getDeadline().toLocalDate().isEqual(dateToSearch)) {
-                tasks.add(t);
-            }
+        if (!(t instanceof TimedTask tt)) {
+            return;
         }
-        if (t instanceof Event e) {
-            LocalDate startDate = e.getStart().toLocalDate();
-            LocalDate endDate = e.getEnd().toLocalDate();
-            // using inclusive checks ensures not missing events that fall on the start and end dates
-            boolean startsOnOrBeforeDate = startDate.isEqual(dateToSearch)
-                    || startDate.isBefore(dateToSearch);
-            boolean endsOnOrAfterDate = endDate.isEqual(dateToSearch)
-                    || endDate.isAfter(dateToSearch);
-            if (startsOnOrBeforeDate && endsOnOrAfterDate) {
-                tasks.add(t);
-            }
+        if (tt.isOnDate(dateToSearch)) {
+            tasks.add(t);
         }
     }
 
@@ -149,34 +138,11 @@ public class TaskList {
      */
     public void processQuery(Task t, LocalDateTime periodStartTime,
                              LocalDateTime periodEndTime, ArrayList<Task> tasks) {
-        if (t instanceof Deadline d) {
-            LocalDateTime deadline = d.getDeadline();
-            boolean afterOrOnStart = deadline.isEqual(periodStartTime)
-                    || deadline.isAfter(periodStartTime);
-            boolean beforeOrOnEnd = deadline.isEqual(periodEndTime)
-                    || deadline.isBefore(periodEndTime);
-            if (afterOrOnStart && beforeOrOnEnd) {
-                tasks.add(t);
-            }
+        if (!(t instanceof TimedTask tt)) {
+            return;
         }
-        if (t instanceof Event e) {
-            LocalDateTime start = e.getStart();
-            LocalDateTime end = e.getEnd();
-            // using inclusive checks and start time to check ensures not missing events that extend beyond period
-            boolean startsBeforeOrOnPeriodEnd =
-                    start.isBefore(periodEndTime) || start.isEqual(periodEndTime);
-            boolean endsAfterOrOnPeriodStart =
-                    end.isAfter(periodStartTime) || end.isEqual(periodStartTime);
-            if (startsBeforeOrOnPeriodEnd && endsAfterOrOnPeriodStart) {
-                tasks.add(t);
-            }
+        if (tt.isWithinPeriod(periodStartTime, periodEndTime)) {
+            tasks.add(t);
         }
-    }
-
-    /**
-     * Prints the details of each task in provided Task List.
-     */
-    public void printTasks() {
-
     }
 }

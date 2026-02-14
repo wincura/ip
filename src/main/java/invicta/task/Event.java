@@ -1,13 +1,14 @@
 package invicta.task;
 
 // Imports to handle time data
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
  * Represents a task with a set start and end time.
  */
-public class Event extends Task {
+public class Event extends TimedTask {
     private final LocalDateTime start;
     private final LocalDateTime end;
     private final DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern("MMM dd yyyy (EEE) hh:mm a ");
@@ -30,6 +31,35 @@ public class Event extends Task {
         return this.end;
     }
 
+    /**
+     * Returns true if deadline tasks falls on given date.
+     */
+    @Override
+    public boolean isOnDate(LocalDate dateToSearch) {
+        LocalDate startDate = this.start.toLocalDate();
+        LocalDate endDate = this.end.toLocalDate();
+
+        boolean startsOnOrBeforeDate = startDate.isEqual(dateToSearch)
+                || startDate.isBefore(dateToSearch);
+        boolean endsOnOrAfterDate = endDate.isEqual(dateToSearch)
+                || endDate.isAfter(dateToSearch);
+        return startsOnOrBeforeDate && endsOnOrAfterDate;
+    }
+
+    /**
+     * Returns true if deadline tasks is within given period.
+     */
+    @Override
+    public boolean isWithinPeriod(LocalDateTime periodStartTime, LocalDateTime periodEndTime) {
+        LocalDateTime start = this.start;
+        LocalDateTime end = this.end;
+
+        boolean hasEventStartBeforeOrOnPeriodEnd =
+                start.isBefore(periodEndTime) || start.isEqual(periodEndTime);
+        boolean hasEventEndAfterOrOnPeriodStart =
+                end.isAfter(periodStartTime) || end.isEqual(periodStartTime);
+        return hasEventStartBeforeOrOnPeriodEnd && hasEventEndAfterOrOnPeriodStart;
+    }
 
     @Override
     public String toString() {
