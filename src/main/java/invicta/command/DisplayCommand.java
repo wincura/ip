@@ -8,8 +8,10 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 
 // Imports to use invicta app components and task list to execute operations
+import invicta.app.InvictaException;
 import invicta.app.Storage;
 import invicta.app.Ui;
+import invicta.app.Message;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
@@ -47,47 +49,26 @@ public class DisplayCommand extends Command {
     /**
      * Processes the day operation accordingly.
      */
-    private void processDay(TaskList taskList, Ui ui) {
+    private void processDay(TaskList taskList, Ui ui) throws InvictaException {
         ArrayList<Task> onDateTasks = taskList.getOnDateTasks(dateToSearch);
+        ui.printFound(onDateTasks, dateToSearch);
 
-        int number = 0;
-        if (onDateTasks.isEmpty()) {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tThere are no events on that day. Wanna add a task?\n"
-                    + Ui.SEPARATOR);
-        } else {
-            ui.printFound(onDateTasks, dateToSearch);
-        }
     }
 
     /**
      * Processes the period operation accordingly.
      */
-    private void processPeriod(TaskList taskList, Ui ui) {
+    private void processPeriod(TaskList taskList, Ui ui) throws InvictaException {
         ArrayList<Task> inPeriodTasks = taskList.getInPeriodTasks(periodStartTime, periodEndTime);
-
-        int number = 0;
-        if (inPeriodTasks.isEmpty()) {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tThere are no events on that day. Wanna add a task?\n"
-                    + Ui.SEPARATOR);
-        } else {
-            ui.printFound(inPeriodTasks, periodStartTime, periodEndTime);
-        }
+        ui.printFound(inPeriodTasks, periodStartTime, periodEndTime);
     }
 
     /**
      * Processes the find operation accordingly.
      */
-    private void processFind(TaskList taskList, Ui ui) {
+    private void processFind(TaskList taskList, Ui ui) throws InvictaException {
         ArrayList<Task> matchingTasks = taskList.getMatchingTasks(stringToSearch);
-        if (matchingTasks.isEmpty()) {
-            System.out.println(Ui.SEPARATOR
-                    + "\n\tThere are no matching tasks. Wanna add a task?\n"
-                    + Ui.SEPARATOR);
-        } else {
-            ui.printFound(matchingTasks, stringToSearch);
-        }
+        ui.printFound(matchingTasks, stringToSearch);
     }
 
     /**
@@ -97,7 +78,7 @@ public class DisplayCommand extends Command {
      * @param storage Storage object that handles loading and updating of files.
      * @param ui Ui object that handles user input and displaying.
      */
-    public void execute(TaskList taskList, Storage storage, Ui ui) {
+    public void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException {
         switch (this.commandType) {
         case HELP: {
             ui.help();

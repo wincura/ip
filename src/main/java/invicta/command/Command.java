@@ -6,12 +6,14 @@ import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.task.TaskList;
 
+import java.io.IOException;
+
 /**
  * Represents a generic command input by user to InvictaBot.
  * Serves as base for specific command types.
  */
 public abstract class Command {
-    public abstract void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException;
+    public abstract void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException, IOException;
 
     public static boolean isExit(Command c) {
         return c instanceof ExitCommand;

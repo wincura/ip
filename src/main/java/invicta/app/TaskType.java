@@ -1,5 +1,7 @@
 package invicta.app;
 
+import invicta.app.Message.MessageKey;
+
 /**
  * Represents possible types of tasks.
  */
@@ -31,7 +33,7 @@ public enum TaskType {
                 return c;
             }
         }
-        throw new InvictaException("Invalid type found in file.");
+        throw new InvictaException(Message.getIoMessage(MessageKey.FILE_INVALID_TYPE));
     }
 }
 

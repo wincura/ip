@@ -41,8 +41,7 @@ List of commands in InvictaBot:
 
 You can add simple to-do tasks with a task description and a completion status.
 
-Usage: `todo <name>`    
-
+Usage: `todo <name>`  
 Example: `todo Buy Books`
 
 Expected Outcome:

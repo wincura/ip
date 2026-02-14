@@ -4,7 +4,11 @@ package invicta.command;
 import invicta.app.InvictaException;
 import invicta.app.Storage;
 import invicta.app.Ui;
+import invicta.app.Message;
+import invicta.task.Task;
 import invicta.task.TaskList;
+
+import java.io.IOException;
 
 /**
  * Represents a command that makes changes to tasks in task list.
@@ -21,11 +25,10 @@ public class EditCommand extends Command {
     /**
      * Processes the unmark operation accordingly.
      */
-    private void processUnmark(TaskList taskList, Ui ui, Storage storage) throws InvictaException {
+    private void processUnmark(TaskList taskList, Ui ui, Storage storage) throws InvictaException, IOException {
         if (this.index < 0 | this.index > taskList.getSize() - 1) {
-            throw new InvictaException(Ui.SEPARATOR
-                    + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
-                    + Ui.SEPARATOR);
+            throw new InvictaException(Message.getChatbotMessage(Message.MessageKey.INVALID_INDEX,
+                    Message.getUsageMessage(Message.MessageKey.LIST_USAGE)));
         }
         if (!taskList.getDone(this.index)) {
             ui.marked(4, taskList.getTaskString(this.index));
@@ -39,11 +42,10 @@ public class EditCommand extends Command {
     /**
      * Processes the mark operation accordingly.
      */
-    private void processMark(TaskList taskList, Ui ui, Storage storage) throws InvictaException {
+    private void processMark(TaskList taskList, Ui ui, Storage storage) throws InvictaException, IOException {
         if (this.index < 0 | this.index > taskList.getSize() - 1) {
-            throw new InvictaException(Ui.SEPARATOR
-                    + "\n\tYou want me to do what? Put a valid index! (check task list using 'list' command)\n"
-                    + Ui.SEPARATOR);
+            throw new InvictaException(Message.getChatbotMessage(Message.MessageKey.INVALID_INDEX,
+                    Message.getUsageMessage(Message.MessageKey.LIST_USAGE)));
         }
         if (taskList.getDone(this.index)) {
             ui.marked(2, taskList.getTaskString(this.index));
@@ -57,21 +59,15 @@ public class EditCommand extends Command {
     /**
      * Processes the delete operation accordingly.
      */
-    private void processDelete(TaskList taskList, Ui ui, Storage storage) throws InvictaException {
+    private void processDelete(TaskList taskList, Ui ui, Storage storage) throws InvictaException, IOException {
         if (this.index < 0 | this.index > taskList.getSize() - 1) {
-            throw new InvictaException(Ui.SEPARATOR
-                    + "\n\tYou want me to do what? "
-                    + "Put a valid index! (check task list using 'list' command)\n"
-                    + Ui.SEPARATOR);
+            throw new InvictaException(Message.getChatbotMessage(Message.MessageKey.INVALID_INDEX,
+                    Message.getUsageMessage(Message.MessageKey.LIST_USAGE)));
         }
-        String deleteTask = taskList.getTaskString(this.index);
+        Task deleteTask = taskList.getTaskList().get(this.index);
         taskList.removeTask(this.index);
         storage.update(taskList);
-        System.out.println(Ui.SEPARATOR
-                + "\n\tInto the trash! This task has been deleted: \n"
-                + "\t\t" + deleteTask + "\n\tYou've got " + taskList.getSize()
-                + " tasks in your list now.\n"
-                + Ui.SEPARATOR);
+        ui.deleted(deleteTask, taskList);
     }
 
     /**
@@ -81,7 +77,7 @@ public class EditCommand extends Command {
      * @param storage Storage object that handles loading and updating of files.
      * @param ui Ui object that handles user input and displaying.
      */
-    public void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException {
+    public void execute(TaskList taskList, Storage storage, Ui ui) throws InvictaException, IOException {
         switch (this.commandType) {
         case UNMARK: {
             processUnmark(taskList, ui, storage);
