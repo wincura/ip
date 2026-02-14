@@ -3,11 +3,11 @@ package invicta.app;
 // Imports to handle file read and write, including date time data
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.io.IOException;
 
 // Imports to use task and task list data for storage
 import invicta.task.Deadline;
@@ -15,7 +15,6 @@ import invicta.task.Event;
 import invicta.task.Task;
 import invicta.task.TaskList;
 import invicta.task.Todo;
-import invicta.app.Message.MessageKey;
 
 /**
  * Handles loading and updating of task list files.
@@ -24,6 +23,9 @@ public class Storage {
     private String filePath;
     private String dirPath;
 
+    /**
+     * Constructs an instance of Storage class.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
         this.dirPath = Paths.get(filePath).getParent().toString();
@@ -34,9 +36,9 @@ public class Storage {
      */
     private void prepareDirectory(File dir) {
         if (dir.mkdir()) {
-            Ui.showIOMessages(MessageKey.DIRECTORY_CREATED, dir.getAbsolutePath());
+            Ui.showIoMessages(MessageKey.DIRECTORY_CREATED, dir.getAbsolutePath());
         } else {
-            Ui.showIOMessages(MessageKey.DIRECTORY_CREATE_FAILED, "");
+            Ui.showIoMessages(MessageKey.DIRECTORY_CREATE_FAILED, "");
         }
     }
 
@@ -80,6 +82,8 @@ public class Storage {
             loadedTasks.add(toAdd);
             break;
         }
+        default:
+            throw new InvictaException(Message.getIoMessage(MessageKey.FILE_INVALID_TYPE));
         }
     }
 
@@ -96,21 +100,21 @@ public class Storage {
         if (!dir.exists()) {
             prepareDirectory(dir);
         } else {
-            Ui.showIOMessages(MessageKey.DIRECTORY_FOUND, dir.getAbsolutePath());
+            Ui.showIoMessages(MessageKey.DIRECTORY_FOUND, dir.getAbsolutePath());
         }
 
         File file = new File(this.filePath);
         if (file.createNewFile()) {
-            Ui.showIOMessages(MessageKey.FILE_CREATED, dir.getAbsolutePath());
+            Ui.showIoMessages(MessageKey.FILE_CREATED, dir.getAbsolutePath());
         } else {
-            Ui.showIOMessages(MessageKey.FILE_FOUND, dir.getAbsolutePath());
-            Ui.showIOMessages(MessageKey.FILE_LOADING, "");
+            Ui.showIoMessages(MessageKey.FILE_FOUND, dir.getAbsolutePath());
+            Ui.showIoMessages(MessageKey.FILE_LOADING, "");
             Scanner s = new Scanner(file);
             while (s.hasNext()) {
                 readFile(s, loadedTasks);
             }
             s.close();
-            Ui.showIOMessages(MessageKey.FILE_LOADED, "");
+            Ui.showIoMessages(MessageKey.FILE_LOADED, "");
         }
         return loadedTasks;
     }
@@ -125,12 +129,12 @@ public class Storage {
             values = new String[]{TaskType.TODO.getCode(), (t.getDone()) ? "1" : "0", t.getDescription()};
 
         } else if (t instanceof Deadline) {
-            values = new String[]{TaskType.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                    ((Deadline) t).getDeadline().format(Parser.dateAndTime)};
+            values = new String[]{TaskType.DEADLINE.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(), (
+                    (Deadline) t).getDeadline().format(Parser.dateAndTime)};
         } else if (t instanceof Event) {
-            values = new String[]{TaskType.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(),
-                    ((Event) t).getStart().format(Parser.dateAndTime),
-                    ((Event) t).getEnd().format(Parser.dateAndTime)};
+            values = new String[]{TaskType.EVENT.getCode(), (t.getDone()) ? "1" : "0", t.getDescription(), (
+                    (Event) t).getStart().format(Parser.dateAndTime), (
+                            (Event) t).getEnd().format(Parser.dateAndTime)};
         }
         toAdd = String.join(";", values);
         fw.write(toAdd + System.lineSeparator());
@@ -139,7 +143,7 @@ public class Storage {
     /**
      * Writes into task list file to reflect changes in task list.
      */
-    public void update(TaskList taskList) throws IOException{
+    public void update(TaskList taskList) throws IOException {
         ArrayList<Task> updatedTaskList = taskList.getTaskList();
         FileWriter fw = new FileWriter(this.filePath);
         for (Task t : updatedTaskList) {

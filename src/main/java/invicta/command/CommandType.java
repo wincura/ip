@@ -3,6 +3,7 @@ package invicta.command;
 // Import to handle chatbot-specific exceptions
 import invicta.app.InvictaException;
 import invicta.app.Message;
+import invicta.app.MessageKey;
 
 /**
  * Represents possible types of commands.
@@ -40,8 +41,8 @@ public enum CommandType {
                 return c;
             }
         }
-        throw new InvictaException(Message.getChatbotMessage(Message.MessageKey.INVALID_COMMAND,
-                Message.getUsageMessage(Message.MessageKey.TYPE_HELP)));
+        throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_COMMAND,
+                Message.getUsageMessage(MessageKey.TYPE_HELP)));
     }
 }
 

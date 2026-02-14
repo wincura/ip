@@ -1,17 +1,14 @@
 package invicta.app;
 
-// Imports to handle data structure operations
-import java.util.Arrays;
-
-// Imports to handle time data
+// Imports to handle time data and handle data structure operations
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 // Imports to return and use command and task classes after parsing
-import invicta.app.Ui;
 import invicta.command.AddCommand;
 import invicta.command.Command;
 import invicta.command.CommandType;
@@ -21,8 +18,6 @@ import invicta.command.ExitCommand;
 import invicta.task.Deadline;
 import invicta.task.Event;
 import invicta.task.Todo;
-import invicta.app.Message.MessageKey;
-
 
 /**
  * Handles parsing of user input to return commands or date time data
@@ -32,11 +27,43 @@ public class Parser {
     public static final String FORMAT_DATE_ONLY = "yyyy-MM-dd";
     public static final String FORMAT_DATE_AND_TIME = "yyyy-MM-dd HH:mm";
     public static final String FORMAT_DATE_DISPLAY = "MMM dd yyyy (EEE)";
-    public static DateTimeFormatter dateOnly = DateTimeFormatter.ofPattern(FORMAT_DATE_ONLY);
-    public static DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern(FORMAT_DATE_AND_TIME);
-    public static DateTimeFormatter dateDisplay = DateTimeFormatter.ofPattern(FORMAT_DATE_DISPLAY);
+    protected static DateTimeFormatter dateOnly = DateTimeFormatter.ofPattern(FORMAT_DATE_ONLY);
+    protected static DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern(FORMAT_DATE_AND_TIME);
+    protected static DateTimeFormatter dateDisplay = DateTimeFormatter.ofPattern(FORMAT_DATE_DISPLAY);
 
+    /**
+     * Processes the user input for language selection.
+     */
+    public static void processLanguage(Scanner s) {
+        label:
+        while (true) {
+            try {
+                String langChoice = s.nextLine().trim();
+                switch (langChoice) {
+                case "":
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_LANGUAGE));
+                case "en":
+                    Message.setLang(Message.Lang.EN);
+                    break label;
+                case "fr":
+                    Message.setLang(Message.Lang.FR);
+                    break label;
+                case "es":
+                    Message.setLang(Message.Lang.ES);
+                    break label;
+                default:
+                    throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_LANGUAGE,
+                            Message.getUsageMessage(MessageKey.LANGUAGE_USAGE)));
+                }
+            } catch (InvictaException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 
+    /**
+     * Processes the user input for username.
+     */
     public static void processUsername(Scanner s, String username, Ui ui) {
         while (true) {
             try {
@@ -105,7 +132,7 @@ public class Parser {
                 if (commandString.length < 2) {
                     throw new InvictaException(Message.getChatbotMessage(
                             new MessageKey[] {MessageKey.MISSING_NAME,
-                                    MessageKey.MISSING_EVENT_START, MessageKey.MISSING_EVENT_END},
+                                MessageKey.MISSING_EVENT_START, MessageKey.MISSING_EVENT_END},
                             Message.getUsageMessage(MessageKey.EVENT_USAGE)));
                 } else {
                     StringBuilder taskName = new StringBuilder();
@@ -147,7 +174,8 @@ public class Parser {
                 } else {
                     StringBuilder taskName = new StringBuilder();
                     StringBuilder deadlineTimeString = new StringBuilder();
-                    // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
+                    // Flags to mark where one argument ends and another begins,
+                    // and when to disregard unnecessary arguments
                     boolean taskNameDone = false;
                     int argsDoneFlag = 1;
                     // Start counting from index 1 to ignore deadline command
@@ -228,7 +256,7 @@ public class Parser {
                             new MessageKey[] {MessageKey.MISSING_PERIOD_START, MessageKey.MISSING_PERIOD_END},
                             Message.getUsageMessage(MessageKey.PERIOD_USAGE)));
                 } else {
-                    String[] periodInput = Arrays.copyOfRange(commandString,1, commandString.length);
+                    String[] periodInput = Arrays.copyOfRange(commandString, 1, commandString.length);
                     String[] period = Parser.parsePeriodData(periodInput);
                     if (period[0].isEmpty()) {
                         throw new InvictaException(Message.getChatbotMessage(
@@ -244,8 +272,8 @@ public class Parser {
                 }
             }
             default: {
-                throw new InvictaException(Message.getChatbotMessage(Message.MessageKey.INVALID_COMMAND,
-                        Message.getUsageMessage(Message.MessageKey.TYPE_HELP)));
+                throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_COMMAND,
+                        Message.getUsageMessage(MessageKey.TYPE_HELP)));
             }
             }
         }

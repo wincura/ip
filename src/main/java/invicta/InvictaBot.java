@@ -2,14 +2,9 @@ package invicta;
 // CS2103T Individual Project by William Scott Win A0273291A
 
 // Imports to handle files and user input
-import java.io.IOException;
 import java.util.Scanner;
 
-// Imports to handle time data
-import java.time.format.DateTimeParseException;
-
 // Imports to use packages of invicta
-import invicta.app.InvictaException;
 import invicta.app.Parser;
 import invicta.app.Storage;
 import invicta.app.Ui;
@@ -30,6 +25,9 @@ public class InvictaBot {
     private Storage invictaStorage;
     private TaskList invictaTasks;
 
+    /**
+     * Constructs an instance of the InvictaBot app.
+     */
     public InvictaBot() {
         try {
             this.invictaUi = new Ui();
@@ -73,6 +71,7 @@ public class InvictaBot {
     public void run() {
         Scanner s = new Scanner(System.in);
         boolean isExit = false;
+        invictaUi.readLanguage(s);
         invictaUi.logo();
         invictaUi.readUsername(s);
         processCommand(s, invictaUi, invictaStorage, invictaTasks, isExit);

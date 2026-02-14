@@ -11,6 +11,9 @@ public class Deadline extends Task {
     private final LocalDateTime deadlineTime;
     private final DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern("MMM dd yyyy (EEE) hh:mm a ");
 
+    /**
+     * Constructs an instance of Deadline class.
+     */
     public Deadline(String description, LocalDateTime deadline) {
         super(description);
         this.deadlineTime = deadline;

@@ -1,25 +1,21 @@
 package invicta.app;
 
-// Imports to handle user input
-import java.time.format.DateTimeParseException;
-import java.util.Scanner;
+// Imports to handle user input, ime data and to use data structures
 import java.io.IOException;
-
-// Imports to use data structures
-import java.util.ArrayList;
-
-// Imports to handle time data
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 // Imports to use task and task list data for display
-import invicta.app.Message.MessageKey;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
 
 /**
  * Handles user interactions with InvictaBot.
+ * Orchestrates the display of chatbot messages represented by the Message class.
  */
 public class Ui {
 
@@ -46,13 +42,14 @@ public class Ui {
      */
     public void logo() {
         // Logo below generated with the help of an external tool from https://patorjk.com/software/taag/
-        String logo =   ".___            .__        __        __________        __\n"
-                + "|   | _______  _|__| _____/  |______ \\______   \\ _____/  |_\n"
-                + "|   |/    \\  \\/ /  |/ ___\\   __\\__  \\ |    |  _//  _ \\   __\\\n"
-                + "|   |   |  \\   /|  \\  \\___|  |  / __ \\|    |   (  <_> )  |\n"
-                + "|___|___|  /\\_/ |__|\\___  >__| (____  /______  /\\____/|__|\n"
-                + "         \\/             \\/          \\/       \\/\n";
-        System.out.println("Hello from\n" + logo);
+        String logo = """
+                .___            .__        __        __________        __
+                |   | _______  _|__| _____/  |______ \\______   \\ _____/  |_
+                |   |/    \\  \\/ /  |/ ___\\   __\\__  \\ |    |  _//  _ \\   __\\
+                |   |   |  \\   /|  \\  \\___|  |  / __ \\|    |   (  <_> )  |
+                |___|___|  /\\_/ |__|\\___  >__| (____  /______  /\\____/|__|
+                         \\/             \\/          \\/       \\/""";
+        System.out.println(Message.getChatbotMessageFormatted(MessageKey.HELLO, logo));
     }
 
     /**
@@ -98,7 +95,7 @@ public class Ui {
      * @param i Option indicating already marked/unmarked scenarios
      * @param task Task whose details are to be printed.
      */
-    public void marked(int i, String task) {
+    public void marked(int i, String task) throws InvictaException {
         switch (i) {
         case 1: {
             System.out.println(Message.getChatbotMessageFormatted(MessageKey.MARKED_DONE, task));
@@ -116,6 +113,8 @@ public class Ui {
             System.out.println(Message.getChatbotMessageFormatted(MessageKey.MARKED_NOT_DONE_ALREADY, task));
             break;
         }
+        default:
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_COMMAND));
         }
     }
 
@@ -188,6 +187,16 @@ public class Ui {
     }
 
     /**
+     * Reads user input for language until valid input.
+     *
+     * @param s Scanner used to read user input for language.
+     */
+    public void readLanguage(Scanner s) {
+        System.out.println(Message.getChatbotMessage(MessageKey.PROMPT_LANGUAGE));
+        Parser.processLanguage(s);
+    }
+
+    /**
      * Reads user input for username and loop until valid input.
      *
      * @param s Scanner used to read user input for username.
@@ -219,19 +228,16 @@ public class Ui {
      * Displays error message for taskbot specific errors occurring during operations.
      * Prints using defined error message.
      */
-    public void showException (Exception e) {
+    public void showException(Exception e) {
         if (e instanceof NumberFormatException) {
             System.out.println(Message.getChatbotMessage(MessageKey.INVALID_INDEX,
                     Message.getUsageMessage(MessageKey.LIST_USAGE)));
-        }
-        else if (e instanceof DateTimeParseException) {
+        } else if (e instanceof DateTimeParseException) {
             System.out.println(Message.getChatbotMessage(MessageKey.INVALID_DATE_TIME,
-                    Message.getUsageMessage(Message.MessageKey.TYPE_HELP)));
-        }
-        else if (e instanceof IOException) {
+                    Message.getUsageMessage(MessageKey.TYPE_HELP)));
+        } else if (e instanceof IOException) {
             System.out.println(Message.getIoMessage(MessageKey.FILE_IO_ERROR, e.getMessage()));
-        }
-        else {
+        } else {
             System.out.println(e.getMessage());
         }
     }
@@ -239,9 +245,9 @@ public class Ui {
     /**
      * Displays messages related to reading and writing from file.
      */
-    public static void showIOMessages(MessageKey key, String details) {
-        String IoMessage = Message.getIoMessage(key);
-        System.out.println(IoMessage + " " + details);
+    public static void showIoMessages(MessageKey key, String details) {
+        String ioMessage = Message.getIoMessage(key);
+        System.out.println(ioMessage + " " + details);
     }
 }
 

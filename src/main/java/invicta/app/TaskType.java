@@ -1,7 +1,5 @@
 package invicta.app;
 
-import invicta.app.Message.MessageKey;
-
 /**
  * Represents possible types of tasks.
  */

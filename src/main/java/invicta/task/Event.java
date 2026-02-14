@@ -12,6 +12,9 @@ public class Event extends Task {
     private final LocalDateTime end;
     private final DateTimeFormatter dateAndTime = DateTimeFormatter.ofPattern("MMM dd yyyy (EEE) hh:mm a ");
 
+    /**
+     * Constructs an instance of Event class.
+     */
     public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
         this.start = start;

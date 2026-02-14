@@ -8,6 +8,10 @@ public class Task {
     protected String description;
     protected boolean isDone;
 
+    /**
+     * Constructs an instance of Task class.
+     * Serves as a base for subclasses.
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;

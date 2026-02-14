@@ -1,11 +1,9 @@
 package invicta.task;
 
-// Imports to use data structures
-import java.util.ArrayList;
-
-// Imports to handle time data
+// Imports to use data structures and to handle time data
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 /**
  * Represents a collection of tasks.
@@ -17,7 +15,7 @@ public class TaskList {
     /**
      * Differentiates type of query to perform when processing task search queries.
      */
-    private enum queryContext {
+    private enum QueryContext {
         MATCH,
         DATE,
         PERIOD
@@ -96,6 +94,25 @@ public class TaskList {
     }
 
     /**
+     * Returns a collection of tasks that fall within the given period.
+     * Includes Deadline tasks with deadline date within the given period,
+     * and any Event tasks whose duration touches the given period.
+     *
+     * @param periodStartTime start time of period to be searched.
+     * @param periodEndTime end time of period to be searched.
+     * @return Collection of tasks that fall on the date.
+     */
+    public ArrayList<Task> getInPeriodTasks(LocalDateTime periodStartTime, LocalDateTime periodEndTime) {
+        ArrayList<Task> foundTasks = new ArrayList<>();
+
+        // add the tasks to temp ArrayList of Tasks to be displayed
+        for (Task t : this.taskList) {
+            processQuery(t, periodStartTime, periodEndTime, foundTasks);
+        }
+        return foundTasks;
+    }
+
+    /**
      * Returns a list of tasks that falls on or overlaps the given date
      *
      * @param t Current task to process.
@@ -123,25 +140,6 @@ public class TaskList {
     }
 
     /**
-     * Returns a collection of tasks that fall within the given period.
-     * Includes Deadline tasks with deadline date within the given period,
-     * and any Event tasks whose duration touches the given period.
-     *
-     * @param periodStartTime start time of period to be searched.
-     * @param periodEndTime end time of period to be searched.
-     * @return Collection of tasks that fall on the date.
-     */
-    public ArrayList<Task> getInPeriodTasks(LocalDateTime periodStartTime, LocalDateTime periodEndTime) {
-        ArrayList<Task> foundTasks = new ArrayList<>();
-
-        // add the tasks to temp ArrayList of Tasks to be displayed
-        for (Task t : this.taskList) {
-            processQuery(t, periodStartTime, periodEndTime, foundTasks);
-        }
-        return foundTasks;
-    }
-
-    /**
      * Returns a list of tasks that falls within or overlaps the given period.
      *
      * @param t Current task to process.
@@ -149,7 +147,8 @@ public class TaskList {
      * @param periodEndTime End time of given period.
      * @param tasks Task list to add current task to if it meets search criteria.
      */
-    public void processQuery(Task t, LocalDateTime periodStartTime, LocalDateTime periodEndTime, ArrayList<Task> tasks) {
+    public void processQuery(Task t, LocalDateTime periodStartTime,
+                             LocalDateTime periodEndTime, ArrayList<Task> tasks) {
         if (t instanceof Deadline d) {
             LocalDateTime deadline = d.getDeadline();
             boolean afterOrOnStart = deadline.isEqual(periodStartTime)

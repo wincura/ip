@@ -240,3 +240,12 @@ Expected Outcome:
 ---
 
 Logo for chatbot generated with the help of an external Text to ASCII Art Generator tool from https://patorjk.com/software/taag/.
+
+Translations for French and Spanish language support generated with ChatGPT Gen AI, and verified by me.
+
+Reference(s) used for working with Java Date Time:
+https://www.w3schools.com/java/java_date.asp
+https://www.baeldung.com/java-8-date-time-intro
+
+Reference(s) used for working with Java Properties:
+https://www.baeldung.com/java-properties

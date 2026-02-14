@@ -1,17 +1,16 @@
 package invicta.command;
 
-// Imports to use data structures
-import java.util.ArrayList;
-
-// Imports to handle time data
-import java.time.LocalDateTime;
+// Imports to handle time data and use data structures
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 // Imports to use invicta app components and task list to execute operations
 import invicta.app.InvictaException;
+import invicta.app.Message;
+import invicta.app.MessageKey;
 import invicta.app.Storage;
 import invicta.app.Ui;
-import invicta.app.Message;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
@@ -26,21 +25,31 @@ public class DisplayCommand extends Command {
     private LocalDateTime periodStartTime;
     private LocalDateTime periodEndTime;
 
+    /**
+     * Constructs an instance of a DisplayCommand.
+     */
     public DisplayCommand(CommandType commandType) {
         this.commandType = commandType;
     }
-
+    /**
+     * Constructs an instance of a DisplayCommand, specifically for a 'day' command.
+     */
     public DisplayCommand(CommandType commandType, LocalDate dateToSearch) {
         this.commandType = commandType;
         this.dateToSearch = dateToSearch;
     }
-
+    /**
+     * Constructs an instance of a DisplayCommand, specifically for a 'period' command.
+     */
     public DisplayCommand(CommandType commandType, LocalDateTime periodStartTime, LocalDateTime periodEndTime) {
         this.commandType = commandType;
         this.periodStartTime = periodStartTime;
         this.periodEndTime = periodEndTime;
     }
 
+    /**
+     * Constructs an instance of a DisplayCommand, specifically for a 'find' command.
+     */
     public DisplayCommand(CommandType commandType, String stringToSearch) {
         this.commandType = commandType;
         this.stringToSearch = stringToSearch;
@@ -116,7 +125,8 @@ public class DisplayCommand extends Command {
             }
             break;
         }
-
+        default:
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_COMMAND));
         }
     }
 }

@@ -1,12 +1,12 @@
 package invicta.command;
 
-// Imports to use invicta app components and task list to execute operations
+// Imports to use invicta app components and task list within file to execute operations
+import java.io.IOException;
+
 import invicta.app.InvictaException;
 import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.task.TaskList;
-
-import java.io.IOException;
 
 /**
  * Represents a generic command input by user to InvictaBot.
