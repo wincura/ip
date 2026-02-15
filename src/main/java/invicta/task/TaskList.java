@@ -4,6 +4,7 @@ package invicta.task;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a collection of tasks.
@@ -67,13 +68,10 @@ public class TaskList {
      * @return collection of tasks containing search string
      */
     public ArrayList<Task> getMatchingTasks(String searchString) {
-        ArrayList<Task> foundTasks = new ArrayList<>();
-        for (Task t : this.taskList) {
-            if (t.getDescription().toLowerCase().contains(searchString.toLowerCase())) {
-                foundTasks.add(t);
-            }
-        }
-        return foundTasks;
+        List<Task> foundTasks = taskList.stream()
+                .filter(t -> t.getDescription().toLowerCase().contains(searchString.toLowerCase()))
+                .toList();
+        return (ArrayList<Task>) foundTasks;
     }
 
     /**

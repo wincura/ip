@@ -26,6 +26,8 @@ public class Message {
 
     private static boolean isGuiMode = false;
 
+    private static Lang currentLang = Lang.EN;
+
     public static void setGuiMode(boolean guiMode) {
         isGuiMode = guiMode;
     }
@@ -36,8 +38,6 @@ public class Message {
      * message string to be displayed.
      */
     public enum Lang { EN, FR, ES }
-
-    private static Lang currentLang = Lang.EN;
 
     public static void setLang(Lang lang) {
         currentLang = lang;
@@ -59,17 +59,17 @@ public class Message {
         usageMessages.put(Lang.FR, new HashMap<>());
         usageMessages.put(Lang.ES, new HashMap<>());
 
-        loadInto(ioMessages.get(Lang.EN), "io_en.properties");
-        loadInto(ioMessages.get(Lang.FR), "io_fr.properties");
-        loadInto(ioMessages.get(Lang.ES), "io_es.properties");
+        loadInto(ioMessages.get(Lang.EN), "langs/io_en.properties");
+        loadInto(ioMessages.get(Lang.FR), "langs/io_fr.properties");
+        loadInto(ioMessages.get(Lang.ES), "langs/io_es.properties");
 
-        loadInto(chatbotMessages.get(Lang.EN), "chat_en.properties");
-        loadInto(chatbotMessages.get(Lang.FR), "chat_fr.properties");
-        loadInto(chatbotMessages.get(Lang.ES), "chat_es.properties");
+        loadInto(chatbotMessages.get(Lang.EN), "langs/chat_en.properties");
+        loadInto(chatbotMessages.get(Lang.FR), "langs/chat_fr.properties");
+        loadInto(chatbotMessages.get(Lang.ES), "langs/chat_es.properties");
 
-        loadInto(usageMessages.get(Lang.EN), "usage_en.properties");
-        loadInto(usageMessages.get(Lang.FR), "usage_fr.properties");
-        loadInto(usageMessages.get(Lang.ES), "usage_es.properties");
+        loadInto(usageMessages.get(Lang.EN), "langs/usage_en.properties");
+        loadInto(usageMessages.get(Lang.FR), "langs/usage_fr.properties");
+        loadInto(usageMessages.get(Lang.ES), "langs/usage_es.properties");
     }
 
     /**
@@ -140,7 +140,7 @@ public class Message {
      */
     private static String formatWrap(String msg) {
         if (isGuiMode) {
-            return msg;   // 🔥 No separators in GUI
+            return msg;
         }
         return SEPARATOR + "\n\t" + msg + "\n" + SEPARATOR;
     }
