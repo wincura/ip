@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 // Imports to use task and task list data for display
+import invicta.command.Command;
 import invicta.task.Task;
 import invicta.task.TaskList;
 
@@ -193,7 +194,14 @@ public class Ui {
      */
     public void readLanguage(Scanner s) {
         System.out.println(Message.getChatbotMessage(MessageKey.PROMPT_LANGUAGE));
-        Parser.processLanguage(s);
+        while (true) {
+            try {
+                Parser.processLanguage(s, this);
+                break;
+            } catch (InvictaException e) {
+                showException(e);
+            }
+        }
     }
 
     /**
@@ -203,25 +211,25 @@ public class Ui {
      */
     public void readUsername(Scanner s) {
         System.out.println(Message.getChatbotMessage(MessageKey.PROMPT_USERNAME));
-        String username = "";
-        Parser.processUsername(s, username, this);
-        System.out.println(Message.getChatbotMessageFormatted(MessageKey.PROMPT_COMMAND, this.getUsername()));
+        while (true) {
+            try {
+                Parser.processUsername(s, this);
+                System.out.println(Message.getChatbotMessageFormatted(MessageKey.PROMPT_COMMAND, this.getUsername()));
+                break;
+            } catch (InvictaException e) {
+                this.showException(e);
+            }
+        }
     }
 
     /**
-     * Reads user input from scanner into a string array.
+     * Reads user input from scanner to be parsed to obtain Command object.
      *
      * @param s scanner object with raw user input.
-     * @return userInput string array containing user input split by spaces.
+     * @return Command object corresponding to user command input.
      */
-    public String[] readCommand(Scanner s) throws InvictaException {
-        String raw = s.nextLine().trim();
-        String[] userInput = raw.split(" ");
-        if (raw.isEmpty()) {
-            throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_INPUT));
-        } else {
-            return userInput;
-        }
+    public Command readCommand(Scanner s) throws InvictaException {
+        return Parser.parseCommandData(s.nextLine());
     }
 
     /**
