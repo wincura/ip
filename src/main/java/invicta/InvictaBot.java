@@ -2,14 +2,17 @@ package invicta;
 // CS2103T Individual Project by William Scott Win A0273291A
 
 // Imports to handle files and user input
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 // Imports to use packages of invicta
+import invicta.app.Message;
 import invicta.app.Parser;
 import invicta.app.Storage;
 import invicta.app.Ui;
 import invicta.command.Command;
-import invicta.command.CommandType;
 import invicta.task.TaskList;
 
 /**
@@ -25,6 +28,11 @@ public class InvictaBot {
     private Storage invictaStorage;
     private TaskList invictaTasks;
 
+    // For GUI version
+    private boolean hasChosenLanguage = false;
+    private boolean hasUsername = false;
+    private boolean isExit = false;
+
     /**
      * Constructs an instance of the InvictaBot app.
      */
@@ -38,6 +46,112 @@ public class InvictaBot {
             invictaUi.showException(e);
             invictaTasks = new TaskList();
         }
+    }
+
+    /**
+     * Displays the startup message prompting language.
+     */
+    public String getStartupMessage() {
+        return invicta.app.Message.getChatbotMessage(invicta.app.MessageKey.PROMPT_LANGUAGE);
+    }
+
+    /**
+     * Sets isExit to true, used for exiting app.
+     */
+    public boolean isExit() {
+        return isExit;
+    }
+
+
+    /**
+     * Gets the user input for GUI version.
+     * Written with the help of AI tool, tweaked by me to improve code quality.
+     */
+    public String getResponse(String input) {
+        return captureStdout(() -> {
+            if (!hasChosenLanguage) {
+                getLanguageResponse(input);
+                return;
+            }
+
+            if (!hasUsername) {
+                getUsernameResponse(input);
+                return;
+            }
+
+            if (isExit) {
+                return;
+            }
+
+            getCommandResponse(input);
+        });
+    }
+
+    /**
+     * Gets the user input for language for GUI version.
+     * Used as helper.
+     */
+    private void getLanguageResponse(String input) {
+        try {
+            Parser.processLanguage(new Scanner(input.isEmpty() ? " " : input), invictaUi);
+            hasChosenLanguage = true;
+
+            System.out.println(invicta.app.Message.getChatbotMessage(invicta.app.MessageKey.PROMPT_USERNAME));
+        } catch (Exception e) {
+            invictaUi.showException(e);
+        }
+    }
+
+    /**
+     * Gets the user input for username for GUI version.
+     * Used as helper.
+     */
+    private void getUsernameResponse(String input) {
+        try {
+            Parser.processUsername(new Scanner(input.isEmpty() ? " " : input), invictaUi);
+            hasUsername = true;
+
+            System.out.println(invicta.app.Message.getChatbotMessageFormatted(
+                    invicta.app.MessageKey.PROMPT_COMMAND,
+                    invictaUi.getUsername()
+            ));
+        } catch (Exception e) {
+            invictaUi.showException(e);
+        }
+    }
+
+    /**
+     * Gets the user input for command for GUI version.
+     * Used as helper.
+     */
+    private void getCommandResponse(String input) {
+        try {
+            Command c = Parser.parseCommandData(input);
+            c.execute(invictaTasks, invictaStorage, invictaUi);
+            isExit = Command.isExit(c);
+        } catch (Exception e) {
+            invictaUi.showException(e);
+        }
+    }
+
+    /**
+     * Captures the output from System.out to be displayed in GUI version.
+     * Used as helper.
+     * Written with the help of AI tool, tweaked by me.
+     */
+    private String captureStdout(Runnable action) {
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream capturedOut = new ByteArrayOutputStream();
+        PrintStream tempOut = new PrintStream(capturedOut, true, StandardCharsets.UTF_8);
+        System.setOut(tempOut);
+
+        try {
+            action.run();
+        } finally {
+            System.out.flush();
+            System.setOut(originalOut);
+        }
+        return capturedOut.toString(StandardCharsets.UTF_8).trim();
     }
 
     /**
@@ -79,6 +193,7 @@ public class InvictaBot {
      * Serves as the entry point of InvictaBot and executes the run method.
      */
     public static void main(String[] args) {
+        Message.setGuiMode(false);
         new InvictaBot().run();
     }
 }

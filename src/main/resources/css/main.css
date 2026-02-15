@@ -1,0 +1,60 @@
+.root {
+    main-color: #ffd966;       /* Create a looked-up color called "main-color" within root. */
+    -fx-background-color: main-color;
+    -fx-background-image: url("../images/castle_parchment.png"); /* Set image */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: cover;
+}
+
+.text-field {
+    -fx-background-color: #ffd966;
+    -fx-font: 20px "Lucida Calligraphy";
+    -fx-border-radius: 2px;
+    -fx-border-color: #e3bb49;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0.5, 2.5, 2.5);
+}
+
+.text-field:focused {
+    -fx-background-color: #e3bb49;
+}
+
+.button {
+    -fx-background-image: url('/images/send.png');
+    -fx-background-size: 100% 100%;
+}
+
+.button:hover {
+    -fx-effect: innershadow(gaussian, rgba(255,255,100,0.4), 20, 0.5, 0, 0);
+}
+
+.button:pressed {
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.6), 20, 0.5, 0, 0);
+}
+
+.scroll-pane,
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-font-size: 10px;  /* Change width of scroll bar. */
+    -fx-background-color: main-color;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #e3bb49;
+    -fx-background-radius: 1em;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #917220;
+}
+
+/* Hides the increment and decrement buttons. */
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+

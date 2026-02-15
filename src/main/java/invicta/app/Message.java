@@ -24,6 +24,13 @@ public class Message {
     private static final int SEPARATOR_WIDTH = 100;
     public static final String SEPARATOR = "_".repeat(SEPARATOR_WIDTH);
 
+    private static boolean isGuiMode = false;
+
+    public static void setGuiMode(boolean guiMode) {
+        isGuiMode = guiMode;
+    }
+
+
     /**
      * Represents the current chosen language. Used to determine which .properties file to obtain
      * message string to be displayed.
@@ -39,6 +46,7 @@ public class Message {
     public static Lang getLang() {
         return currentLang;
     }
+
 
     static {
         ioMessages.put(Lang.EN, new HashMap<>());
@@ -131,6 +139,9 @@ public class Message {
      * Returns a string wrapped in the chatbot line separator and respective indents.
      */
     private static String formatWrap(String msg) {
+        if (isGuiMode) {
+            return msg;   // 🔥 No separators in GUI
+        }
         return SEPARATOR + "\n\t" + msg + "\n" + SEPARATOR;
     }
 
