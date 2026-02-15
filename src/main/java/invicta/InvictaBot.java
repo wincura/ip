@@ -52,9 +52,7 @@ public class InvictaBot {
     public void processCommand(Scanner s, Ui ui, Storage storage, TaskList tasks, boolean isExit) {
         while (!isExit) {
             try {
-                String[] commandString = ui.readCommand(s);
-                CommandType commandType = CommandType.fromString(commandString[0]);
-                Command c = Parser.parseCommandData(commandString, commandType);
+                Command c = ui.readCommand(s);
                 c.execute(tasks, storage, ui);
                 isExit = Command.isExit(c);
             } catch (Exception e) {
@@ -78,7 +76,7 @@ public class InvictaBot {
     }
 
     /**
-     * Main method of InvictaBot and executes the run method.
+     * Serves as the entry point of InvictaBot and executes the run method.
      */
     public static void main(String[] args) {
         new InvictaBot().run();

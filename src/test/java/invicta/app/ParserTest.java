@@ -33,9 +33,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_validTodoCommand_returnCorrectCommand() throws InvictaException {
         String raw = "todo Buy Birthday Gifts";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.TODO;
-        assertInstanceOf(AddCommand.class, Parser.parseCommandData(userInput, commandType));
+        assertInstanceOf(AddCommand.class, Parser.parseCommandData(raw));
     }
 
     /**
@@ -45,9 +43,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_todoMissingName_throwsInvictaException() throws InvictaException {
         String raw = "todo";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.TODO;
-        assertThrows(InvictaException.class, () -> Parser.parseCommandData(userInput, commandType));
+        assertThrows(InvictaException.class, () -> Parser.parseCommandData(raw));
     }
 
     /**
@@ -57,9 +53,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_validEventCommand_returnCorrectCommand() throws InvictaException {
         String raw = "event CCA Recruitment Drive /from 2026-02-19 18:30 /to 2026-03-28 20:30";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.EVENT;
-        assertInstanceOf(AddCommand.class, Parser.parseCommandData(userInput, commandType));
+        assertInstanceOf(AddCommand.class, Parser.parseCommandData(raw));
     }
 
     /**
@@ -69,9 +63,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_eventMissingStartTime_throwsInvictaException() throws InvictaException {
         String raw = "event CCA Recruitment Drive";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.EVENT;
-        assertThrows(InvictaException.class, () -> Parser.parseCommandData(userInput, commandType));
+        assertThrows(InvictaException.class, () -> Parser.parseCommandData(raw));
     }
 
     /**
@@ -81,9 +73,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_eventMissingEndTime_throwsInvictaException() throws InvictaException {
         String raw = "event CCA Recruitment Drive /from 2026-02-19 18:30";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.EVENT;
-        assertThrows(InvictaException.class, () -> Parser.parseCommandData(userInput, commandType));
+        assertThrows(InvictaException.class, () -> Parser.parseCommandData(raw));
     }
 
     /**
@@ -93,9 +83,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_validDeadlineCommand_returnCorrectCommand() throws InvictaException {
         String raw = "deadline Problem Set 1 /by 2026-02-21 23:59";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.DEADLINE;
-        assertInstanceOf(AddCommand.class, Parser.parseCommandData(userInput, commandType));
+        assertInstanceOf(AddCommand.class, Parser.parseCommandData(raw));
     }
 
     /**
@@ -105,9 +93,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_deadlineMissingDeadlineTime_throwsInvictaException() throws InvictaException {
         String raw = "deadline Problem Set 1";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.DEADLINE;
-        assertThrows(InvictaException.class, () -> Parser.parseCommandData(userInput, commandType));
+        assertThrows(InvictaException.class, () -> Parser.parseCommandData(raw));
     }
 
     /**
@@ -117,9 +103,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_validListCommand_returnCorrectCommand() throws InvictaException {
         String raw = "list";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.LIST;
-        assertInstanceOf(DisplayCommand.class, Parser.parseCommandData(userInput, commandType));
+        assertInstanceOf(DisplayCommand.class, Parser.parseCommandData(raw));
     }
 
     /**
@@ -129,9 +113,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_validHelpCommand_returnCorrectCommand() throws InvictaException {
         String raw = "help";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.HELP;
-        assertInstanceOf(DisplayCommand.class, Parser.parseCommandData(userInput, commandType));
+        assertInstanceOf(DisplayCommand.class, Parser.parseCommandData(raw));
     }
 
     /**
@@ -141,9 +123,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_validMarkCommand_returnCorrectCommand() throws InvictaException {
         String raw = "mark 1";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.MARK;
-        assertInstanceOf(EditCommand.class, Parser.parseCommandData(userInput, commandType));
+        assertInstanceOf(EditCommand.class, Parser.parseCommandData(raw));
     }
 
     /**
@@ -153,9 +133,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_markMissingIndex_throwsInvictaException() throws InvictaException {
         String raw = "mark";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.MARK;
-        assertThrows(InvictaException.class, () -> Parser.parseCommandData(userInput, commandType));
+        assertThrows(InvictaException.class, () -> Parser.parseCommandData(raw));
     }
 
     /**
@@ -165,9 +143,7 @@ public class ParserTest {
     @Test
     public void parseCommandData_markInvalidIndex_throwsNumberFormatException() throws NumberFormatException {
         String raw = "mark a";
-        String[] userInput = raw.split(" ");
-        CommandType commandType = CommandType.MARK;
-        assertThrows(NumberFormatException.class, () -> Parser.parseCommandData(userInput, commandType));
+        assertThrows(NumberFormatException.class, () -> Parser.parseCommandData(raw));
     }
 
     /**
