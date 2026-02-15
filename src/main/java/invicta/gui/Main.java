@@ -32,8 +32,8 @@ public class Main extends Application {
 
 
             stage.setScene(scene);
-            stage.setMinHeight(700);
-            stage.setMinWidth(500);
+            stage.setMinHeight(500);
+            stage.setMinWidth(400);
             Message.setGuiMode(true);
             fxmlLoader.<MainWindow>getController().initialize(invictaBot);
             stage.show();

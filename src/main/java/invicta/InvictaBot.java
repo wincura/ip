@@ -31,6 +31,7 @@ public class InvictaBot {
     // For GUI version
     private boolean hasChosenLanguage = false;
     private boolean hasUsername = false;
+    private boolean hasError = false;
     private boolean isExit = false;
 
     /**
@@ -56,7 +57,14 @@ public class InvictaBot {
     }
 
     /**
-     * Sets isExit to true, used for exiting app.
+     * Checks if hasError is true, used for formatting errors differently.
+     */
+    public boolean hasError() {
+        return hasError;
+    }
+
+    /**
+     * Checks if isExit is true, used for exiting app.
      */
     public boolean isExit() {
         return isExit;
@@ -69,6 +77,8 @@ public class InvictaBot {
      */
     public String getResponse(String input) {
         return captureStdout(() -> {
+            hasError = false;
+
             if (!hasChosenLanguage) {
                 getLanguageResponse(input);
                 return;
@@ -98,6 +108,7 @@ public class InvictaBot {
 
             System.out.println(invicta.app.Message.getChatbotMessage(invicta.app.MessageKey.PROMPT_USERNAME));
         } catch (Exception e) {
+            hasError = true;
             invictaUi.showException(e);
         }
     }
@@ -116,6 +127,7 @@ public class InvictaBot {
                     invictaUi.getUsername()
             ));
         } catch (Exception e) {
+            hasError = true;
             invictaUi.showException(e);
         }
     }
@@ -130,6 +142,7 @@ public class InvictaBot {
             c.execute(invictaTasks, invictaStorage, invictaUi);
             isExit = Command.isExit(c);
         } catch (Exception e) {
+            hasError = true;
             invictaUi.showException(e);
         }
     }
