@@ -27,7 +27,7 @@ Expected Outcome:
 List of commands in InvictaBot:
 	bye - exit app
 	list - display task list
-	delete - delete the task
+	delete <index> - delete the task
 	mark <index> - mark task as done
 	unmark <index> - mask task as not done  
 	... 
