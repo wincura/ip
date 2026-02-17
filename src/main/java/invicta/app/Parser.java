@@ -70,6 +70,7 @@ public class Parser {
     public static void processLanguage(Scanner s, Ui ui) throws InvictaException {
         String langChoice = s.nextLine().trim();
         requireInput(langChoice, MessageKey.MISSING_LANGUAGE);
+        assert !(langChoice.isEmpty()) : "Data for language missing!";
         switch (langChoice) {
         case "en":
             Message.setLang(Message.Lang.EN);
@@ -92,6 +93,7 @@ public class Parser {
     public static void processUsername(Scanner s, Ui ui) throws InvictaException {
         String username = s.nextLine().trim();
         requireInput(username, MessageKey.MISSING_USERNAME);
+        assert !(username.isEmpty()) : "Data for username missing!";
         ui.setUsername(username);
     }
 
@@ -101,6 +103,7 @@ public class Parser {
     public static EditCommand processEditCommand(String[] commandString,
                                           CommandType commandType, MessageKey usage) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_INDEX, usage);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         int index = Integer.parseInt(commandString[1]) - 1;
         return new EditCommand(commandType, index);
     }
@@ -110,6 +113,7 @@ public class Parser {
      */
     public static AddCommand processEventCommand(String[] commandString) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_NAME, MessageKey.EVENT_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         StringBuilder taskName = new StringBuilder();
         int taskNameLength = 0; // to be used later to pass user input words after task name
         for (int i = 1; i < commandString.length; i++) {
@@ -133,6 +137,9 @@ public class Parser {
         }
         LocalDateTime eventStartTime = Parser.parseDateTimeData(period[0].trim());
         LocalDateTime eventEndTime = Parser.parseDateTimeData(period[1].trim());
+        if (eventEndTime.isBefore(eventStartTime)) {
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_PERIOD));
+        }
         Event ev = new Event(taskName.toString().trim(),
                 eventStartTime,
                 eventEndTime);
@@ -144,6 +151,7 @@ public class Parser {
      */
     public static AddCommand processDeadlineCommand(String[] commandString) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_NAME, MessageKey.DEADLINE_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         StringBuilder taskName = new StringBuilder();
         StringBuilder deadlineTimeString = new StringBuilder();
         // Flags to mark where one argument ends and another begins,
@@ -181,6 +189,7 @@ public class Parser {
      */
     public static AddCommand processTodoCommand(String[] commandString) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_NAME, MessageKey.TODO_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         StringBuilder taskName = new StringBuilder();
         // Start counting from index 1 to ignore todo command
         for (int i = 1; i < commandString.length; i++) {
@@ -197,6 +206,7 @@ public class Parser {
     public static DisplayCommand processFindCommand(String[] commandString, CommandType commandType)
             throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_STRING, MessageKey.FIND_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         String stringToSearch;
         StringBuilder stringToSearchString = new StringBuilder();
         for (int i = 1; i < commandString.length; i++) {
@@ -213,6 +223,7 @@ public class Parser {
     public static DisplayCommand processDayCommand(String[] commandString, CommandType commandType)
             throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_STRING, MessageKey.FIND_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         LocalDate dateToSearch;
         StringBuilder dateToSearchString = new StringBuilder();
         if (commandString.length < 2) {
@@ -236,6 +247,7 @@ public class Parser {
     public static DisplayCommand processPeriodCommand(String[] commandString, CommandType commandType)
             throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_PERIOD_START, MessageKey.PERIOD_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         String[] periodInput = Arrays.copyOfRange(commandString, 1, commandString.length);
         String[] period = Parser.parsePeriodData(periodInput);
         if (period[0].isEmpty()) {
@@ -247,6 +259,9 @@ public class Parser {
         }
         LocalDateTime periodStartTime = Parser.parseDateTimeData(period[0].trim());
         LocalDateTime periodEndTime = Parser.parseDateTimeData(period[1].trim());
+        if (periodEndTime.isBefore(periodStartTime)) {
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_PERIOD));
+        }
         return new DisplayCommand(commandType, periodStartTime, periodEndTime);
     }
 
@@ -263,6 +278,7 @@ public class Parser {
         String[] commandString = trimmed.split(" ");
         CommandType commandType = CommandType.fromString(commandString[0]);
         requireInput(commandString[0], MessageKey.MISSING_INPUT);
+        assert !(commandString[0].isEmpty()) : "Data for command input missing!";
         switch (commandType) {
         case BYE: {
             return new ExitCommand();
@@ -333,7 +349,7 @@ public class Parser {
         StringBuilder periodStartTimeString = new StringBuilder();
         StringBuilder periodEndTimeString = new StringBuilder();
         // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
-        boolean isEndOfEventStart = false;
+        boolean isEndOfPeriodStart = false;
         int argsDoneFlag = 2;
         // Start counting from index 1 to ignore event command
         for (int i = 1; i < userInput.length; i++) {
@@ -344,12 +360,12 @@ public class Parser {
                     break;
                 }
             } else if (word.equals("/to")) {
-                isEndOfEventStart = true;
+                isEndOfPeriodStart = true;
                 argsDoneFlag -= 1;
                 if (argsDoneFlag < 1) {
                     break;
                 }
-            } else if (isEndOfEventStart) {
+            } else if (isEndOfPeriodStart) {
                 periodEndTimeString.append(word).append(" ");
             } else {
                 periodStartTimeString.append(word).append(" ");
