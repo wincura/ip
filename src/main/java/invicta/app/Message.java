@@ -24,8 +24,8 @@ public class Message {
     private static final int SEPARATOR_WIDTH = 100;
     public static final String SEPARATOR = "_".repeat(SEPARATOR_WIDTH);
 
-    private static boolean isGuiMode = false;
     private static Lang currentLang = Lang.EN;
+    private static boolean isGuiMode = false;
 
     public static void setGuiMode(boolean guiMode) {
         isGuiMode = guiMode;
@@ -37,7 +37,6 @@ public class Message {
      * message string to be displayed.
      */
     public enum Lang { EN, FR, ES }
-
 
 
     public static void setLang(Lang lang) {

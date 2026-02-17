@@ -1,12 +1,8 @@
 package invicta.app;
 
-
-import org.junit.jupiter.api.Test;
-
-import invicta.command.AddCommand;
-import invicta.command.CommandType;
-import invicta.command.DisplayCommand;
-import invicta.command.EditCommand;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,9 +10,12 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.DateTimeParseException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import invicta.command.AddCommand;
+import invicta.command.DisplayCommand;
+import invicta.command.EditCommand;
+
 
 /**
  * Tests that the parser returns the correct command type when parsing command input,
