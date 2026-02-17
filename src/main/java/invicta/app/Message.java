@@ -24,6 +24,7 @@ public class Message {
     private static final int SEPARATOR_WIDTH = 100;
     public static final String SEPARATOR = "_".repeat(SEPARATOR_WIDTH);
 
+    private static Lang currentLang = Lang.EN;
     private static boolean isGuiMode = false;
 
     public static void setGuiMode(boolean guiMode) {
@@ -37,7 +38,6 @@ public class Message {
      */
     public enum Lang { EN, FR, ES }
 
-    private static Lang currentLang = Lang.EN;
 
     public static void setLang(Lang lang) {
         currentLang = lang;
@@ -140,7 +140,7 @@ public class Message {
      */
     private static String formatWrap(String msg) {
         if (isGuiMode) {
-            return msg;   // 🔥 No separators in GUI
+            return msg;
         }
         return SEPARATOR + "\n\t" + msg + "\n" + SEPARATOR;
     }

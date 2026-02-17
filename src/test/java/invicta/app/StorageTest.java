@@ -1,27 +1,25 @@
 package invicta.app;
 
-import invicta.task.Deadline;
-import invicta.task.Event;
-import invicta.task.Task;
-import invicta.task.TaskList;
-import invicta.task.Todo;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import invicta.app.Storage;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import invicta.task.Deadline;
+import invicta.task.Event;
+import invicta.task.Task;
+import invicta.task.TaskList;
+import invicta.task.Todo;
 
 public class StorageTest {
     private static final String VALID_FILE_TO_READ_PATH = "./data/validloadtest.txt";
@@ -58,7 +56,7 @@ public class StorageTest {
      * when valid task list file is input.
      */
     @Test
-    public void load_validTaskListFile_loadTaskListCorrectly () throws InvictaException, IOException {
+    public void load_validTaskListFile_loadTaskListCorrectly() throws InvictaException, IOException {
         testLoadStorage = new Storage(VALID_FILE_TO_READ_PATH);
         ArrayList<Task> expectedTaskList = baseTaskList.getTaskList();
         ArrayList<Task> output = new TaskList(testLoadStorage.load()).getTaskList();
@@ -72,7 +70,7 @@ public class StorageTest {
      * when invalid task list file is input.
      */
     @Test
-    public void load_invalidTaskListFile_throwInvictaException () throws InvictaException, IOException {
+    public void load_invalidTaskListFile_throwInvictaException() throws InvictaException, IOException {
         testLoadStorage = new Storage(INVALID_FILE_TO_READ_PATH);
         assertThrows(InvictaException.class, () -> new TaskList(testLoadStorage.load()));
     }
