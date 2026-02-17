@@ -18,6 +18,9 @@ public class Deadline extends TimedTask {
     public Deadline(String description, LocalDateTime deadline) {
         super(description);
         this.deadlineTime = deadline;
+
+        assert this.description != null;
+        assert this.deadlineTime != null;
     }
 
 

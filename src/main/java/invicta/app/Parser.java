@@ -88,6 +88,7 @@ public class Parser {
     public static void processLanguage(Scanner s, Ui ui) throws InvictaException {
         String langChoice = s.nextLine().trim();
         requireInput(langChoice, MessageKey.MISSING_LANGUAGE);
+        assert !(langChoice.isEmpty()) : "Data for language missing!";
         switch (langChoice) {
         case "en":
             Message.setLang(Message.Lang.EN);
@@ -110,6 +111,7 @@ public class Parser {
     public static void processUsername(Scanner s, Ui ui) throws InvictaException {
         String username = s.nextLine().trim();
         requireInput(username, MessageKey.MISSING_USERNAME);
+        assert !(username.isEmpty()) : "Data for username missing!";
         ui.setUsername(username);
     }
 
@@ -119,6 +121,7 @@ public class Parser {
     public static EditCommand processEditCommand(String[] commandString,
                                           CommandType commandType, MessageKey usage) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_INDEX, usage);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         int index = Integer.parseInt(commandString[1]) - 1;
         return new EditCommand(commandType, index);
     }
@@ -207,6 +210,7 @@ public class Parser {
      */
     public static AddCommand processTodoCommand(String[] commandString) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_NAME, MessageKey.TODO_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         StringBuilder taskName = new StringBuilder();
         Todo td = new Todo(joinTokens(commandString, 1, commandString.length));
         return new AddCommand(td);
@@ -240,6 +244,7 @@ public class Parser {
     public static DisplayCommand processPeriodCommand(String[] commandString, CommandType commandType)
             throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_PERIOD_START, MessageKey.PERIOD_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         String[] periodInput = Arrays.copyOfRange(commandString, 1, commandString.length);
         String[] period = Parser.parsePeriodData(periodInput);
         if (period[0].isEmpty()) {
@@ -251,6 +256,9 @@ public class Parser {
         }
         LocalDateTime periodStartTime = Parser.parseDateTimeData(period[0].trim());
         LocalDateTime periodEndTime = Parser.parseDateTimeData(period[1].trim());
+        if (periodEndTime.isBefore(periodStartTime)) {
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_PERIOD));
+        }
         return new DisplayCommand(commandType, periodStartTime, periodEndTime);
     }
 
@@ -267,6 +275,7 @@ public class Parser {
         String[] commandString = trimmed.split("\\s+");
         CommandType commandType = CommandType.fromString(commandString[0]);
         requireInput(commandString[0], MessageKey.MISSING_INPUT);
+        assert !(commandString[0].isEmpty()) : "Data for command input missing!";
         switch (commandType) {
         case BYE: {
             return new ExitCommand();
