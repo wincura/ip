@@ -169,6 +169,9 @@ public class Parser {
 
         LocalDateTime eventStartTime = Parser.parseDateTimeData(eventStartString);
         LocalDateTime eventEndTime = Parser.parseDateTimeData(eventEndString);
+        if (eventEndTime.isBefore(eventStartTime)) {
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_PERIOD));
+        }
         Event ev = new Event(name, eventStartTime, eventEndTime);
         return new AddCommand(ev);
     }

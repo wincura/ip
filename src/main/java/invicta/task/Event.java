@@ -24,7 +24,6 @@ public class Event extends TimedTask {
         assert this.description != null;
         assert this.start != null;
         assert this.end != null;
-        assert !(this.start.isAfter(this.end)) : "Event start time is after event end time!";
     }
 
     // Getter methods to get start and end times
