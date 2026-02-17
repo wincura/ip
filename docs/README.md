@@ -11,7 +11,7 @@ It is:
 - Easy to learn
 - ~~EASY~~ SUPER EASY to use
 
-// Product screenshot goes here
+<img width="1258" height="1026" alt="Ui" src="https://github.com/user-attachments/assets/2f7beab8-4a51-4e89-9d91-e2a5c14d861e" />
 
 ## Getting Help
 
