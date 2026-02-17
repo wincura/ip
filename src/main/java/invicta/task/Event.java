@@ -20,6 +20,11 @@ public class Event extends TimedTask {
         super(description);
         this.start = start;
         this.end = end;
+
+        assert this.description != null;
+        assert this.start != null;
+        assert this.end != null;
+        assert !(this.start.isAfter(this.end)) : "Event start time is after event end time!";
     }
 
     // Getter methods to get start and end times
@@ -43,7 +48,10 @@ public class Event extends TimedTask {
                 || startDate.isBefore(dateToSearch);
         boolean endsOnOrAfterDate = endDate.isEqual(dateToSearch)
                 || endDate.isAfter(dateToSearch);
-        return startsOnOrBeforeDate && endsOnOrAfterDate;
+
+        boolean isOverlapping = startsOnOrBeforeDate && endsOnOrAfterDate;
+        assert !(start.isAfter(end)) : "Event start time is after event end time!";
+        return isOverlapping;
     }
 
     /**
@@ -58,7 +66,10 @@ public class Event extends TimedTask {
                 start.isBefore(periodEndTime) || start.isEqual(periodEndTime);
         boolean hasEventEndAfterOrOnPeriodStart =
                 end.isAfter(periodStartTime) || end.isEqual(periodStartTime);
-        return hasEventStartBeforeOrOnPeriodEnd && hasEventEndAfterOrOnPeriodStart;
+
+        boolean isOverlapping = hasEventStartBeforeOrOnPeriodEnd && hasEventEndAfterOrOnPeriodStart;
+        assert !(start.isAfter(end)) : "Event start time is after event end time!";
+        return isOverlapping;
     }
 
     @Override

@@ -14,6 +14,8 @@ public abstract class TimedTask extends Task {
      */
     public TimedTask(String description) {
         super(description);
+
+        assert this.description != null;
     }
 
     /**

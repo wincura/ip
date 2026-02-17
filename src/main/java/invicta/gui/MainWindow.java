@@ -54,8 +54,9 @@ public class MainWindow extends AnchorPane {
         String response = invictaBot.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getInvictaDialog(response, invictaImage)
-        );
+                invictaBot.hasError()
+                        ? DialogBox.getErrorDialog(response, invictaImage)
+                        : DialogBox.getInvictaDialog(response, invictaImage));
         userInput.clear();
 
         if (invictaBot.isExit()) {

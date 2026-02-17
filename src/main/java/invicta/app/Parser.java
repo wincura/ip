@@ -32,6 +32,26 @@ public class Parser {
     protected static DateTimeFormatter dateDisplay = DateTimeFormatter.ofPattern(FORMAT_DATE_DISPLAY);
 
     /**
+     * Helper function used to join a range of tokens into a string.
+     */
+    private static String joinTokens(String[] tokens, int start, int end) {
+        return String.join(" ", Arrays.copyOfRange(tokens, start, end)).trim();
+    }
+
+    /**
+     * Helper function used to find index of a string within a string array.
+     * Used for commands involving strings like '/by', '/to' or '/from'.
+     */
+    private static int indexOf(String[] tokens, String str) {
+        for (int i = 0; i < tokens.length; i++) {
+            if (tokens[i].equals(str)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Checks user input tokens and throw exception if minimum arguments requirement of 2 is not met.
      *
      * @param userInput  String array to check user input in.
@@ -42,9 +62,7 @@ public class Parser {
     private static void requireMinArgs(String[] userInput, MessageKey missingKey, MessageKey usageKey)
             throws InvictaException {
         if (userInput.length < 2) {
-            throw new InvictaException(
-                    Message.getChatbotMessage(
-                            missingKey,
+            throw new InvictaException(Message.getChatbotMessage(missingKey,
                             Message.getUsageMessage(usageKey)));
         }
     }
@@ -70,6 +88,7 @@ public class Parser {
     public static void processLanguage(Scanner s, Ui ui) throws InvictaException {
         String langChoice = s.nextLine().trim();
         requireInput(langChoice, MessageKey.MISSING_LANGUAGE);
+        assert !(langChoice.isEmpty()) : "Data for language missing!";
         switch (langChoice) {
         case "en":
             Message.setLang(Message.Lang.EN);
@@ -92,6 +111,7 @@ public class Parser {
     public static void processUsername(Scanner s, Ui ui) throws InvictaException {
         String username = s.nextLine().trim();
         requireInput(username, MessageKey.MISSING_USERNAME);
+        assert !(username.isEmpty()) : "Data for username missing!";
         ui.setUsername(username);
     }
 
@@ -101,41 +121,55 @@ public class Parser {
     public static EditCommand processEditCommand(String[] commandString,
                                           CommandType commandType, MessageKey usage) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_INDEX, usage);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         int index = Integer.parseInt(commandString[1]) - 1;
         return new EditCommand(commandType, index);
     }
 
     /**
      * Returns an AddCommand to add event task with respective start and end times.
+     * Used AI Tool to simplify this method for code quality.
      */
     public static AddCommand processEventCommand(String[] commandString) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_NAME, MessageKey.EVENT_USAGE);
-        StringBuilder taskName = new StringBuilder();
-        int taskNameLength = 0; // to be used later to pass user input words after task name
-        for (int i = 1; i < commandString.length; i++) {
-            String word = commandString[i];
-            if (word.equals("/from")) {
-                break;
-            } else {
-                taskName.append(word).append(" ");
-                taskNameLength++;
-            }
-        }
-        // pass remaining user input to extract period
-        String[] periodInput = Arrays.copyOfRange(commandString, taskNameLength + 1, commandString.length);
-        String[] period = Parser.parsePeriodData(periodInput);
-        if (period[0].isEmpty()) {
-            throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_EVENT_START,
-                    Message.getUsageMessage(MessageKey.EVENT_USAGE)));
-        } else if (period[1].isEmpty()) {
-            throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_EVENT_END,
+
+        int startIndex = indexOf(commandString, "/from");
+        int endIndex = indexOf(commandString, "/to");
+
+        if (startIndex == -1) {
+            throw new InvictaException(Message.getChatbotMessage(
+                    MessageKey.MISSING_EVENT_START,
                     Message.getUsageMessage(MessageKey.EVENT_USAGE)));
         }
-        LocalDateTime eventStartTime = Parser.parseDateTimeData(period[0].trim());
-        LocalDateTime eventEndTime = Parser.parseDateTimeData(period[1].trim());
-        Event ev = new Event(taskName.toString().trim(),
-                eventStartTime,
-                eventEndTime);
+        if (endIndex == -1 || endIndex < startIndex) {
+            throw new InvictaException(Message.getChatbotMessage(
+                    MessageKey.MISSING_EVENT_END,
+                    Message.getUsageMessage(MessageKey.EVENT_USAGE)));
+        }
+
+        String name = joinTokens(commandString, 1, startIndex);
+        String eventStartString = joinTokens(commandString, startIndex + 1, endIndex);
+        String eventEndString = joinTokens(commandString, endIndex + 1, commandString.length);
+
+        if (name.isEmpty()) {
+            throw new InvictaException(Message.getChatbotMessage(
+                    MessageKey.MISSING_NAME,
+                    Message.getUsageMessage(MessageKey.EVENT_USAGE)));
+        }
+        if (eventStartString.isEmpty()) {
+            throw new InvictaException(Message.getChatbotMessage(
+                    MessageKey.MISSING_EVENT_START,
+                    Message.getUsageMessage(MessageKey.EVENT_USAGE)));
+        }
+        if (eventEndString.isEmpty()) {
+            throw new InvictaException(Message.getChatbotMessage(
+                    MessageKey.MISSING_EVENT_END,
+                    Message.getUsageMessage(MessageKey.EVENT_USAGE)));
+        }
+
+        LocalDateTime eventStartTime = Parser.parseDateTimeData(eventStartString);
+        LocalDateTime eventEndTime = Parser.parseDateTimeData(eventEndString);
+        Event ev = new Event(name, eventStartTime, eventEndTime);
         return new AddCommand(ev);
     }
 
@@ -144,36 +178,31 @@ public class Parser {
      */
     public static AddCommand processDeadlineCommand(String[] commandString) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_NAME, MessageKey.DEADLINE_USAGE);
-        StringBuilder taskName = new StringBuilder();
-        StringBuilder deadlineTimeString = new StringBuilder();
-        // Flags to mark where one argument ends and another begins,
-        // and when to disregard unnecessary arguments
-        boolean isEndOfTaskName = false;
-        int argsDoneFlag = 1;
-        // Start counting from index 1 to ignore deadline command
-        for (int i = 1; i < commandString.length; i++) {
-            String word = commandString[i];
-            if (word.equals("/by")) {
-                isEndOfTaskName = true;
-                argsDoneFlag -= 1;
-                if (argsDoneFlag < 0) {
-                    break;
-                }
-            } else if (isEndOfTaskName) {
-                deadlineTimeString.append(word).append(" ");
-            } else {
-                taskName.append(word).append(" ");
-            }
-        }
-        if (deadlineTimeString.isEmpty()) {
-            throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_DEADLINE,
+
+        int deadlineIndex = indexOf(commandString, "/by");
+        if (deadlineIndex == -1) {
+            throw new InvictaException(Message.getChatbotMessage(
+                    MessageKey.MISSING_DEADLINE,
                     Message.getUsageMessage(MessageKey.DEADLINE_USAGE)));
-        } else {
-            LocalDateTime deadlineTime = Parser.parseDateTimeData(deadlineTimeString.toString().trim());
-            Deadline dl = new Deadline(taskName.toString().trim(),
-                    deadlineTime);
-            return new AddCommand(dl);
         }
+
+        String name = joinTokens(commandString, 1, deadlineIndex);
+        String deadlineString = joinTokens(commandString, deadlineIndex + 1, commandString.length);
+
+        if (name.isEmpty()) {
+            throw new InvictaException(Message.getChatbotMessage(
+                    MessageKey.MISSING_NAME,
+                    Message.getUsageMessage(MessageKey.DEADLINE_USAGE)));
+        }
+        if (deadlineString.isEmpty()) {
+            throw new InvictaException(Message.getChatbotMessage(
+                    MessageKey.MISSING_DEADLINE,
+                    Message.getUsageMessage(MessageKey.DEADLINE_USAGE)));
+        }
+
+        LocalDateTime deadlineTime = Parser.parseDateTimeData(deadlineString);
+        Deadline dl = new Deadline(name, deadlineTime);
+        return new AddCommand(dl);
     }
 
     /**
@@ -181,13 +210,9 @@ public class Parser {
      */
     public static AddCommand processTodoCommand(String[] commandString) throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_NAME, MessageKey.TODO_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         StringBuilder taskName = new StringBuilder();
-        // Start counting from index 1 to ignore todo command
-        for (int i = 1; i < commandString.length; i++) {
-            String word = commandString[i];
-            taskName.append(word).append(" ");
-        }
-        Todo td = new Todo(taskName.toString().trim());
+        Todo td = new Todo(joinTokens(commandString, 1, commandString.length));
         return new AddCommand(td);
     }
 
@@ -197,14 +222,7 @@ public class Parser {
     public static DisplayCommand processFindCommand(String[] commandString, CommandType commandType)
             throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_STRING, MessageKey.FIND_USAGE);
-        String stringToSearch;
-        StringBuilder stringToSearchString = new StringBuilder();
-        for (int i = 1; i < commandString.length; i++) {
-            String word = commandString[i];
-            stringToSearchString.append(word).append(" ");
-        }
-        stringToSearch = stringToSearchString.toString().trim();
-        return new DisplayCommand(commandType, stringToSearch);
+        return new DisplayCommand(commandType, joinTokens(commandString, 1, commandString.length));
     }
 
     /**
@@ -212,21 +230,11 @@ public class Parser {
      */
     public static DisplayCommand processDayCommand(String[] commandString, CommandType commandType)
             throws InvictaException {
-        requireMinArgs(commandString, MessageKey.MISSING_STRING, MessageKey.FIND_USAGE);
+        requireMinArgs(commandString, MessageKey.MISSING_DAY, MessageKey.DAY_USAGE);
         LocalDate dateToSearch;
-        StringBuilder dateToSearchString = new StringBuilder();
-        if (commandString.length < 2) {
-            throw new InvictaException(Message.getChatbotMessage(MessageKey.MISSING_DAY,
-                    Message.getUsageMessage(MessageKey.DAY_USAGE)));
-        } else {
-            for (int i = 1; i < commandString.length; i++) {
-                String word = commandString[i];
-                dateToSearchString.append(word).append(" ");
-            }
-            dateToSearch = Parser.parseDateTimeData(dateToSearchString
-                    .toString().trim()).toLocalDate(); // time values are disregarded
-            return new DisplayCommand(commandType, dateToSearch);
-        }
+        dateToSearch = Parser.parseDateTimeData(joinTokens(commandString, 1, commandString.length))
+                .toLocalDate(); // time values are disregarded
+        return new DisplayCommand(commandType, dateToSearch);
     }
 
 
@@ -236,6 +244,7 @@ public class Parser {
     public static DisplayCommand processPeriodCommand(String[] commandString, CommandType commandType)
             throws InvictaException {
         requireMinArgs(commandString, MessageKey.MISSING_PERIOD_START, MessageKey.PERIOD_USAGE);
+        assert !(commandString.length < 2) : "Minimum size of arguments not met!";
         String[] periodInput = Arrays.copyOfRange(commandString, 1, commandString.length);
         String[] period = Parser.parsePeriodData(periodInput);
         if (period[0].isEmpty()) {
@@ -247,6 +256,9 @@ public class Parser {
         }
         LocalDateTime periodStartTime = Parser.parseDateTimeData(period[0].trim());
         LocalDateTime periodEndTime = Parser.parseDateTimeData(period[1].trim());
+        if (periodEndTime.isBefore(periodStartTime)) {
+            throw new InvictaException(Message.getChatbotMessage(MessageKey.INVALID_PERIOD));
+        }
         return new DisplayCommand(commandType, periodStartTime, periodEndTime);
     }
 
@@ -260,9 +272,10 @@ public class Parser {
      */
     public static Command parseCommandData(String raw) throws InvictaException {
         String trimmed = raw.trim();
-        String[] commandString = trimmed.split(" ");
+        String[] commandString = trimmed.split("\\s+");
         CommandType commandType = CommandType.fromString(commandString[0]);
         requireInput(commandString[0], MessageKey.MISSING_INPUT);
+        assert !(commandString[0].isEmpty()) : "Data for command input missing!";
         switch (commandType) {
         case BYE: {
             return new ExitCommand();
@@ -324,40 +337,24 @@ public class Parser {
      * Returns the start and end times of a period in a string array by
      * iterating through user input to extract strings representing start and end times of a period.
      * If more user arguments in input than expected, they are disregarded.
+     * Used AI tool to simplify this method for code quality.
      *
      * @param userInput String array to be parsed into period start and end times.
      * @return period String array containing the strings representing start and end times of a period.
      */
     public static String[] parsePeriodData(String[] userInput) {
-        String[] period = new String[2];
-        StringBuilder periodStartTimeString = new StringBuilder();
-        StringBuilder periodEndTimeString = new StringBuilder();
-        // Flags to mark where one argument ends and another begins, and when to disregard unnecessary arguments
-        boolean isEndOfEventStart = false;
-        int argsDoneFlag = 2;
-        // Start counting from index 1 to ignore event command
-        for (int i = 1; i < userInput.length; i++) {
-            String word = userInput[i];
-            if (word.equals("/from")) {
-                argsDoneFlag -= 1;
-                if (argsDoneFlag < 1) {
-                    break;
-                }
-            } else if (word.equals("/to")) {
-                isEndOfEventStart = true;
-                argsDoneFlag -= 1;
-                if (argsDoneFlag < 1) {
-                    break;
-                }
-            } else if (isEndOfEventStart) {
-                periodEndTimeString.append(word).append(" ");
-            } else {
-                periodStartTimeString.append(word).append(" ");
-            }
+        int fromIdx = indexOf(userInput, "/from");
+        int toIdx = indexOf(userInput, "/to");
+
+        String start = "";
+        String end = "";
+
+        if (fromIdx != -1 && toIdx != -1 && fromIdx < toIdx) {
+            start = joinTokens(userInput, fromIdx + 1, toIdx);
+            end = joinTokens(userInput, toIdx + 1, userInput.length);
         }
-        period[0] = periodStartTimeString.toString();
-        period[1] = periodEndTimeString.toString();
-        return period;
+
+        return new String[] { start, end };
     }
 
 }

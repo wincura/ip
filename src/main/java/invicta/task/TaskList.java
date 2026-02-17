@@ -33,12 +33,21 @@ public class TaskList {
         return this.taskList.isEmpty();
     }
 
+    /**
+     * Adds task to task list.
+     */
     public void addTask(Task t) {
         this.taskList.add(t);
+        assert this.taskList.contains(t) : "Task was not added properly!";
     }
 
+    /**
+     * Removes task from task list.
+     */
     public void removeTask(int i) {
+        Task temp = this.taskList.get(i);
         this.taskList.remove(i);
+        assert !this.taskList.contains(temp) : "Task was not removed properly!";
     }
 
     public ArrayList<Task> getTaskList() {

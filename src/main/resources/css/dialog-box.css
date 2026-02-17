@@ -5,6 +5,11 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2.5, 0.5, 2.5, 2.5);
 }
 
+.error-dialog .label {
+    -fx-text-fill: #91113e;
+    -fx-background-color: #bfa1ab;
+}
+
 .reply-label {
     -fx-background-radius: 1em 1em 1em 0;
 }
