@@ -4,8 +4,13 @@ package invicta.task;
  * Represents a to-do task without a set time.
  */
 public class Todo extends Task {
+    /**
+     * Constructs an instance of Task class.
+     */
     public Todo(String description) {
         super(description);
+
+        assert this.description != null;
     }
 
     @Override
