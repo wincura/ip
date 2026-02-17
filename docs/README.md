@@ -244,7 +244,7 @@ Logo for chatbot generated with the help of an external Text to ASCII Art Genera
 ### Usage of Generative AI Tools
 - Images for GUI version of chatbot generated with ChatGPT Gen AI.
 - Translations for French and Spanish language support generated with ChatGPT Gen AI, and verified by me.
-- The getResponse() and captureStdout() methods in InvictaBot class, loadInto() method in Message class was written with the help of ChatGPT Gen AI, and tweaked by me.
+- The getResponse() and captureStdout() methods in InvictaBot class, the processEventCommand() and parsePeriodData() methods in Parser class and the loadInto() method in Message class was written with the help of ChatGPT Gen AI, and tweaked by me.
 - ChatGPT Gen AI helped me to pinpoint some bugs or small details I might have missed out like spelling or punctuation.
 
 Reference(s) used for working with Java Date Time:  
